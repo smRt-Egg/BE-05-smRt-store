@@ -11,10 +11,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
+
     User login(LoginReqeust request);
+
     UserResponse findByLoginId(String loginId);
+
     SignUpUserResponse signUp(SignUpUserRequest request);
+
     Optional<User> findByUserId(Long userId);
+
     Long updateUser(Long userId, UpdateUserRequest request);
+
     Long deleteUser(Long userId);
 }
