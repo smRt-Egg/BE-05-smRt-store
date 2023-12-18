@@ -1,23 +1,21 @@
 package com.programmers.smrtstore.core.properties;
 
+import static com.auth0.jwt.JWT.create;
+import static com.auth0.jwt.JWT.require;
+
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.auth0.jwt.JWT.create;
-import static com.auth0.jwt.JWT.require;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public final class Jwt {
@@ -28,34 +26,42 @@ public final class Jwt {
     private final String issuer;
 
     private final String clientSecret;
-
-    private final int expirySeconds;
+    private final int accessTokenExpirySeconds;
+    private final int refreshTokenExpirySeconds;
 
     private final Algorithm algorithm;
 
     private final JWTVerifier jwtVerifier;
 
-    public Jwt(String issuer, String clientSecret, int expirySeconds) {
+    public Jwt(String issuer, String clientSecret, int accessTokenExpirySeconds, int refreshTokenExpirySeconds) {
         this.issuer = issuer;
         this.clientSecret = clientSecret;
-        this.expirySeconds = expirySeconds;
+        this.accessTokenExpirySeconds = accessTokenExpirySeconds;
+        this.refreshTokenExpirySeconds = refreshTokenExpirySeconds;
         this.algorithm = Algorithm.HMAC512(clientSecret);
         this.jwtVerifier = require(algorithm)
-                .withIssuer(issuer)
-                .build();
+            .withIssuer(issuer)
+            .build();
     }
 
-    public String sign(Claims claims) {
+    public JwtAuthentication sign(Claims claims) {
         Date now = new Date();
-        JWTCreator.Builder builder = create();
-        builder.withIssuer(issuer);
-        builder.withIssuedAt(now);
-        if (expirySeconds > 0) {
-            builder.withExpiresAt(new Date(now.getTime() + expirySeconds * 1_000L));
-        }
-        builder.withClaim(USERNAME, claims.username);
-        builder.withArrayClaim(ROLES, claims.roles);
-        return builder.sign(algorithm);
+
+        String accessToken = create()
+            .withIssuer(issuer)
+            .withIssuedAt(now)
+            .withExpiresAt(new Date(now.getTime() + accessTokenExpirySeconds * 1_000L))
+            .withClaim(USERNAME, claims.username)
+            .withArrayClaim(ROLES, claims.roles)
+            .sign(algorithm);
+
+        String refreshToken = create()
+            .withIssuer(issuer)
+            .withIssuedAt(now)
+            .withExpiresAt(new Date(now.getTime() + refreshTokenExpirySeconds * 1_000L))
+            .sign(algorithm);
+
+        return new JwtAuthentication(accessToken, refreshToken, claims.username);
     }
 
     public Claims verify(String token) throws JWTVerificationException {
@@ -64,6 +70,7 @@ public final class Jwt {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Claims {
+
         String username;
         String[] roles;
         Date iat;
@@ -71,8 +78,9 @@ public final class Jwt {
 
         Claims(DecodedJWT decodedJWT) {
             Claim usernameClaim = decodedJWT.getClaim(USERNAME);
-            if (!usernameClaim.isNull())
+            if (!usernameClaim.isNull()) {
                 this.username = usernameClaim.asString();
+            }
             Claim rolesClaim = decodedJWT.getClaim(ROLES);
             if (!rolesClaim.isNull()) {
                 this.roles = rolesClaim.asArray(String.class);
@@ -116,11 +124,11 @@ public final class Jwt {
         @Override
         public String toString() {
             return "Claims{" +
-                    "username='" + username + '\'' +
-                    ", roles=" + Arrays.toString(roles) +
-                    ", iat=" + iat +
-                    ", exp=" + exp +
-                    '}';
+                "username='" + username + '\'' +
+                ", roles=" + Arrays.toString(roles) +
+                ", iat=" + iat +
+                ", exp=" + exp +
+                '}';
         }
     }
 }
