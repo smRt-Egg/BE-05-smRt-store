@@ -11,9 +11,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
 @Table(name = "users")
@@ -72,4 +76,10 @@ public class User {
 
     @Column(nullable = false)
     private Integer point;
+
+    public List<GrantedAuthority> getAuthorities() {
+        return Stream.of(new SimpleGrantedAuthority(role.name()))
+            .map(GrantedAuthority.class::cast)
+            .toList();
+    }
 }
