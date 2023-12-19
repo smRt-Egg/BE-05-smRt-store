@@ -25,33 +25,30 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String loginId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String password;
 
     @Column(nullable = false)
     private Integer age;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String nickName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 64)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 64)
     private String birth;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean marketing_agree;
-
-    @Column(nullable = false)
-    private String thumbNail;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -63,7 +60,7 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime deletedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isMembership;
 
     private String image;
@@ -71,5 +68,5 @@ public class User {
     @Column(nullable = false)
     private String phoneNum;
 
-    private Long shippingInfo;
+    private Long shippingInfoId;
 }
