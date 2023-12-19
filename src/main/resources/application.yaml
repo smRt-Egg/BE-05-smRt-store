@@ -2,4 +2,5 @@ jwt:
   header: token
   issuer: smRtEgg
   client-secret: HaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgateHaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgateHaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgate
-  expiry-seconds: 3600
+  access-token-expiry-hour: 1
+  refresh-token-expiry-hour: 3

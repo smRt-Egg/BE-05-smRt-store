@@ -20,7 +20,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication)
         throws AuthenticationException {
-
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         return processUserAuthentication(
             String.valueOf(jwtAuthenticationToken.getPrincipal()),
@@ -28,10 +27,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         );
     }
 
+    // TODO: userService 구현 필요 (feat. 찡비)
     private Authentication processUserAuthentication(String principal, String credentials) {
         /*
-         * TODO: userService 구현 필요 (feat. 찡비)
-         *
         try {
             User user = userService.login(principal, credentials);
             List<GrantedAuthority> authorities = user.getGroup().getAuthorities();
@@ -53,6 +51,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String[] roles = authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .toArray(String[]::new);
-        return jwt.sign(Jwt.Claims.from(username, roles));
+        return jwt.sign(username, roles);
     }
 }

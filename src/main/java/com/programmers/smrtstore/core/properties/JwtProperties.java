@@ -1,33 +1,30 @@
 package com.programmers.smrtstore.core.properties;
 
-import java.security.Key;
 import java.util.Base64;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Component
 @Getter
+@Component
+@ConfigurationProperties(prefix = "jwt")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JwtProperties {
+    @Setter
+    private String header;
+    @Setter
+    private String issuer;
+    private String clientSecret;
+    @Setter
+    private int accessTokenExpiryHour;
+    @Setter
+    private int refreshTokenExpiryHour;
 
-    private final String header;
-    private final String issuer;
-    private final Key key;
-    private final int expirySecond;
-
-
-    public JwtProperties(@Value("jwt.header") String header,
-        @Value("jwt.issuer") String issuer,
-        @Value("jwt.client-secret") String clientSecret,
-        @Value("jwt.expiry-second") int expirySecond) {
-        this.header = header;
-        this.issuer = issuer;
-        this.key = encodeKey(clientSecret);
-        this.expirySecond = expirySecond;
-    }
-
-    private static Key encodeKey(String clientSecret) {
-        return new SecretKeySpec(Base64.getDecoder().decode(clientSecret), "HmacSHA256");
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = new SecretKeySpec(Base64.getDecoder().decode(clientSecret), "HmacSHA256").toString();
     }
 }
