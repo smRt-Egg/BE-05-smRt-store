@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
+import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
+import com.programmers.smrtstore.domain.order.domain.entity.enums.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,11 +30,9 @@ public class Order {
 
     private LocalDateTime orderDate;
 
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
-    private String paymentMethod;
-
-    private String paymentStatus;
+    private PaymentMethod paymentMethod;
 
     private Integer totalPrice;
 
