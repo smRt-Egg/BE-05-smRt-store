@@ -71,22 +71,14 @@ jobs:
           key: ${{ secrets.EC2_PEM_KEY }}
           port: 22
           script: |
-            # 실행 중인 컨테이너가 있으면 정지
             if [ ! -z "$(docker ps -q)" ]; then
             docker stop $(docker ps -q)
             fi
-            
-            # 정지된 컨테이너가 있으면 제거
             if [ ! -z "$(docker ps -aq)" ]; then
             docker rm $(docker ps -aq)
             fi
-            
-            # Docker 레지스트리에 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-            # 이미지 풀
             docker pull ${{ secrets.DOCKER_ID }}/smrt_store
-            # 컨테이너 실행
             docker run -d \
             --log-driver=awslogs \
             --log-opt awslogs-region=ap-northeast-2 \
@@ -96,6 +88,5 @@ jobs:
             -p 8080:8080 \
             -e TZ=Asia/Seoul \
             ${{ secrets.DOCKER_ID }}/smrt_store
-          # 시스템 정리
             docker system prune -f
 
