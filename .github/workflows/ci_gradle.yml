@@ -31,6 +31,7 @@ jobs:
     ## create application.yml
     - name: make application.yml
       run:
+        mkdir ./src/main/resources
         touch ./src/main/resources/application.yml
       shell: bash
     - name: deliver application.yml
