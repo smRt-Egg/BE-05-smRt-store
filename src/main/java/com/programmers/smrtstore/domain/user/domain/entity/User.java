@@ -1,7 +1,5 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
-import com.programmers.smrtstore.domain.user.domain.enums.Gender;
-import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
