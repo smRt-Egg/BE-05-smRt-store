@@ -9,10 +9,9 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.UserResponse;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface UserService {
 
-    User login(LoginReqeust request);
+    User login(String principal, String credentials);
 
     Optional<User> findByLoginId(String loginId);
 

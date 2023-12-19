@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")
@@ -74,6 +75,11 @@ public class User {
 
     @Column(nullable = false)
     private Integer point;
+
+    public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
+        if (!passwordEncoder.matches(credentials, password))
+            throw new IllegalArgumentException("Bad credential");
+    }
 
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
