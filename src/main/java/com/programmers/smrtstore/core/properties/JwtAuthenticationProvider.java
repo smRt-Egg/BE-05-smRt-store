@@ -1,8 +1,14 @@
 package com.programmers.smrtstore.core.properties;
 
+import com.programmers.smrtstore.domain.user.application.UserService;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final Jwt jwt;
+    private final UserService userService;
 
     @Override
     public boolean supports(Class<?> authentication) {
@@ -27,12 +34,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         );
     }
 
-    // TODO: userService 구현 필요 (feat. 찡비)
     private Authentication processUserAuthentication(String principal, String credentials) {
-        /*
         try {
-            User user = userService.login(principal, credentials);
-            List<GrantedAuthority> authorities = user.getGroup().getAuthorities();
+            User user = userService.login(
+                LoginRequest.builder().principal(principal).credentials(credentials).build());
+            List<GrantedAuthority> authorities = user.getAuthorities();
             JwtAuthentication token = getToken(user.getLoginId(), authorities);
             JwtAuthenticationToken authenticated =
                 new JwtAuthenticationToken(token, null, authorities);
@@ -43,8 +49,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         } catch (DataAccessException e) {
             throw new AuthenticationServiceException(e.getMessage(), e);
         }
-        */
-        return null;
+
     }
 
     private JwtAuthentication getToken(String username, List<GrantedAuthority> authorities) {
