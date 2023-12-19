@@ -35,9 +35,7 @@ jobs:
         touch ./src/main/resources/application.yml
       shell: bash
     - name: deliver application.yml
-      run: |
-#        cd ./src/main/resources # resources 폴더로 이동
-        echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
       shell: bash
 
       ## Gradle Test를 실행한다
