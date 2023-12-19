@@ -19,6 +19,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+       ## gradle 캐싱
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       ## create application.yml
       - name: make application.yml
         run: |
@@ -33,14 +44,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # gradle build
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: build -x test
-
-#      # gradle build
-#      - name: Build with Gradle
-#        run: ./gradlew build -x test
+        run: ./gradlew build -x test
 
       # push 하기 위해 로그인
       - name: Docker Hub 로그인
@@ -54,12 +60,6 @@ jobs:
         run: |
           docker build -f Dockerfile -t ${{ secrets.DOCKER_ID }}/smrt_store .
           docker push ${{ secrets.DOCKER_ID }}/smrt_store
-
-#      - name: Docker image 빌드하고 push하기
-#        uses: docker/build-push-action@v5
-#        with:
-#          push: true
-#          tags: ${{ secrets.DOCKER_ID }}/smrt_store:latest
 
       #docker 파일을 ec2 서버에 배포
       - name: Deploy to Prod
