@@ -69,4 +69,7 @@ public class User {
     private String phoneNum;
 
     private Long shippingInfoId;
+
+    @Column(nullable = false)
+    private Integer point;
 }
