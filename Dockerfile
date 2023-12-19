@@ -1,7 +1,7 @@
 # 우리 어플리케이션 jar 파일을 여러 레이어로 추출하는 과정
 FROM eclipse-temurin:17-jre as builder
 WORKDIR application
-ARG JAR_FILE=build/libs/smRt-store-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=build/libs/*SNAPSHOT.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
