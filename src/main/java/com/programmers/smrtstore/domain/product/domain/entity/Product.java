@@ -52,7 +52,7 @@ public class Product {
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "create_at")
+    @Column(name = "create_at", nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private LocalDateTime createAt;
 
@@ -60,7 +60,7 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private LocalDateTime updateAt;
 
-    @Column(name = "is_available")
+    @Column(name = "is_available", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean isAvailable;
 }
