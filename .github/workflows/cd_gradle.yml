@@ -77,7 +77,7 @@ jobs:
             if [ ! -z "$(docker ps -aq)" ]; then
             docker rm $(docker ps -aq)
             fi
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull ${{ secrets.DOCKER_ID }}/smrt_store
             docker run -d \
             --log-driver=awslogs \
