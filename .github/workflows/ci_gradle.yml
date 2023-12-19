@@ -3,9 +3,9 @@ name: Java CI with Gradle in smRt store
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main","develop" ]
 
 permissions:
   checks: write
@@ -24,18 +24,19 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    ## Gradle Wrapper 권한 부여
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
     ## create application.yml
     - name: make application.yml
-      run:
+      run: |
+        mkdir -p ./src/main/resources
         touch ./src/main/resources/application.yml
       shell: bash
     - name: deliver application.yml
       run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
       shell: bash
-
-      ## Gradle Wrapper 권한 부여
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
 
       ## Gradle Test를 실행한다
     - name: Test with Gradle
