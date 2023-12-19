@@ -6,8 +6,7 @@ on:
     branches: [ "main" ]
 
 permissions:
-  checks: write
-  pull-requests: write
+  contents: read
 
 jobs:
   build-and-push-docker:
@@ -20,21 +19,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      ## Gradle Wrapper 권한 부여
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      ##gradle 캐싱
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       ## create application.yml
       - name: make application.yml
         run: |
@@ -45,10 +29,18 @@ jobs:
         run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
         shell: bash
 
+      # 빌드 및 테스트 단계.
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build -x test
+
+#      # gradle build
+#      - name: Build with Gradle
+#        run: ./gradlew build -x test
 
       # push 하기 위해 로그인
       - name: Docker Hub 로그인
