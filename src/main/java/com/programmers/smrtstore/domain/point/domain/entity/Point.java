@@ -44,6 +44,6 @@ public class Point {
     private Date issuedAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "expired_at", nullable = false)
+    @Column(name = "expired_at")
     private Date expiredAt;
 }
