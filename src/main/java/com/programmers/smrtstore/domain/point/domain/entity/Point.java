@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,14 +37,17 @@ public class Point {
     @Column(name = "point_status", nullable = false)
     private PointStatus pointStatus;
 
-    @Column(name = "point_amount", nullable = false)
-    private int pointAmount;
+    @Column(name = "point_value", nullable = false)
+    private int pointValue;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "issued_at", nullable = false)
-    private Date issuedAt;
+    private LocalDateTime issuedAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expired_at")
-    private Date expiredAt;
+    private LocalDateTime expiredAt;
+
+    @Column(name = "membership_apply_yn", nullable = false)
+    private Boolean memberShipApplyYn;
 }
