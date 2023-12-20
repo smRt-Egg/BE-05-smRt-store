@@ -2,6 +2,8 @@ package com.programmers.smrtstore.domain.product.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,7 +21,7 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Getter
 @Entity
-@Table(name = "product")
+@Table(name = "product_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
@@ -34,33 +36,33 @@ public class Product {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "count", nullable = false)
-    private Integer count;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private Category category;
 
-    @Column(name = "thumbnail_image", nullable = false)
-    private URL thumbnailImage;
+    @Column(name = "thumbnail", nullable = false)
+    private URL thumbnail;
 
-    @Column(name = "detail_image")
-    private URL detailImage;
+    @Column(name = "content_image")
+    private URL contentImage;
 
     @Column(name = "origin", nullable = false, length = 50)
     private String origin;
 
-    @Column(name = "manufacture_date", nullable = false)
-    private LocalDate manufactureDate;
-
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "create_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
-    @Column(name = "is_available", nullable = false)
+    @Column(name = "available_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
-    private boolean isAvailable;
+    private boolean availableYn;
+
+
 }
