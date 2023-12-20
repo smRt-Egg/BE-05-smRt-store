@@ -14,20 +14,13 @@ public class Coupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     private String name;
 
     private String content;
 
-    private BenefitUnitType benefitUnitType;
-
     private Long benefitValue;
-
-    private CustomerManageBenefitType customerManageBenefitType;
-
-    private CouponPublicationType couponPublicationType;
 
     private Long maxDiscountValue;
 
@@ -35,17 +28,24 @@ public class Coupon {
 
     private Integer idPerIssuableCount;
 
-    private Integer unusedCouponCount;
-
     private boolean isMembershipCoupon;
 
     private boolean isDuplicate;
 
     private boolean isValid;
 
+    private BenefitUnitType benefitUnitType;
+
+    private CustomerManageBenefitType customerManageBenefitType;
+
+    private CouponPublicationType couponPublicationType;
+
     private LocalDateTime validPeriodStartDate;
 
     private LocalDateTime validPeriodEndDate;
 
     private LocalDateTime createdAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private CouponQuantity couponQuantity;
 }
