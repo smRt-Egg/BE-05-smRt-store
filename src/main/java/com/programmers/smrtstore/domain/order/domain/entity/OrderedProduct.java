@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "ordered_products")
+@Table(name = "ordered_product_TB")
 @Entity
 public class OrderedProduct {
 
@@ -27,6 +27,6 @@ public class OrderedProduct {
 
     private Integer quantity;
 
-    private Integer price;
+    private Integer total_price;
 
 }
