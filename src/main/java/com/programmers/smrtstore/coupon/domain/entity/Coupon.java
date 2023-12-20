@@ -29,11 +29,13 @@ public class Coupon {
 
     private Integer idPerIssuableCount;
 
-    private boolean isMembershipCoupon;
+    private boolean membershipCouponYn;
 
-    private boolean isDuplicate;
+    private boolean duplicationYn;
 
-    private boolean isValid;
+    private boolean availableYn;
+
+    private CouponType couponType;
 
     private BenefitUnitType benefitUnitType;
 
