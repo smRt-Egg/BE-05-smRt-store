@@ -1,22 +1,18 @@
 package com.programmers.smrtstore.coupon.application;
 
 import com.programmers.smrtstore.coupon.presentation.req.OrderCouponRequest;
-import com.programmers.smrtstore.coupon.presentation.req.RegisterCouponRequest;
 import com.programmers.smrtstore.coupon.presentation.req.SaveCouponRequest;
-import com.programmers.smrtstore.coupon.presentation.res.CouponResponse;
-import com.programmers.smrtstore.coupon.presentation.res.OrderCouponResponse;
-import com.programmers.smrtstore.coupon.presentation.res.RegisterCouponResponse;
-import com.programmers.smrtstore.coupon.presentation.res.SaveCouponResponse;
+import com.programmers.smrtstore.coupon.presentation.req.UpdateUserCouponRequest;
+import com.programmers.smrtstore.coupon.presentation.res.*;
 
 import java.util.List;
 
 public interface CouponService {
 
     SaveCouponResponse save(SaveCouponRequest request);
-    RegisterCouponResponse register(RegisterCouponRequest request);
-
-    List<CouponResponse> getCouponByUserId(Long userId);
-    List<CouponResponse> getCouponByProductId(Long productId);
-
-    OrderCouponResponse order(OrderCouponRequest request);
+    List<UserCouponResponse> getCouponsByUserId(Long userId);
+    UserCouponResponse getCouponById(Long couponId);
+    ProductCouponResponse getCouponByProductIdAndUserId(Long productId, Long userId);
+    OrderCouponResponse calculateWithCoupon(OrderCouponRequest request);
+    Long updateUserCoupon(Long userId, UpdateUserCouponRequest request );
 }
