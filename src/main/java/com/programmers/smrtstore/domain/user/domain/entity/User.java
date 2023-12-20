@@ -50,7 +50,7 @@ public class User {
     private Gender gender;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean marketing_agree;
+    private boolean marketingAgree;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

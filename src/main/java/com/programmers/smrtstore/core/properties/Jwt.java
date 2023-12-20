@@ -8,6 +8,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.programmers.smrtstore.util.DateStrategy;
 import java.util.Date;
 import java.util.Map;
 import lombok.Getter;
@@ -23,8 +24,10 @@ public final class Jwt {
     private final long refreshTokenExpirySeconds;
     private final Algorithm algorithm;
     private final JWTVerifier jwtVerifier;
+    private final DateStrategy dateStrategy;
 
-    public Jwt(String issuer, String clientSecret, int accessTokenExpiryHour, int refreshTokenExpiryHour) {
+    public Jwt(String issuer, String clientSecret, int accessTokenExpiryHour,
+        int refreshTokenExpiryHour, DateStrategy dateStrategy) {
         this.issuer = issuer;
         this.accessTokenExpirySeconds = accessTokenExpiryHour * 3600L;
         this.refreshTokenExpirySeconds = refreshTokenExpiryHour * 3600L;
@@ -32,10 +35,11 @@ public final class Jwt {
         this.jwtVerifier = require(algorithm)
             .withIssuer(issuer)
             .build();
+        this.dateStrategy = dateStrategy;
     }
 
     public JwtAuthentication sign(String username, String[] roles) {
-        Date nowDate = new Date();
+        Date nowDate = dateStrategy.create();
         String accessToken = create()
             .withIssuer(issuer)
             .withIssuedAt(nowDate)

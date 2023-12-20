@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -47,8 +48,8 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/auth/**").permitAll())
-            .addFilterAfter(jwtAuthenticationFilter(),
-                SecurityContextHolderFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter(),
+                UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exceptionHandling -> {
                 exceptionHandling.accessDeniedHandler(accessDeniedHandler());
                 exceptionHandling.authenticationEntryPoint(authenticationEntryPoint());
@@ -57,12 +58,21 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public WebSecurityCustomizer ignoringWebSecurityCustomizer() {
+        return web -> web.ignoring()
+            .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"))
+            .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
+            .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**"));
+    }
+
+    @Bean
     protected Jwt jwt() {
         return new Jwt(
             jwtProperties.getIssuer(),
             jwtProperties.getClientSecret(),
             jwtProperties.getAccessTokenExpiryHour(),
-            jwtProperties.getRefreshTokenExpiryHour()
+            jwtProperties.getRefreshTokenExpiryHour(),
+            Date::new
         );
     }
 
@@ -75,16 +85,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public WebSecurityCustomizer ignoringWebSecurityCustomizer() {
-        return web -> web.ignoring()
-            .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"))
-            .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
-            .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**"));
-    }
-
-    @Bean
     protected AccessDeniedHandler accessDeniedHandler() {
-        // TODO: 구현 방식 논의
         return new AccessDeniedHandler() {
             @Qualifier("handlerExceptionResolver")
             private HandlerExceptionResolver resolver;
@@ -99,7 +100,6 @@ public class SecurityConfiguration {
 
     @Bean
     protected AuthenticationEntryPoint authenticationEntryPoint() {
-        // TODO: 구현 방식 논의
         return new AuthenticationEntryPoint() {
             @Qualifier("handlerExceptionResolver")
             private HandlerExceptionResolver resolver;
