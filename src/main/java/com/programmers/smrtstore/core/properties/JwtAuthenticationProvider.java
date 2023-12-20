@@ -37,7 +37,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         try {
             User user = userService.login(principal, credentials);
             List<GrantedAuthority> authorities = user.getAuthorities();
-            JwtAuthentication token = getToken(user.getLoginId(), authorities);
+            JwtAuthentication token = getToken(user.getAuth().getLoginId(), authorities);
             JwtAuthenticationToken authenticated =
                 new JwtAuthenticationToken(token, null, authorities);
             authenticated.setDetails(user);

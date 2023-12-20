@@ -30,7 +30,8 @@ public class UserService {
         checkArgument(isNotEmpty(credentials), "credentials must be provided.");
 
         User user = userRepository.findByLoginId(principal)
-            .orElseThrow(() -> new UsernameNotFoundException("Could not found user for " + principal));
+            .orElseThrow(
+                () -> new UsernameNotFoundException("Could not found user for " + principal));
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }

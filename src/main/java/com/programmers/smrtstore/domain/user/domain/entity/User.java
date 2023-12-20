@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,13 +30,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
-    private String loginId;
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "auth_id")
+    private Auth auth;
 
-    @Column(nullable = false, length = 20)
-    private String password;
-
-    @Column(nullable = false)
     private Integer age;
 
     @Column(nullable = false, length = 10)
@@ -43,6 +42,9 @@ public class User {
     @Column(nullable = false, length = 64)
     private String email;
 
+    @Column(nullable = false)
+    private String phone;
+
     @Column(nullable = false, length = 64)
     private String birth;
 
@@ -50,35 +52,32 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean marketingAgree;
+    private String thumbnail;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isMembership;
-
-    private String image;
-
-    @Column(nullable = false)
-    private String phoneNum;
-
-    private Long shippingInfoId;
-
-    @Column(nullable = false)
     private Integer point;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean marketingAgree;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean membershipYN;
+
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime deletedAt;
+
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
-        if (!passwordEncoder.matches(credentials, password))
+        if (!passwordEncoder.matches(credentials, auth.getPassword())) {
             throw new IllegalArgumentException("Bad credential");
+        }
     }
 
     public List<GrantedAuthority> getAuthorities() {

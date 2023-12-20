@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class LoginRequest {
+
     private String principal;
     private String credentials;
 }

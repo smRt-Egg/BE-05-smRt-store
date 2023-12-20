@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jwt")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JwtProperties {
+
     @Setter
     private String header;
     @Setter
@@ -25,6 +26,7 @@ public class JwtProperties {
     private int refreshTokenExpiryHour;
 
     public void setClientSecret(String clientSecret) {
-        this.clientSecret = new SecretKeySpec(Base64.getDecoder().decode(clientSecret), "HmacSHA256").toString();
+        this.clientSecret = new SecretKeySpec(Base64.getDecoder().decode(clientSecret),
+            "HmacSHA256").toString();
     }
 }
