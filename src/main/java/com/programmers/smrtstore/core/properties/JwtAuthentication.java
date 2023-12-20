@@ -2,7 +2,9 @@ package com.programmers.smrtstore.core.properties;
 
 import java.util.Date;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class JwtAuthentication {
 

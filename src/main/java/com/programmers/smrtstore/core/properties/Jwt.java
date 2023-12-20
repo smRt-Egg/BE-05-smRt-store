@@ -11,9 +11,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.programmers.smrtstore.util.DateStrategy;
 import java.util.Date;
 import java.util.Map;
-import lombok.Getter;
 
-@Getter
+
 public final class Jwt {
 
     private static final String USERNAME_STR = "username";
@@ -29,8 +28,8 @@ public final class Jwt {
     public Jwt(String issuer, String clientSecret, int accessTokenExpiryHour,
         int refreshTokenExpiryHour, DateStrategy dateStrategy) {
         this.issuer = issuer;
-        this.accessTokenExpirySeconds = accessTokenExpiryHour * 3600L;
-        this.refreshTokenExpirySeconds = refreshTokenExpiryHour * 3600L;
+        this.accessTokenExpirySeconds = accessTokenExpiryHour * 3600000L;
+        this.refreshTokenExpirySeconds = refreshTokenExpiryHour * 3600000L;
         this.algorithm = Algorithm.HMAC512(clientSecret);
         this.jwtVerifier = require(algorithm)
             .withIssuer(issuer)
