@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "wish_list")
+@Table(name = "keeps")
 @Entity
 public class Keep {
 
@@ -24,6 +24,12 @@ public class Keep {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "keep_date")
-    private LocalDateTime keepDate;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    public Keep(Long userId, Long productId) {
+        this.userId = userId;
+        this.productId = productId;
+        this.createdAt = LocalDateTime.now();
+    }
 }
