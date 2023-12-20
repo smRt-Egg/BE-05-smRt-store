@@ -5,7 +5,6 @@ import static io.micrometer.common.util.StringUtils.isNotEmpty;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;

@@ -2,7 +2,6 @@ package com.programmers.smrtstore.core.properties;
 
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -36,8 +35,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private Authentication processUserAuthentication(String principal, String credentials) {
         try {
-            User user = userService.login(
-                LoginRequest.builder().principal(principal).credentials(credentials).build());
+            User user = userService.login(principal, credentials);
             List<GrantedAuthority> authorities = user.getAuthorities();
             JwtAuthentication token = getToken(user.getLoginId(), authorities);
             JwtAuthenticationToken authenticated =

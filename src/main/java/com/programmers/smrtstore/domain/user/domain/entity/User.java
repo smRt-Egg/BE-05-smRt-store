@@ -19,7 +19,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
@@ -51,7 +51,7 @@ public class User {
     private Gender gender;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean marketing_agree;
+    private boolean marketingAgree;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
