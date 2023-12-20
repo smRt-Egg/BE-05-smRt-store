@@ -12,6 +12,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,10 +50,10 @@ public class Product {
     @Column(name = "origin", nullable = false, length = 50)
     private String origin;
 
-    @Column(name = "release_date", nullable = false)
+    @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private LocalDateTime createdAt;
 
@@ -64,5 +65,16 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean availableYn;
 
-
+    @Builder
+    Product(String name, Integer price, Category category, URL thumbnail, URL contentImage,
+        String origin) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.thumbnail = thumbnail;
+        this.contentImage = contentImage;
+        this.origin = origin;
+        // TODO: 추상화?
+        this.createdAt = LocalDateTime.now();
+    }
 }
