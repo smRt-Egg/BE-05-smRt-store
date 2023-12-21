@@ -26,21 +26,16 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     // SpringBoot Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // SpringBoot Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // JWT
+    implementation 'com.auth0:java-jwt:4.4.0'
+    //Guava
+    implementation 'com.google.guava:guava:32.1.3-jre'
 
     // SpringBoot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // SpringBoot Data JPA
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // SpringBoot Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
-    // JWT
-    implementation 'com.auth0:java-jwt:4.4.0'
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    //Guava
-    implementation 'com.google.guava:guava:32.1.3-jre'
 }
 
 tasks.named('test') {
