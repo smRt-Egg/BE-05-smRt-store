@@ -1,0 +1,5 @@
+package com.programmers.smrtstore.domain.order.domain.entity.enums;
+
+public enum OrderStatus {
+    PAYMENT_WAITING, PAYMENT_COMPLETED, PREPARING_FOR_SHIPMENT, SHIPPED, DELIVERED, CANCELLED, PURCHASE_CONFIRMED, REFUND_REQUESTED, REFUND_COMPLETED
+}
