@@ -1,6 +1,8 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.*;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.*;
 import static io.micrometer.common.util.StringUtils.isNotEmpty;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -11,6 +13,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResp
 import com.programmers.smrtstore.domain.user.presentation.dto.res.UserResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private PasswordEncoder passwordEncoder;
@@ -43,7 +47,14 @@ public class UserService {
     }
 
     public SignUpUserResponse signUp(SignUpUserRequest request) {
-        return null;
+        User user = toUser(request);
+        User saved = userRepository.save(user);
+        return toSignUpUserResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExist(String loginId) {
+        return userRepository.findByAuth_LoginId(loginId).isPresent();
     }
 
     public UserResponse findByUserId(Long userId) {

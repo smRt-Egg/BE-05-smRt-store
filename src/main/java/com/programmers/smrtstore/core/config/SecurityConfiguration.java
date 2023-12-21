@@ -1,6 +1,8 @@
 package com.programmers.smrtstore.core.config;
 
 import com.programmers.smrtstore.domain.auth.jwt.Jwt;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAccessDeniedHandler;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationEntryPoint;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationFilter;
 import com.programmers.smrtstore.core.properties.JwtProperties;
 import jakarta.servlet.ServletException;
@@ -32,6 +34,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class SecurityConfiguration {
 
     private final JwtProperties jwtProperties;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,8 +55,8 @@ public class SecurityConfiguration {
             .addFilterBefore(jwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exceptionHandling -> {
-                exceptionHandling.accessDeniedHandler(accessDeniedHandler());
-                exceptionHandling.authenticationEntryPoint(authenticationEntryPoint());
+                exceptionHandling.accessDeniedHandler(jwtAccessDeniedHandler);
+                exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
             })
             .build();
     }
@@ -82,33 +86,5 @@ public class SecurityConfiguration {
             jwtProperties.getHeader(),
             jwt()
         );
-    }
-
-    @Bean
-    protected AccessDeniedHandler accessDeniedHandler() {
-        return new AccessDeniedHandler() {
-            @Qualifier("handlerExceptionResolver")
-            private HandlerExceptionResolver resolver;
-
-            @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response,
-                AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                resolver.resolveException(request, response, null, accessDeniedException);
-            }
-        };
-    }
-
-    @Bean
-    protected AuthenticationEntryPoint authenticationEntryPoint() {
-        return new AuthenticationEntryPoint() {
-            @Qualifier("handlerExceptionResolver")
-            private HandlerExceptionResolver resolver;
-
-            @Override
-            public void commence(HttpServletRequest request, HttpServletResponse response,
-                AuthenticationException authException) throws IOException, ServletException {
-                resolver.resolveException(request, response, null, authException);
-            }
-        };
     }
 }
