@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.core.properties;
+package com.programmers.smrtstore.domain.auth.jwt;
 
 import static io.micrometer.common.util.StringUtils.isNotEmpty;
 import static java.util.Collections.emptyList;

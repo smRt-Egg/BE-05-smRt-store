@@ -2,6 +2,8 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.programmers.smrtstore.domain.auth.jwt.Jwt;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

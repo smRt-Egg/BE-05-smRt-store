@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.core.properties;
+package com.programmers.smrtstore.domain.auth.jwt;
 
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;

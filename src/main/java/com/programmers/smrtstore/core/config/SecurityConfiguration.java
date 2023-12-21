@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.core.config;
 
-import com.programmers.smrtstore.core.properties.Jwt;
-import com.programmers.smrtstore.core.properties.JwtAuthenticationFilter;
+import com.programmers.smrtstore.domain.auth.jwt.Jwt;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationFilter;
 import com.programmers.smrtstore.core.properties.JwtProperties;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

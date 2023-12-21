@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.core.properties;
+package com.programmers.smrtstore.domain.auth.jwt;
 
 import static com.auth0.jwt.JWT.create;
 import static com.auth0.jwt.JWT.require;
