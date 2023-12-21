@@ -16,12 +16,18 @@ repositories {
 }
 
 dependencies {
+    // SpringBoot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.projectlombok:lombok:1.18.28'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // SpringBoot DATA JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
