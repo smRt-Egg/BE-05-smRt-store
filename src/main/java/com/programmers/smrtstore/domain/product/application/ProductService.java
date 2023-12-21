@@ -4,6 +4,7 @@ import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProdu
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateProductRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.CreateProductResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductResponse;
+import java.util.List;
 
 public interface ProductService {
 
@@ -11,7 +12,13 @@ public interface ProductService {
 
     ProductResponse getProductById(Long productId);
 
+    List<ProductResponse> getAllProducts();
+
     Long releaseProduct(Long productId);
+
+    Long makeProductAvailable(Long productId);
+
+    Long makeProductNotAvailable(Long productId);
 
     Long deleteProduct(Long productId);
 
