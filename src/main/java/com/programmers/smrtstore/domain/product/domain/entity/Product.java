@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.domain.product.exception.ProductAlreadyAvailableException;
+import com.programmers.smrtstore.domain.product.exception.ProductAlreadyReleasedException;
+import com.programmers.smrtstore.domain.product.exception.ProductNotAvailableException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -76,5 +79,28 @@ public class Product {
         this.origin = origin;
         // TODO: 추상화?
         this.createdAt = LocalDateTime.now();
+        this.availableYn = false;
+    }
+
+    public void release() {
+        if (availableYn || releaseDate != null) {
+            throw new ProductAlreadyReleasedException();
+        }
+        this.availableYn = true;
+        this.releaseDate = LocalDate.now();
+    }
+
+    public void makeNotAvailable() {
+        if (!availableYn) {
+            throw new ProductNotAvailableException();
+        }
+        this.availableYn = false;
+    }
+
+    public void makeAvailable() {
+        if (availableYn) {
+            throw new ProductAlreadyAvailableException();
+        }
+        this.availableYn = true;
     }
 }
