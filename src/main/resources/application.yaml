@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://smrt-store-backend.cxykagk8gter.ap-northeast-2.rds.amazonaws.com:3306/smrtStore?connectionTimeZone=Asia/Seoul&serverTimezone=Asia/Seoul
+    username: prgrms1010
+    password: nIyPBoTXRimGt9H
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+#        show_sql: true
+#        format_sql: true
+jwt:
+  header: token
+  issuer: smRtEgg
+  client-secret: HaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgateHaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgateHaplyIthinkontheeandthenmystateLiketothelarkatbreakofdayarisingFromsullenearthsingshymnsatheavensgate
+  access-token-expiry-hour: 1
+  refresh-token-expiry-hour: 3
