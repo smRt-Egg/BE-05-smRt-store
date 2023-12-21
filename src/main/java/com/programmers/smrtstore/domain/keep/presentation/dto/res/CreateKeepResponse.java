@@ -7,12 +7,12 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 public class CreateKeepResponse {
     Long userId;
     Long productId;
     LocalDateTime createdAt;
 
+    @Builder
     private CreateKeepResponse(Keep keep) {
         this.userId = keep.getUserId();
         this.productId = keep.getProductId();

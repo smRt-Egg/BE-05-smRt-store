@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class PointResponse {
 
     private Long id;
@@ -19,6 +18,7 @@ public class PointResponse {
     private LocalDateTime expiredAt;
     private Boolean membershipApplyYn;
 
+    @Builder
     private PointResponse(Point point) {
         this.id = point.getId();
         this.userId = point.getUserId();
