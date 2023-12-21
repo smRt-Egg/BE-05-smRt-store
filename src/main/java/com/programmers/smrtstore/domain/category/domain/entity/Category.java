@@ -22,7 +22,7 @@ public class Category {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "value", nullable = false, updatable = false)
+    @Column(name = "value", nullable = false, updatable = false, unique = true)
     private String value;
 
     @Builder
