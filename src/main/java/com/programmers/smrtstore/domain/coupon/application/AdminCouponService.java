@@ -1,8 +1,8 @@
-package com.programmers.smrtstore.coupon.application;
+package com.programmers.smrtstore.domain.coupon.application;
 
-import com.programmers.smrtstore.coupon.presentation.req.CreateCouponRequest;
-import com.programmers.smrtstore.coupon.presentation.res.CouponResponse;
-import com.programmers.smrtstore.coupon.presentation.res.CreateCouponResponse;
+import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponRequest;
+import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
+import com.programmers.smrtstore.domain.coupon.presentation.res.CreateCouponResponse;
 
 import java.util.List;
 

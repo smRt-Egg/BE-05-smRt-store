@@ -1,6 +1,6 @@
-package com.programmers.smrtstore.coupon.infrastructure;
+package com.programmers.smrtstore.domain.coupon.infrastructure;
 
-import com.programmers.smrtstore.coupon.domain.entity.Coupon;
+import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponJpaRepository extends JpaRepository<Coupon,Long> {

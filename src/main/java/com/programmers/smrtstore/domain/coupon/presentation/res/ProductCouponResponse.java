@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.coupon.presentation.res;
+package com.programmers.smrtstore.domain.coupon.presentation.res;
 
 public class ProductCouponResponse {
     //여기서는 Product에 맞는 coupon list전부와

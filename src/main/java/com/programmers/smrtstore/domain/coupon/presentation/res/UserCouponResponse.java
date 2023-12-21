@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.coupon.presentation.res;
+package com.programmers.smrtstore.domain.coupon.presentation.res;
 
 public class UserCouponResponse {
     //coupon id
