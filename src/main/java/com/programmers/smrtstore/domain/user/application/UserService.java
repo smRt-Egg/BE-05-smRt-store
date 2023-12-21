@@ -29,7 +29,7 @@ public class UserService {
         checkArgument(isNotEmpty(principal), "principal must be provided.");
         checkArgument(isNotEmpty(credentials), "credentials must be provided.");
 
-        User user = userRepository.findByLoginId(principal)
+        User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
                 () -> new UsernameNotFoundException("Could not found user for " + principal));
         user.checkPassword(passwordEncoder, credentials);
@@ -39,7 +39,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<User> findByLoginId(String loginId) {
         checkArgument(isNotEmpty(loginId), "loginId must be provided.");
-        return userRepository.findByLoginId(loginId);
+        return userRepository.findByAuth_LoginId(loginId);
     }
 
     public SignUpUserResponse signUp(SignUpUserRequest request) {
