@@ -5,17 +5,21 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.req.DeleteKeepRequ
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 public interface KeepService {
 
     CreateKeepResponse createKeep(CreateKeepRequest request);
 
-    KeepResponse getAllKeepsByUserId(Long userId);
+    List<KeepResponse> getAllKeepsByUserId(Long userId);
 
     DeleteKeepResponse deleteKeep(DeleteKeepRequest request);
 
-    KeepResponse findKeepByUserAndCategory(FindKeepByCategoryRequest request);
+    List<KeepResponse> findKeepByUserAndCategory(FindKeepByCategoryRequest request);
 
-    KeepResponse getKeepRanking();
+    List<KeepRankingResponse> getKeepRanking(PageRequest pageRequest);
 }
