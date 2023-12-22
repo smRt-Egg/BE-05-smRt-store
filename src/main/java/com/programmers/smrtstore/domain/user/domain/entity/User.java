@@ -71,7 +71,7 @@ public class User {
     @Column(nullable = false)
     private Integer point;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false)
     private boolean marketingAgree;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")

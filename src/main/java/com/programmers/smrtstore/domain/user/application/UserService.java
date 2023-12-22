@@ -1,11 +1,14 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.programmers.smrtstore.core.properties.ErrorCode.*;
 import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.*;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.*;
 import static io.micrometer.common.util.StringUtils.isNotEmpty;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -30,22 +33,19 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User login(String principal, String credentials) {
-        checkArgument(isNotEmpty(principal), "principal must be provided.");
-        checkArgument(isNotEmpty(credentials), "credentials must be provided.");
-
         User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
-                () -> new UsernameNotFoundException("Could not found user for " + principal));
+                () -> new UserException(NOT_FOUND_USER, principal));
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }
 
     @Transactional(readOnly = true)
     public Optional<User> findByLoginId(String loginId) {
-        checkArgument(isNotEmpty(loginId), "loginId must be provided.");
         return userRepository.findByAuth_LoginId(loginId);
     }
 
+    @Transactional
     public SignUpUserResponse signUp(SignUpUserRequest request) {
         User user = toUser(request);
         User saved = userRepository.save(user);
