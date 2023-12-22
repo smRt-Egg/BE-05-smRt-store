@@ -38,6 +38,16 @@ jobs:
       run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
       shell: bash
 
+      ## create application-test.yml
+    - name: make application-test.yml
+      run: |
+        mkdir -p ./src/test/resources
+        touch ./src/test/resources/application-test.yml
+      shell: bash
+    - name: deliver application-test.yml
+      run: echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.yml
+      shell: bash
+
       ## Gradle Test를 실행한다
     - name: Test with Gradle
       run: ./gradlew --info test
