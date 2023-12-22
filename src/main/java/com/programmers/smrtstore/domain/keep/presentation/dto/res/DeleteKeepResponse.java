@@ -9,8 +9,12 @@ public class DeleteKeepResponse {
     Long id;
     Boolean isDelete;
 
-    public DeleteKeepResponse(Long id, Boolean isDelete) {
+    private DeleteKeepResponse(Long id, Boolean isDelete) {
         this.id = id;
         this.isDelete = isDelete;
+    }
+
+    public static DeleteKeepResponse of(Long id){
+        return new DeleteKeepResponse(id, true);
     }
 }
