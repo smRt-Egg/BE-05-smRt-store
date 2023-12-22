@@ -20,14 +20,17 @@ public class UserCoupon {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
+    @JoinColumn(name = "coupon_id",nullable = false)
     private Coupon coupon;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private User user ;
 
+    @Column(nullable = false)
     private boolean ownYn;
+
+    @Column(nullable = false)
     private Integer reIssueCount;
 
     public UserCoupon(Coupon coupon, User user, boolean ownYn, Integer reIssueCount) {
