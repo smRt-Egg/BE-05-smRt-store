@@ -34,13 +34,13 @@ public class Coupon {
     private boolean duplicationYn;
 
     private boolean availableYn;
-
+    @Enumerated(EnumType.STRING)
     private CouponType couponType;
-
+    @Enumerated(EnumType.STRING)
     private BenefitUnitType benefitUnitType;
-
+    @Enumerated(EnumType.STRING)
     private CustomerManageBenefitType customerManageBenefitType;
-
+    @Enumerated(EnumType.STRING)
     private CouponPublicationType couponPublicationType;
 
     private LocalDateTime validPeriodStartDate;
@@ -49,6 +49,6 @@ public class Coupon {
 
     private LocalDateTime createdAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private CouponQuantity couponQuantity;
 }

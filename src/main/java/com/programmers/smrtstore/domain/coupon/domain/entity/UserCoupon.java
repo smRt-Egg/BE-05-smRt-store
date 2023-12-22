@@ -1,9 +1,7 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +15,20 @@ public class UserCoupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 
-    private Long couponId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user ;
 
+    private boolean ownYn;
+    private Integer reIssueCount;
+    public void makeOwnYes() {
+        this.ownYn = true;
+    }
+    public void makeOwnNo() {
+        this.ownYn = false;
+    }
 }
