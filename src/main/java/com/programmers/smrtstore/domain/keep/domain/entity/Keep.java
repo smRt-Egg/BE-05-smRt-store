@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.keep.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,7 @@ public class Keep {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Builder
     public Keep(Long userId, Long productId) {
         this.userId = userId;
         this.productId = productId;
