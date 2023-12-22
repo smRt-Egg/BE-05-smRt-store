@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 @Getter
 @Builder
 public class ErrorResponse {
+
     private final LocalDateTime timestamp = LocalDateTime.now();
     private final int statusCode;
     private final String statusCodeName;
@@ -16,7 +17,9 @@ public class ErrorResponse {
     private final String message;
     private final String runtimeValue;
 
-    public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode, String runtimeValue) {
+    public static ResponseEntity<ErrorResponse> toResponseEntity(
+        ErrorCode errorCode, String runtimeValue
+    ) {
         return ResponseEntity
             .status(errorCode.getHttpStatus())
             .body(ErrorResponse.builder()
