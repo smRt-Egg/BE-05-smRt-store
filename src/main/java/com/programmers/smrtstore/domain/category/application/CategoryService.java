@@ -5,9 +5,9 @@ import com.programmers.smrtstore.domain.category.exception.CategoryAlreadyExistE
 import com.programmers.smrtstore.domain.category.exception.CategoryNotFoundException;
 import com.programmers.smrtstore.domain.category.infrastructure.CategoryJpaRepository;
 import com.programmers.smrtstore.domain.category.presentation.res.CategoryResponse;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,7 +18,7 @@ public class CategoryService {
 
     private final CategoryJpaRepository categoryJpaRepository;
 
-    public CategoryResponse addCategory(@NonNull String value) {
+    public CategoryResponse addCategory(@NotNull String value) {
         categoryJpaRepository.findByValue(value).ifPresent(ignore -> {
             throw new CategoryAlreadyExistException();
         });
@@ -28,7 +28,7 @@ public class CategoryService {
         return CategoryResponse.from(category);
     }
 
-    public CategoryResponse getCategoryById(@NonNull Long categoryId) {
+    public CategoryResponse getCategoryById(@NotNull Long categoryId) {
         Category category = categoryJpaRepository.findById(categoryId).orElseThrow(
             CategoryNotFoundException::new);
         return CategoryResponse.from(category);
