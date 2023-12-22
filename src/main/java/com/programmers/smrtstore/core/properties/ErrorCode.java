@@ -17,7 +17,6 @@ public enum ErrorCode {
     //400
     DUPLICATE_LOGIN_ID(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     NOT_FOUND_USER(NOT_FOUND, "user을 찾을 수 없습니다.");
-    EMPTY_VALUE(BAD_REQUEST, "")
     private final HttpStatus httpStatus;
     private final String message;
 
