@@ -7,15 +7,18 @@ import com.programmers.smrtstore.domain.category.infrastructure.CategoryJpaRepos
 import com.programmers.smrtstore.domain.category.presentation.res.CategoryResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryJpaRepository categoryJpaRepository;
 
-    public CategoryResponse addCategory(String value) {
+    public CategoryResponse addCategory(@NonNull String value) {
         categoryJpaRepository.findByValue(value).ifPresent(ignore -> {
             throw new CategoryAlreadyExistException();
         });
@@ -25,7 +28,7 @@ public class CategoryService {
         return CategoryResponse.from(category);
     }
 
-    public CategoryResponse getCategoryById(Long categoryId) {
+    public CategoryResponse getCategoryById(@NonNull Long categoryId) {
         Category category = categoryJpaRepository.findById(categoryId).orElseThrow(
             CategoryNotFoundException::new);
         return CategoryResponse.from(category);
@@ -35,11 +38,5 @@ public class CategoryService {
         return categoryJpaRepository.findAll()
             .stream().map(CategoryResponse::from)
             .toList();
-    }
-
-    public void deleteCategory(Long categoryId) {
-        Category category = categoryJpaRepository.findById(categoryId)
-            .orElseThrow(CategoryNotFoundException::new);
-        categoryJpaRepository.delete(category);
     }
 }
