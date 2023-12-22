@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(
+        name = "User_Coupon_TB",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UniqueUserAndCoupon",columnNames = {"user_id","coupon_id"})})
 public class UserCoupon {
 
     @Id
@@ -25,10 +29,22 @@ public class UserCoupon {
 
     private boolean ownYn;
     private Integer reIssueCount;
+
+    public UserCoupon(Coupon coupon, User user, boolean ownYn, Integer reIssueCount) {
+        this.coupon = coupon;
+        this.user = user;
+        this.ownYn = ownYn;
+        this.reIssueCount = reIssueCount;
+    }
+
     public void makeOwnYes() {
         this.ownYn = true;
     }
     public void makeOwnNo() {
         this.ownYn = false;
+    }
+
+    public void increaseIssueCount() {
+        this.reIssueCount+=1;
     }
 }

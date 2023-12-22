@@ -9,11 +9,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(
+        name = "Product_Coupon_TB",
+        uniqueConstraints = {
+        @UniqueConstraint(name = "UniqueProductAndCoupon",columnNames = {"product_id","coupon_id"})})
 public class ProductCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
@@ -22,4 +25,9 @@ public class ProductCoupon {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product productId;
+
+    public ProductCoupon(Coupon coupon, Product productId) {
+        this.coupon = coupon;
+        this.productId = productId;
+    }
 }
