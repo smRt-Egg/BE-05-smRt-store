@@ -11,9 +11,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.Builder;
-import org.checkerframework.checker.units.qual.N;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public record SignUpUserRequest(@NotBlank
                                 @Size(max = 12, min = 4,
@@ -55,13 +54,15 @@ public record SignUpUserRequest(@NotBlank
                                 boolean marketingAgree,
                                 @NotNull
                                 boolean membershipYN) {
-    @Builder
-    public SignUpUserRequest {}
 
-    public static User toUser(SignUpUserRequest request) {
+    @Builder
+    public SignUpUserRequest {
+    }
+
+    public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
         Auth auth = Auth.builder()
             .loginId(request.loginId)
-            .password(request.password)
+            .password(passwordEncoder.encode(request.password()))
             .build();
         return User.builder()
             .auth(auth)
