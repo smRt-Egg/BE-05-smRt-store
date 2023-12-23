@@ -1,32 +1,28 @@
 package com.programmers.smrtstore.core.config;
 
+import com.programmers.smrtstore.core.properties.JwtProperties;
 import com.programmers.smrtstore.domain.auth.jwt.Jwt;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAccessDeniedHandler;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationEntryPoint;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationFilter;
-import com.programmers.smrtstore.core.properties.JwtProperties;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationProvider;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +32,7 @@ public class SecurityConfiguration {
     private final JwtProperties jwtProperties;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final ObjectPostProcessor<Object> objectPostProcessor;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -86,5 +83,17 @@ public class SecurityConfiguration {
             jwtProperties.getHeader(),
             jwt()
         );
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
+        return new AuthenticationManagerBuilder(objectPostProcessor)
+            .authenticationProvider(jwtAuthenticationProvider).build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

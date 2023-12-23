@@ -1,12 +1,9 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.programmers.smrtstore.core.properties.ErrorCode.*;
-import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.*;
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.*;
-import static io.micrometer.common.util.StringUtils.isNotEmpty;
+import static com.programmers.smrtstore.core.properties.ErrorCode.NOT_FOUND_USER;
+import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.toUser;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
-import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -17,7 +14,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.UserResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public User login(String principal, String credentials) {
+        log.info("로그인 시작");
         User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
                 () -> new UserException(NOT_FOUND_USER, principal));
+        log.info("mark");
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }
@@ -47,7 +45,7 @@ public class UserService {
 
     @Transactional
     public SignUpUserResponse signUp(SignUpUserRequest request) {
-        User user = toUser(request);
+        User user = toUser(request, passwordEncoder);
         User saved = userRepository.save(user);
         return toSignUpUserResponse(saved);
     }

@@ -28,6 +28,6 @@ public class Auth {
     private String loginId;
 
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
 }
