@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 
 application*.yml
-docker-compose.yaml
 
 ### STS ###
 .apt_generated
