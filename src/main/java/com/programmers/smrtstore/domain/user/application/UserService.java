@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.NOT_FOUND_USER;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.toUser;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
@@ -29,11 +28,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User login(String principal, String credentials) {
-        log.info("로그인 시작");
         User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
-                () -> new UserException(NOT_FOUND_USER, principal));
-        log.info("mark");
+                () -> new UserException(USER_NOT_FOUND, principal));
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }
