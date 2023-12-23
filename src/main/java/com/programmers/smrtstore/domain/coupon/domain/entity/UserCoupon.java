@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.coupon.domain.entity;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,29 +26,32 @@ public class UserCoupon {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
-    private User user ;
+    private User user;
 
     @Column(nullable = false)
-    private boolean ownYn;
+    private boolean useYn;
 
     @Column(nullable = false)
-    private Integer reIssueCount;
+    private Integer issueCount;
 
-    public UserCoupon(Coupon coupon, User user, boolean ownYn, Integer reIssueCount) {
+    @Builder
+    public UserCoupon(Coupon coupon, User user) {
         this.coupon = coupon;
         this.user = user;
-        this.ownYn = ownYn;
-        this.reIssueCount = reIssueCount;
+        this.useYn = false;
+        this.issueCount = 1;
     }
 
-    public void makeOwnYes() {
-        this.ownYn = true;
+    public void downloadCoupon() {
+        useYn = false;
+        increaseIssueCount();
     }
-    public void makeOwnNo() {
-        this.ownYn = false;
+    public void useCoupon() {
+        useYn = true;
     }
 
     public void increaseIssueCount() {
-        this.reIssueCount+=1;
+        issueCount+=1;
     }
+
 }
