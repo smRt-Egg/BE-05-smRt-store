@@ -9,11 +9,10 @@ import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.UserResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +46,7 @@ public class UserService {
         return toSignUpUserResponse(saved);
     }
 
-    public UserResponse findByUserId(Long userId) {
+    public DetailUserResponse findByUserId(Long userId) {
         return null;
     }
 

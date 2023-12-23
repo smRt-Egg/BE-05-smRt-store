@@ -5,13 +5,43 @@ import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import lombok.Getter;
 
-public record SignUpUserResponse(String loginId, String password, Integer age, String nickName, String email, String phone,
-                                 String birth, Gender gender, Role role, String thumbnail,
-                                 boolean marketingAgree, boolean membershipYN, Integer point,
-                                 LocalDateTime updatedTime, LocalDateTime deletedTime, LocalDateTime createdTime) {
-    @Builder
-    public SignUpUserResponse {}
+@Builder
+@Getter
+public class SignUpUserResponse {
+
+    String loginId;
+
+    String password;
+
+    Integer age;
+
+    String nickName;
+
+    String email;
+
+    String phone;
+
+    String birth;
+
+    Gender gender;
+
+    Role role;
+
+    String thumbnail;
+
+    boolean marketingAgree;
+
+    boolean membershipYN;
+
+    Integer point;
+
+    LocalDateTime updatedTime;
+
+    LocalDateTime deletedTime;
+
+    LocalDateTime createdTime;
 
     public static SignUpUserResponse toSignUpUserResponse(User user) {
         return SignUpUserResponse.builder()

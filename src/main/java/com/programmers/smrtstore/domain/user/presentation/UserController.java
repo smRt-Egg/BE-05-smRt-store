@@ -9,11 +9,10 @@ import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserDto;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -35,24 +34,26 @@ public class UserController {
 
     @GetMapping("/exists/{loginId}")
     public ResponseEntity<String> checkDuplication(@PathVariable String loginId) {
-        userService.findByLoginId(loginId).orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
+        userService.findByLoginId(loginId)
+            .orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
         return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
 
     @PostMapping
-    public ResponseEntity<SignUpUserResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
+    public ResponseEntity<SignUpUserResponse> signUp(
+        @RequestBody @Valid SignUpUserRequest request) {
         SignUpUserResponse response = userService.signUp(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<DetailUserDto> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<DetailUserResponse> login(@RequestBody @Valid LoginRequest request) {
         JwtAuthenticationToken authToken = new JwtAuthenticationToken(
             request.getPrincipal(), request.getCredentials());
         Authentication resultToken = authenticationManager.authenticate(authToken);
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         User user = (User) resultToken.getDetails();
-        DetailUserDto response = new DetailUserDto(authentication.getAccessToken(),
+        DetailUserResponse response = new DetailUserResponse(authentication.getAccessToken(),
             authentication.getUsername(), authentication.getRefreshToken(), user.getRole());
         return ResponseEntity.ok(response);
     }
