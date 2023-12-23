@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
@@ -40,7 +41,6 @@ public class UserService {
         return userRepository.findByAuth_LoginId(loginId);
     }
 
-    @Transactional
     public SignUpUserResponse signUp(SignUpUserRequest request) {
         User user = toUser(request, passwordEncoder);
         User saved = userRepository.save(user);
