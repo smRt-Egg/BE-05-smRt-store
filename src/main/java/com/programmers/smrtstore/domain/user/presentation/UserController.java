@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth/user")
 @RequiredArgsConstructor
-@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -36,16 +35,12 @@ public class UserController {
 
     @GetMapping("/exists/{loginId}")
     public ResponseEntity<String> checkDuplication(@PathVariable String loginId) {
-        boolean exist = userService.isExist(loginId);
-        if (exist) {
-            throw new UserException(DUPLICATE_LOGIN_ID, loginId);
-        }
+        userService.findByLoginId(loginId).orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
         return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
 
     @PostMapping
-    public ResponseEntity<SignUpUserResponse> signUp(
-        @RequestBody @Valid SignUpUserRequest request) {
+    public ResponseEntity<SignUpUserResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
         SignUpUserResponse response = userService.signUp(request);
         return ResponseEntity.ok(response);
     }
@@ -54,11 +49,8 @@ public class UserController {
     public ResponseEntity<DetailUserDto> login(@RequestBody @Valid LoginRequest request) {
         JwtAuthenticationToken authToken = new JwtAuthenticationToken(
             request.getPrincipal(), request.getCredentials());
-        log.info("authToken : " + authToken.getPrincipal() + " " + authToken.getCredentials());
         Authentication resultToken = authenticationManager.authenticate(authToken);
-        log.info("결과 토큰 얻기");
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
-        log.info("authentication");
         User user = (User) resultToken.getDetails();
         DetailUserDto response = new DetailUserDto(authentication.getAccessToken(),
             authentication.getUsername(), authentication.getRefreshToken(), user.getRole());

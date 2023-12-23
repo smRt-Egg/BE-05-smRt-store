@@ -47,11 +47,6 @@ public class UserService {
         return toSignUpUserResponse(saved);
     }
 
-    @Transactional(readOnly = true)
-    public boolean isExist(String loginId) {
-        return userRepository.findByAuth_LoginId(loginId).isPresent();
-    }
-
     public UserResponse findByUserId(Long userId) {
         return null;
     }
