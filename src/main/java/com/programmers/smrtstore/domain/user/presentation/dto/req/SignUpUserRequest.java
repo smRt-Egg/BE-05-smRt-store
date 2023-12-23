@@ -1,11 +1,7 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.req;
 
-import static com.programmers.smrtstore.domain.user.domain.entity.Auth.*;
-
-import com.programmers.smrtstore.domain.user.domain.entity.Auth;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
-import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,7 +11,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Builder

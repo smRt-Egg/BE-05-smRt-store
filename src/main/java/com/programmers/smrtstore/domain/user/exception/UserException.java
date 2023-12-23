@@ -5,8 +5,7 @@ import com.programmers.smrtstore.exception.exceptionClass.CustomException;
 
 public class UserException extends CustomException {
 
-    public UserException(ErrorCode errorCode,
-        String runtimeValue) {
+    public UserException(ErrorCode errorCode, String runtimeValue) {
         super(errorCode, runtimeValue);
     }
 }
