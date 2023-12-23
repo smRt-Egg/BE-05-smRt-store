@@ -3,7 +3,6 @@ package com.programmers.smrtstore.domain.user.domain.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -20,9 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Builder
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
@@ -77,11 +74,11 @@ public class User {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean membershipYN;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
