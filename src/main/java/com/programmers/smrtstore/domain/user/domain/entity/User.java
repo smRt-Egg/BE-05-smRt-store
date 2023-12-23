@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import static com.programmers.smrtstore.domain.user.domain.entity.Auth.toAuth;
+
+import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -93,5 +96,22 @@ public class User {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
             .map(GrantedAuthority.class::cast)
             .toList();
+    }
+
+    public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
+        return User.builder()
+            .auth(toAuth(request.getLoginId(), request.getPassword(), passwordEncoder))
+            .age(request.getAge())
+            .birth(request.getBirth())
+            .email(request.getEmail())
+            .gender(request.getGender())
+            .role(request.getRole())
+            .membershipYN(request.isMembershipYN())
+            .phone(request.getPhone())
+            .marketingAgree(request.isMarketingAgree())
+            .nickName(request.getNickName())
+            .thumbnail(request.getThumbnail())
+            .point(0)
+            .build();
     }
 }

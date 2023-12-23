@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "auth_TB")
@@ -30,4 +32,11 @@ public class Auth {
 
     @Column(nullable = false)
     private String password;
+
+    public static Auth toAuth(String loginId, String password, PasswordEncoder passwordEncoder) {
+        return Auth.builder()
+            .loginId(loginId)
+            .password(passwordEncoder.encode(password))
+            .build();
+    }
 }

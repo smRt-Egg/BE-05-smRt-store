@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.req;
 
+import static com.programmers.smrtstore.domain.user.domain.entity.Auth.*;
+
 import com.programmers.smrtstore.domain.user.domain.entity.Auth;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
@@ -62,25 +64,4 @@ public class SignUpUserRequest {
 
     @NotNull
     boolean membershipYN;
-
-    public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
-        Auth auth = Auth.builder()
-            .loginId(request.loginId)
-            .password(passwordEncoder.encode(request.getPassword()))
-            .build();
-        return User.builder()
-            .auth(auth)
-            .age(request.age)
-            .birth(request.birth)
-            .email(request.email)
-            .gender(request.gender)
-            .role(request.role)
-            .membershipYN(request.membershipYN)
-            .phone(request.phone)
-            .marketingAgree(request.marketingAgree)
-            .nickName(request.nickName)
-            .thumbnail(request.thumbnail)
-            .point(0)
-            .build();
-    }
 }

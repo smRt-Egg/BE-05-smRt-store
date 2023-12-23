@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
-import static com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest.toUser;
+import static com.programmers.smrtstore.domain.user.domain.entity.User.*;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
