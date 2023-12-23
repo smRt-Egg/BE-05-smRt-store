@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(
-        name = "User_Coupon_TB",
+        name = "coupon_owned_user_TB",
         uniqueConstraints = {
                 @UniqueConstraint(name = "UniqueUserAndCoupon",columnNames = {"user_id","coupon_id"})})
 public class UserCoupon {
