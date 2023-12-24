@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "keeps")
+@Table(name = "keeps_TB")
 @Entity
 public class Keep {
 
