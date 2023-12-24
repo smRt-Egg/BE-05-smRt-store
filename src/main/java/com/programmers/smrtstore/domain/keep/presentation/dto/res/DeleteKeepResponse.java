@@ -7,14 +7,12 @@ import lombok.Getter;
 @Builder
 public class DeleteKeepResponse {
     Long id;
-    Boolean isDelete;
 
-    private DeleteKeepResponse(Long id, Boolean isDelete) {
+    private DeleteKeepResponse(Long id) {
         this.id = id;
-        this.isDelete = isDelete;
     }
 
     public static DeleteKeepResponse from(Long id){
-        return new DeleteKeepResponse(id, true);
+        return new DeleteKeepResponse(id);
     }
 }
