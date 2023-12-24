@@ -9,13 +9,17 @@ public class KeepResponse {
     private Long userId;
     private Long productId;
 
-    private KeepResponse(Keep keep) {
-        this.id = keep.getId();
-        this.userId = keep.getUserId();
-        this.productId = keep.getProductId();
+    private KeepResponse(Long id, Long userId, Long productId) {
+        this.id = id;
+        this.userId = userId;
+        this.productId = productId;
     }
 
     public static KeepResponse of(Keep keep) {
-        return new KeepResponse(keep);
+        return new KeepResponse(
+            keep.getId(),
+            keep.getUserId(),
+            keep.getProductId()
+        );
     }
 }
