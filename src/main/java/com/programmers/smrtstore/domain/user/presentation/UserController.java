@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.presentation;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_LOGIN_ID;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
@@ -31,7 +32,6 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
-
     @GetMapping("/exists/{loginId}")
     public ResponseEntity<String> checkDuplication(@PathVariable String loginId) {
         userService.findByLoginId(loginId)
@@ -48,13 +48,12 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<DetailUserResponse> login(@RequestBody @Valid LoginRequest request) {
-        JwtAuthenticationToken authToken = new JwtAuthenticationToken(
-            request.getPrincipal(), request.getCredentials());
+        JwtAuthenticationToken authToken = new JwtAuthenticationToken(request.getPrincipal(),
+            request.getCredentials());
         Authentication resultToken = authenticationManager.authenticate(authToken);
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         User user = (User) resultToken.getDetails();
-        DetailUserResponse response = new DetailUserResponse(authentication.getAccessToken(),
-            authentication.getUsername(), authentication.getRefreshToken(), user.getRole());
+        DetailUserResponse response = toDetailUserResponse(authentication, user);
         return ResponseEntity.ok(response);
     }
 }

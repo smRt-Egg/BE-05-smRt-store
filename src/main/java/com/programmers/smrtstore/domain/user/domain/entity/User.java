@@ -1,7 +1,9 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
 import static com.programmers.smrtstore.domain.user.domain.entity.Auth.toAuth;
 
+import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -88,7 +90,7 @@ public class User {
 
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
         if (!passwordEncoder.matches(credentials, auth.getPassword())) {
-            throw new IllegalArgumentException("Bad credential");
+            throw new UserException(INCORRECT_PASSWORD, credentials);
         }
     }
 

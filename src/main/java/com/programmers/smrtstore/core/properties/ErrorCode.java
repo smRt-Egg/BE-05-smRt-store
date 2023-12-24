@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.core.properties;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    INCORRECT_PASSWORD(BAD_REQUEST, "비밀번호가 잘못되었습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "user을 찾을 수 없습니다."),
 
