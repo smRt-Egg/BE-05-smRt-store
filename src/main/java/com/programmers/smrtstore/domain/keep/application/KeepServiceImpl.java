@@ -40,10 +40,8 @@ public class KeepServiceImpl implements KeepService {
     @Override
     public DeleteKeepResponse deleteKeep(DeleteKeepRequest request) {
         Long deleteId = request.getId();
-        if (!keepRepository.existsById(deleteId)) {
-            throw new KeepNotFoundException();
-        }
-        keepRepository.deleteById(deleteId);
+        Keep deleteKeep = keepRepository.findById(deleteId).orElseThrow(() -> new KeepNotFoundException());
+        keepRepository.delete(deleteKeep);
         return DeleteKeepResponse.from(deleteId);
     }
 
