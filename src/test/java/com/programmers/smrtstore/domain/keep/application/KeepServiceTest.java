@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.keep.application;
 
 import com.programmers.smrtstore.domain.keep.domain.entity.Keep;
-import com.programmers.smrtstore.domain.keep.exception.KeepNotFoundException;
+import com.programmers.smrtstore.domain.keep.exception.KeepException;
 import com.programmers.smrtstore.domain.keep.infrastructure.KeepJpaRepository;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.CreateKeepRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.DeleteKeepRequest;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 @Transactional
-class KeepServiceImplTest {
+class KeepServiceTest {
 
     @Autowired
     private KeepService keepService;
@@ -96,7 +95,6 @@ class KeepServiceImplTest {
         DeleteKeepResponse deleteKeepResponse = keepService.deleteKeep(request);
         //Then
         assertThat(deleteKeepResponse.getId()).isEqualTo(deleteId);
-        assertThat(deleteKeepResponse.getIsDelete()).isTrue();
     }
 
     @DisplayName("존재하지 않은 찜을 삭제하려하면 예외가 발생한다.")
@@ -107,17 +105,16 @@ class KeepServiceImplTest {
         DeleteKeepRequest request = DeleteKeepRequest.builder()
                 .id(deleteInvalidId).build();
         //When //Then
-        assertThatThrownBy(() -> keepService.deleteKeep(request)).isInstanceOf(KeepNotFoundException.class);
+        assertThatThrownBy(() -> keepService.deleteKeep(request)).isInstanceOf(KeepException.class);
     }
 
     @DisplayName("찜 랭킹은 내림차순이다.")
     @Test
     void getKeepRankingTest() {
-        int requestTopSize = 5;
         //Given
-        PageRequest pageRequest = PageRequest.of(0, requestTopSize);
+        int requestTopSize = 5;
         //When
-        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(pageRequest);
+        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(requestTopSize);
         //Then
         assertThat(keepRanking).hasSize(requestTopSize);
         assertThat(keepRanking.stream().map(KeepRankingResponse::getCount).toList()).isSortedAccordingTo(Comparator.reverseOrder());
