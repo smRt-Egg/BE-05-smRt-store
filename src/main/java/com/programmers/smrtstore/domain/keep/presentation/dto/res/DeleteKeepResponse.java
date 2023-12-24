@@ -14,7 +14,7 @@ public class DeleteKeepResponse {
         this.isDelete = isDelete;
     }
 
-    public static DeleteKeepResponse of(Long id){
+    public static DeleteKeepResponse from(Long id){
         return new DeleteKeepResponse(id, true);
     }
 }

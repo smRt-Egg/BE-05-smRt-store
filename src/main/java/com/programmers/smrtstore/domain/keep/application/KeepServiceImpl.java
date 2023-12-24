@@ -44,7 +44,7 @@ public class KeepServiceImpl implements KeepService {
             throw new KeepNotFoundException();
         }
         keepRepository.deleteById(deleteId);
-        return DeleteKeepResponse.of(deleteId);
+        return DeleteKeepResponse.from(deleteId);
     }
 
     @Override
