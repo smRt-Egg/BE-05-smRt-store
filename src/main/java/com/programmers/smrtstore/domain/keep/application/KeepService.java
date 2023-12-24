@@ -11,6 +11,7 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResp
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,9 @@ public class KeepService {
     }
 
     public List<KeepResponse> findKeepByUserAndCategory(FindKeepByCategoryRequest request) {
-        return null;
+        Long userId = request.getUserId();
+        Category category = request.getCategory();
+        return keepRepository.findKeepByUserAndCategory(userId, category);
     }
 
     public List<KeepRankingResponse> getKeepRanking(int limit) {
