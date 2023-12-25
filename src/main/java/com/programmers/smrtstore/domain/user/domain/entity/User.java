@@ -88,6 +88,22 @@ public class User {
 
     private LocalDateTime deletedAt;
 
+    public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role, boolean membershipYN, String phone, boolean marketingAgree,
+        String nickName, String thumbnail) {
+        this.age = age;
+        this.auth = auth;
+        this.birth = birth;
+        this.email = email;
+        this.gender = gender;
+        this.role = role;
+        this.membershipYN = membershipYN;
+        this.phone = phone;
+        this.marketingAgree = marketingAgree;
+        this.nickName = nickName;
+        this.thumbnail = thumbnail;
+        this.point = 0;
+    }
+
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
         if (!passwordEncoder.matches(credentials, auth.getPassword())) {
             throw new UserException(INCORRECT_PASSWORD, credentials);
@@ -101,19 +117,17 @@ public class User {
     }
 
     public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
-        return User.builder()
-            .auth(toAuth(request.getLoginId(), request.getPassword(), passwordEncoder))
-            .age(request.getAge())
-            .birth(request.getBirth())
-            .email(request.getEmail())
-            .gender(request.getGender())
-            .role(request.getRole())
-            .membershipYN(request.isMembershipYN())
-            .phone(request.getPhone())
-            .marketingAgree(request.isMarketingAgree())
-            .nickName(request.getNickName())
-            .thumbnail(request.getThumbnail())
-            .point(0)
-            .build();
+        Auth auth = toAuth(request.getLoginId(), request.getPassword(), passwordEncoder);
+        return new User(auth,
+            request.getAge(),
+            request.getBirth(),
+            request.getEmail(),
+            request.getGender(),
+            request.getRole(),
+            request.isMembershipYN(),
+            request.getPhone(),
+            request.isMarketingAgree(),
+            request.getNickName(),
+            request.getThumbnail());
     }
 }

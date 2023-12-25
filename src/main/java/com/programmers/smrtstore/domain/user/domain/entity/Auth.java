@@ -32,10 +32,12 @@ public class Auth {
     @Column(nullable = false)
     private String password;
 
+    public Auth(String loginId, String password) {
+        this.loginId = loginId;
+        this.password = password;
+    }
+
     public static Auth toAuth(String loginId, String password, PasswordEncoder passwordEncoder) {
-        return Auth.builder()
-            .loginId(loginId)
-            .password(passwordEncoder.encode(password))
-            .build();
+        return new Auth(loginId, passwordEncoder.encode(password));
     }
 }
