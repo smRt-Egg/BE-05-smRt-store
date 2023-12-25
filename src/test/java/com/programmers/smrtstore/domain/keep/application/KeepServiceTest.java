@@ -5,10 +5,12 @@ import com.programmers.smrtstore.domain.keep.exception.KeepException;
 import com.programmers.smrtstore.domain.keep.infrastructure.KeepJpaRepository;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.CreateKeepRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.DeleteKeepRequest;
+import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,5 +121,19 @@ class KeepServiceTest {
         assertThat(keepRanking).hasSize(requestTopSize);
         assertThat(keepRanking.stream().map(KeepRankingResponse::getCount).toList()).isSortedAccordingTo(Comparator.reverseOrder());
     }
+
+    @DisplayName("유저의 상품 카테고리를 활용해 찜을 조회할 수 있다.")
+    @Test
+    void getKeepFromUserIdAndCategory(){
+        //Given
+        FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
+                .userId(1L)
+                .category(Category.TEMP)
+                .build();
+        //When
+        List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(request);
+        //Then
+        assertThat(keepByUserAndCategory).isEmpty();
+     }
 
 }
