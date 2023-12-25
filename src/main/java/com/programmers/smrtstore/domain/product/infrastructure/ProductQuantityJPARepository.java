@@ -2,7 +2,9 @@ package com.programmers.smrtstore.domain.product.infrastructure;
 
 import com.programmers.smrtstore.domain.product.domain.entity.ProductQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ProductQuantityRepository extends JpaRepository<ProductQuantity, Long> {
+@Repository
+public interface ProductQuantityJPARepository extends JpaRepository<ProductQuantity, Long> {
 
 }
