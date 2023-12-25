@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,8 +42,12 @@ public class Product {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "price", nullable = false)
-    private Integer price;
+    @Column(name = "sale_price", nullable = false)
+    private Integer salePrice;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "product_quantity")
+    private ProductQuantity productQuantity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
@@ -52,9 +58,6 @@ public class Product {
 
     @Column(name = "content_image")
     private URL contentImage;
-
-    @Column(name = "origin", nullable = false, length = 50)
-    private String origin;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -75,25 +78,22 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean optionYn;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "product_quantity")
-    private ProductQuantity productQuantity;
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ProductOption> productOptions = new ArrayList<>();
+    private List<ProductOption> productOptions;
 
     @Builder
-    private Product(String name, Integer price, Integer stockQuantity, Category category,
-        URL thumbnail, URL contentImage, String origin) {
+    private Product(String name, Integer salePrice, Integer stockQuantity, Category category,
+        URL thumbnail, URL contentImage, boolean optionYn) {
         this.name = name;
-        this.price = price;
+        this.salePrice = salePrice;
         this.category = category;
+        this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.thumbnail = thumbnail;
         this.contentImage = contentImage;
-        this.origin = origin;
-        this.productQuantity = ProductQuantity.builder()
-            .stockQuantity(stockQuantity == null ? 0 : stockQuantity)
-            .build();
+        this.optionYn = optionYn;
+        if (optionYn) {
+            this.productOptions = new ArrayList<>();
+        }
     }
 
     public void addOption(ProductOption productOption) {
@@ -106,10 +106,10 @@ public class Product {
         productQuantity.addStockQuantity(quantity);
     }
 
-    public void addStockQuantity(Integer quantity, ProductOption productOption) {
-        productOptions.stream().filter(option -> option.equals(productOption))
+    public void addStockQuantity(Integer quantity, Long productOptionId) {
+        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
-            .orElseThrow(RuntimeException::new)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
@@ -117,18 +117,15 @@ public class Product {
         productQuantity.removeStockQuantity(quantity);
     }
 
-    public void removeStockQuantity(Integer quantity, ProductOption productOption) {
-        productOptions.stream().filter(option -> option.equals(productOption))
+    public void removeStockQuantity(Integer quantity, Long productOptionId) {
+        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
-            .orElseThrow(RuntimeException::new)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .removeStockQuantity(quantity);
     }
 
     public void removeOption(ProductOption productOption) {
         productOptions.remove(productOption);
-        if (productOptions.isEmpty()) {
-            optionYn = false;
-        }
     }
 
     public Integer getStockQuantity() {
@@ -142,7 +139,7 @@ public class Product {
 
     public void releaseProduct() {
         if (availableYn || releaseDate != null) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_ALREADY_RELEASED);
         }
         this.availableYn = true;
         this.releaseDate = LocalDate.now();
@@ -150,14 +147,14 @@ public class Product {
 
     public void makeNotAvailable() {
         if (!availableYn) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_NOT_AVAILABLE);
         }
         this.availableYn = false;
     }
 
     public void makeAvailable() {
         if (availableYn) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_ALREADY_AVAILABLE);
         }
         this.availableYn = true;
     }

@@ -3,8 +3,8 @@ package com.programmers.smrtstore.domain.product.presentation.dto.res;
 import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,14 +14,13 @@ public class ProductResponse {
 
     private Long id;
     private String name;
-    private Integer price;
+    private Integer salePrice;
     private Category category;
     private URL thumbnail;
     private URL contentImage;
-    private String origin;
     private LocalDate releaseDate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private boolean availableYn;
 
 
@@ -29,11 +28,10 @@ public class ProductResponse {
         return ProductResponse.builder()
             .id(product.getId())
             .name(product.getName())
-            .price(product.getPrice())
+            .salePrice(product.getSalePrice())
             .category(product.getCategory())
             .thumbnail(product.getThumbnail())
             .contentImage(product.getContentImage())
-            .origin(product.getOrigin())
             .releaseDate(product.getReleaseDate())
             .createdAt(product.getCreatedAt())
             .updatedAt(product.getUpdatedAt())
