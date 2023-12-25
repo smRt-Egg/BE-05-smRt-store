@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.product.presentation.dto.res;
 import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -20,8 +21,8 @@ public class ProductResponse {
     private URL contentImage;
     private String origin;
     private LocalDate releaseDate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private boolean availableYn;
 
 

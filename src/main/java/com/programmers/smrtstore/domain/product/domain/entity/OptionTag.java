@@ -5,10 +5,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Category {
-    TEMP(1, "TEMP");
-
+public enum OptionTag {
+    COLOR(1, "색상");
 
     private final Integer id;
     private final String name;
+
 }
+
