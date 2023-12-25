@@ -60,6 +60,7 @@ public class ProductOption {
         this.price = price == null ? 0 : price;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.product = product;
+        this.product.addOption(this);
     }
 
     public void addStockQuantity(Integer quantity) {

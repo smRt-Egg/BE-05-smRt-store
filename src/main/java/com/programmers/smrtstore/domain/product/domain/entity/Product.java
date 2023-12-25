@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -78,7 +79,7 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean optionYn;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductOption> productOptions;
 
     @Builder
@@ -97,7 +98,6 @@ public class Product {
     }
 
     public void addOption(ProductOption productOption) {
-        optionYn = true;
         productOptions.add(productOption);
 
     }
