@@ -1,25 +1,18 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.domain.entity.User.toUser;
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -79,6 +79,9 @@ public class User {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean membershipYN;
 
+    @Column(nullable = false)
+    private boolean repurchase;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -88,7 +91,8 @@ public class User {
 
     private LocalDateTime deletedAt;
 
-    public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role, boolean membershipYN, String phone, boolean marketingAgree,
+    public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role,
+        boolean membershipYN, String phone, boolean marketingAgree,
         String nickName, String thumbnail) {
         this.age = age;
         this.auth = auth;
@@ -118,7 +122,8 @@ public class User {
 
     public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
         Auth auth = toAuth(request.getLoginId(), request.getPassword(), passwordEncoder);
-        return new User(auth,
+        return new User(
+            auth,
             request.getAge(),
             request.getBirth(),
             request.getEmail(),
