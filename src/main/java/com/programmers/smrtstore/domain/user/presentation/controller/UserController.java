@@ -6,6 +6,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResp
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,13 @@ public class UserController {
     @PostMapping("/{userId}")
     public ResponseEntity<DetailUserResponse> update(@PathVariable Long userId, @RequestBody
     UpdateUserRequest request) {
-        DetailUserResponse response = userService.updateUser(userId, request);
+        DetailUserResponse response = userService.update(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<DetailUserResponse> withdraw(@PathVariable Long userId) {
+        DetailUserResponse response = userService.withdraw(userId);
         return ResponseEntity.ok(response);
     }
 }

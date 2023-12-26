@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.user.presentation.controller;
 
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailAuthResponse.toDetailUserResponse;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailAuthResponse.toDetailAuthResponse;
 
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
@@ -51,7 +51,7 @@ public class AuthController {
         Authentication resultToken = authenticationManager.authenticate(authToken);
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         User user = (User) resultToken.getDetails();
-        DetailAuthResponse response = toDetailUserResponse(authentication, user);
+        DetailAuthResponse response = toDetailAuthResponse(authentication, user);
         return ResponseEntity.ok(response);
     }
 }

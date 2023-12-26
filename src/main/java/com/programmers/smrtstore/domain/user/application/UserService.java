@@ -14,6 +14,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -71,17 +72,20 @@ public class UserService {
         return toDetailUserResponse(user);
     }
 
-    public DetailUserResponse updateUser(Long userId, UpdateUserRequest request) {
+    public DetailUserResponse update(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
-            request.getNickName(),
+        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(), request.getNickName(),
             request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
-            request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN());
+            request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN(),
+            request.isRepurchaseYN());
         return toDetailUserResponse(user);
     }
 
-    public Long deleteUser(Long userId) {
-        return null;
+    public DetailUserResponse withdraw(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        user.saveDeleteDate(LocalDateTime.now());
+        return toDetailUserResponse(user);
     }
 }

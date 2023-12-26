@@ -81,7 +81,7 @@ public class User {
     private boolean membershipYN;
 
     @Column(nullable = false)
-    private boolean repurchase;
+    private boolean repurchaseYN;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -93,15 +93,13 @@ public class User {
     private LocalDateTime deletedAt;
 
     public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role,
-        boolean membershipYN, String phone, boolean marketingAgree,
-        String nickName, String thumbnail) {
+        String phone, boolean marketingAgree, String nickName, String thumbnail) {
         this.age = age;
         this.auth = auth;
         this.birth = birth;
         this.email = email;
         this.gender = gender;
         this.role = role;
-        this.membershipYN = membershipYN;
         this.phone = phone;
         this.marketingAgree = marketingAgree;
         this.nickName = nickName;
@@ -122,9 +120,8 @@ public class User {
     }
 
     public void updateUser(String loginId, String password, Integer age, String nickName,
-        String email, String phone,
-        String birth, Gender gender, String thumbnail, boolean marketingAgree,
-        boolean membershipYN) {
+        String email, String phone, String birth, Gender gender, String thumbnail, boolean marketingAgree,
+        boolean membershipYN, boolean repurchaseYN) {
         this.getAuth().updateAuth(loginId, password);
         this.age = age;
         this.nickName = nickName;
@@ -135,6 +132,11 @@ public class User {
         this.thumbnail = thumbnail;
         this.marketingAgree = marketingAgree;
         this.membershipYN = membershipYN;
+        this.repurchaseYN = repurchaseYN;
+    }
+
+    public void saveDeleteDate(LocalDateTime time) {
+        this.deletedAt = time;
     }
 
     public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
@@ -146,7 +148,6 @@ public class User {
             request.getEmail(),
             request.getGender(),
             request.getRole(),
-            request.isMembershipYN(),
             request.getPhone(),
             request.isMarketingAgree(),
             request.getNickName(),

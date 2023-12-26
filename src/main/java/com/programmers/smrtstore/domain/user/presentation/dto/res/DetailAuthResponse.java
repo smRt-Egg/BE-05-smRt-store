@@ -17,7 +17,7 @@ public class DetailAuthResponse {
     private String username;
     private Role role;
 
-    public static DetailAuthResponse toDetailUserResponse(JwtAuthentication authentication,
+    public static DetailAuthResponse toDetailAuthResponse(JwtAuthentication authentication,
         User user) {
         return DetailAuthResponse.builder()
             .username(user.getAuth().getLoginId())
