@@ -75,7 +75,8 @@ public class UserService {
     public DetailUserResponse update(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(), request.getNickName(),
+        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
+            request.getNickName(),
             request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
             request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN(),
             request.isRepurchaseYN());

@@ -11,6 +11,8 @@ import lombok.Getter;
 @Getter
 public class SignUpUserResponse {
 
+    Long id;
+
     String loginId;
 
     String password;
@@ -47,6 +49,7 @@ public class SignUpUserResponse {
 
     public static SignUpUserResponse toSignUpUserResponse(User user) {
         return SignUpUserResponse.builder()
+            .id(user.getId())
             .age(user.getAge())
             .birth(user.getBirth())
             .createdTime(user.getCreatedAt())
