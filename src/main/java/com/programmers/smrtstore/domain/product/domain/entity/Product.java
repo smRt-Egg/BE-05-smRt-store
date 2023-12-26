@@ -1,8 +1,6 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
-import com.programmers.smrtstore.domain.product.exception.ProductAlreadyAvailableException;
-import com.programmers.smrtstore.domain.product.exception.ProductAlreadyReleasedException;
-import com.programmers.smrtstore.domain.product.exception.ProductNotAvailableException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,19 +8,24 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
-@Setter
 @Getter
 @Entity
 @Table(name = "product_TB")
@@ -34,7 +37,7 @@ public class Product {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 100, nullable = false)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @Column(name = "price", nullable = false)
@@ -56,35 +59,90 @@ public class Product {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JdbcTypeCode(SqlTypes.TIMESTAMP)
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    @JdbcTypeCode(SqlTypes.TIMESTAMP)
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
     @Column(name = "available_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean availableYn;
 
+    @Column(name = "option_yn", nullable = false)
+    @JdbcTypeCode(SqlTypes.TINYINT)
+    private boolean optionYn;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "product_quantity")
+    private ProductQuantity productQuantity;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ProductOption> productOptions = new ArrayList<>();
+
     @Builder
-    Product(String name, Integer price, Category category, URL thumbnail, URL contentImage,
-        String origin) {
+    private Product(String name, Integer price, Integer stockQuantity, Category category,
+        URL thumbnail, URL contentImage, String origin) {
         this.name = name;
         this.price = price;
         this.category = category;
         this.thumbnail = thumbnail;
         this.contentImage = contentImage;
         this.origin = origin;
-        // TODO: 추상화?
-        this.createdAt = LocalDateTime.now();
-        this.availableYn = false;
+        this.productQuantity = ProductQuantity.builder()
+            .stockQuantity(stockQuantity == null ? 0 : stockQuantity)
+            .build();
     }
 
-    public void release() {
+    public void addOption(ProductOption productOption) {
+        optionYn = true;
+        productOptions.add(productOption);
+
+    }
+
+    public void addStockQuantity(Integer quantity) {
+        productQuantity.addStockQuantity(quantity);
+    }
+
+    public void addStockQuantity(Integer quantity, ProductOption productOption) {
+        productOptions.stream().filter(option -> option.equals(productOption))
+            .findFirst()
+            .orElseThrow(RuntimeException::new)
+            .addStockQuantity(quantity);
+    }
+
+    public void removeStockQuantity(Integer quantity) {
+        productQuantity.removeStockQuantity(quantity);
+    }
+
+    public void removeStockQuantity(Integer quantity, ProductOption productOption) {
+        productOptions.stream().filter(option -> option.equals(productOption))
+            .findFirst()
+            .orElseThrow(RuntimeException::new)
+            .removeStockQuantity(quantity);
+    }
+
+    public void removeOption(ProductOption productOption) {
+        productOptions.remove(productOption);
+        if (productOptions.isEmpty()) {
+            optionYn = false;
+        }
+    }
+
+    public Integer getStockQuantity() {
+        if (optionYn) {
+            return productOptions.stream()
+                .map(ProductOption::getStockQuantity)
+                .reduce(0, Integer::sum);
+        }
+        return productQuantity.getStockQuantity();
+    }
+
+    public void releaseProduct() {
         if (availableYn || releaseDate != null) {
-            throw new ProductAlreadyReleasedException();
+            throw new RuntimeException();
         }
         this.availableYn = true;
         this.releaseDate = LocalDate.now();
@@ -92,14 +150,14 @@ public class Product {
 
     public void makeNotAvailable() {
         if (!availableYn) {
-            throw new ProductNotAvailableException();
+            throw new RuntimeException();
         }
         this.availableYn = false;
     }
 
     public void makeAvailable() {
         if (availableYn) {
-            throw new ProductAlreadyAvailableException();
+            throw new RuntimeException();
         }
         this.availableYn = true;
     }
