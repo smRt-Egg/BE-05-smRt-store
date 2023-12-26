@@ -34,16 +34,16 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<DetailUserResponse> update(@PathVariable Long userId, @RequestBody
+    @PostMapping("/update")
+    public ResponseEntity<DetailUserResponse> update(@RequestBody
     UpdateUserRequest request) {
-        DetailUserResponse response = userService.update(userId, request);
+        DetailUserResponse response = userService.update(request);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<DetailUserResponse> withdraw(@PathVariable Long userId) {
-        DetailUserResponse response = userService.withdraw(userId);
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<DetailUserResponse> withdraw() {
+        DetailUserResponse response = userService.withdraw();
         return ResponseEntity.ok(response);
     }
 }

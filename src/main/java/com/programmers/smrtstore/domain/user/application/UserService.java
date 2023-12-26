@@ -37,6 +37,7 @@ public class UserService {
         User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
                 () -> new UserException(USER_NOT_FOUND, principal));
+        if(user.getDeletedAt() != null) throw new UserException(USER_NOT_FOUND, principal);
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }
@@ -50,12 +51,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public DetailUserResponse getUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
-        String loginId = jwtAuthentication.getUsername();
-
-        User user = userRepository.findByAuth_LoginId(loginId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, loginId));
+        User user = certificatedUser();
         return toDetailUserResponse(user);
     }
 
@@ -72,9 +68,8 @@ public class UserService {
         return toDetailUserResponse(user);
     }
 
-    public DetailUserResponse update(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    public DetailUserResponse update(UpdateUserRequest request) {
+        User user = certificatedUser();
         user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
             request.getNickName(),
             request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
@@ -83,10 +78,18 @@ public class UserService {
         return toDetailUserResponse(user);
     }
 
-    public DetailUserResponse withdraw(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    public DetailUserResponse withdraw() {
+        User user = certificatedUser();
         user.saveDeleteDate(LocalDateTime.now());
         return toDetailUserResponse(user);
+    }
+
+    private User certificatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
+        String loginId = jwtAuthentication.getUsername();
+
+        return userRepository.findByAuth_LoginId(loginId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, loginId));
     }
 }
