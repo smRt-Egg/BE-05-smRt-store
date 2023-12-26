@@ -20,6 +20,7 @@ public class DetailAuthResponse {
     public static DetailAuthResponse toDetailUserResponse(JwtAuthentication authentication,
         User user) {
         return DetailAuthResponse.builder()
+            .username(user.getAuth().getLoginId())
             .accessToken(authentication.getAccessToken())
             .refreshToken(authentication.getRefreshToken())
             .role(user.getRole())

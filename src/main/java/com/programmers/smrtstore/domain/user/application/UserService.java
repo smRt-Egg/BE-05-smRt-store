@@ -3,8 +3,10 @@ package com.programmers.smrtstore.domain.user.application;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_LOGIN_ID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.domain.entity.User.toUser;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -13,6 +15,9 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-//    private final AuthenticationManager authenticationManager;
 
     @Transactional(readOnly = true)
     public User login(String principal, String credentials) {
@@ -35,20 +40,21 @@ public class UserService {
         return user;
     }
 
-//    public DetailUserResponse tokenLogin(LoginRequest request) {
-//        JwtAuthenticationToken authToken = new JwtAuthenticationToken(request.getPrincipal(),
-//            request.getCredentials());
-//        Authentication resultToken = authenticationManager.authenticate(authToken);
-//        JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
-//        User user = (User) resultToken.getDetails();
-//
-//        return toDetailUserResponse(authentication, user);
-//    }
-
     @Transactional(readOnly = true)
-    public void findByLoginId(String loginId) {
+    public void checkDuplicate(String loginId) {
         userRepository.findByAuth_LoginId(loginId)
             .orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
+    }
+
+    @Transactional(readOnly = true)
+    public DetailUserResponse getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
+        String loginId = jwtAuthentication.getUsername();
+
+        User user = userRepository.findByAuth_LoginId(loginId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, loginId));
+        return toDetailUserResponse(user);
     }
 
     public SignUpUserResponse signUp(SignUpUserRequest request) {
@@ -61,7 +67,7 @@ public class UserService {
     public DetailUserResponse findByUserId(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        return DetailUserResponse.toDetailUserResponse(user);
+        return toDetailUserResponse(user);
     }
 
     public Long updateUser(Long userId, UpdateUserRequest request) {

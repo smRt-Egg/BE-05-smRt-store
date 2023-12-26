@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.auth.jwt;
 import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Builder

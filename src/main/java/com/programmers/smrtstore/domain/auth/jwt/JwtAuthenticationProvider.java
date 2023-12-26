@@ -31,7 +31,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication)
         throws AuthenticationException {
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
-        log.info("authenticate 시작");
         return processUserAuthentication(
             String.valueOf(jwtAuthenticationToken.getPrincipal()),
             jwtAuthenticationToken.getCredentials()
