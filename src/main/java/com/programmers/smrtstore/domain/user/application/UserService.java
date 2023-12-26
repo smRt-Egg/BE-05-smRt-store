@@ -37,7 +37,9 @@ public class UserService {
         User user = userRepository.findByAuth_LoginId(principal)
             .orElseThrow(
                 () -> new UserException(USER_NOT_FOUND, principal));
-        if(user.getDeletedAt() != null) throw new UserException(USER_NOT_FOUND, principal);
+        if (user.getDeletedAt() != null) {
+            throw new UserException(USER_NOT_FOUND, principal);
+        }
         user.checkPassword(passwordEncoder, credentials);
         return user;
     }
