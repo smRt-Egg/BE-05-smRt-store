@@ -34,14 +34,18 @@ public class ProductQuantity {
         return new ProductQuantity(stockQuantity);
     }
 
-    public void addStockQuantity(Integer quantity) {
+    protected void addStockQuantity(Integer quantity) {
         this.stockQuantity += quantity;
     }
 
-    public void removeStockQuantity(Integer quantity) {
+    protected void removeStockQuantity(Integer quantity) {
         if (this.stockQuantity < quantity) {
             throw new ProductException(PRODUCT_QUANTITY_NOT_ENOUGH);
         }
         this.stockQuantity -= quantity;
+    }
+
+    protected void updateStockQuantity(Integer quantity) {
+        this.stockQuantity = quantity;
     }
 }

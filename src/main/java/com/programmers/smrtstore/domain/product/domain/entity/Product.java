@@ -158,4 +158,50 @@ public class Product {
         }
         this.availableYn = true;
     }
+
+    private void updateName(String name) {
+        this.name = name;
+    }
+
+    private void updateSalePrice(Integer salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    private void updateStockQuantity(Integer stockQuantity) {
+        this.productQuantity.updateStockQuantity(stockQuantity);
+    }
+
+    private void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    private void updateThumbnail(URL thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    private void updateContentImage(URL contentImage) {
+        this.contentImage = contentImage;
+    }
+
+    public void updateValues(String name, Integer salePrice, Integer stockQuantity,
+        Category category, URL thumbnail, URL contentImage) {
+        if (name != null) {
+            updateName(name);
+        }
+        if (salePrice != null) {
+            updateSalePrice(salePrice);
+        }
+        if (stockQuantity != null) {
+            updateStockQuantity(stockQuantity);
+        }
+        if (category != null) {
+            updateCategory(category);
+        }
+        if (thumbnail != null) {
+            updateThumbnail(thumbnail);
+        }
+        if (contentImage != null) {
+            updateContentImage(contentImage);
+        }
+    }
 }

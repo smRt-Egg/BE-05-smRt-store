@@ -75,11 +75,27 @@ public class ProductOption {
         return this.productQuantity.getStockQuantity();
     }
 
-    public void updateOptionName(String optionName) {
+    private void updateOptionName(String optionName) {
         this.optionName = optionName;
     }
 
-    public void updatePrice(Integer price) {
+    private void updatePrice(Integer price) {
         this.price = price;
+    }
+
+    private void updateOptionTag(OptionTag optionTag) {
+        this.optionTag = optionTag;
+    }
+
+    public void updateValues(String optionName, Integer price, OptionTag optionTag) {
+        if (optionName != null) {
+            updateOptionName(optionName);
+        }
+        if (price != null) {
+            updatePrice(price);
+        }
+        if (optionTag != null) {
+            updateOptionTag(optionTag);
+        }
     }
 }
