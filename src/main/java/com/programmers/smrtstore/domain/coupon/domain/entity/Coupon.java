@@ -6,6 +6,7 @@ import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponRequ
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -58,6 +59,7 @@ public class Coupon {
     @OneToOne(mappedBy = "coupon", fetch = FetchType.LAZY)
     private CouponQuantity couponQuantity;
 
+    @Builder
     private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, LocalDateTime createdAt, CouponQuantity couponQuantity) {
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
@@ -89,18 +91,18 @@ public class Coupon {
                 request.getCouponQuantity());
     }
 
-    public void validCoupon() {
-        validEndDate();
-        validAvailable();
+    public void validateCoupon() {
+        validateEndDate();
+        validateAvailable();
     }
 
-    private  void validAvailable() {
+    private  void validateAvailable() {
         if (!availableYn) {
             throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE, String.valueOf(availableYn));
         }
     }
 
-    private  void validEndDate() {
+    private  void validateEndDate() {
         if (validPeriodEndDate.isAfter(LocalDateTime.now())) {
             throw new CouponException(ErrorCode.COUPON_DATE_INVALID, validPeriodEndDate.toString());
         }

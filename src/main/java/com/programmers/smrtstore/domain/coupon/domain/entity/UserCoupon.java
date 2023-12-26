@@ -40,22 +40,22 @@ public class UserCoupon {
     }
 
     public static UserCoupon of(Coupon coupon, User user) {
-        validCouponWithUser(coupon, user);
+        validateCouponWithUser(coupon, user);
         return new UserCoupon(coupon, user);
     }
 
     public void reIssueCoupon() {
-        validCouponWithUser(coupon, user);
-        validCouponIssueCount();
-        validExistCoupon();
+        validateCouponWithUser(coupon, user);
+        validateCouponIssueCount();
+        validateExistCoupon();
 
         useYn = false;
         increaseIssueCount();
     }
 
     public void useCoupon() {
-        validCouponWithUser(coupon, user);
-        validCouponUse();
+        validateCouponWithUser(coupon, user);
+        validateCouponUse();
         useYn = true;
     }
 
@@ -63,35 +63,35 @@ public class UserCoupon {
         issueCount += 1;
     }
 
-    public static void validCouponWithUser(Coupon coupon, User user) {
-        coupon.validCoupon();
+    public static void validateCouponWithUser(Coupon coupon, User user) {
+        coupon.validateCoupon();
         // validCustomerManageBenefitType(coupon.getCustomerManageBenefitType()
-        validMembership(coupon.isMembershipCouponYn(), user.isMembershipYN()); //멤버십 쿠폰일때 멤버십 유저인지?
+        validateMembership(coupon.isMembershipCouponYn(), user.isMembershipYN()); //멤버십 쿠폰일때 멤버십 유저인지?
     }
 
-    private static void validMembership(boolean couponMembership, boolean userMembership) {
+    private static void validateMembership(boolean couponMembership, boolean userMembership) {
         if (couponMembership && !userMembership) {
             throw new CouponException(ErrorCode.NOT_MEMBERSHIP, String.valueOf(userMembership));
         }
     }
 
-//    private void validCustomerManageBenefitType(CustomerManageBenefitType type) {
+//    private void validateCustomerManageBenefitType(CustomerManageBenefitType type) {
 //          User.getXXX());//쿠폰에 맞는 고객인지?-> User,ORDER랑 같이 NEW,ALL,TALK 등 USER TYPE에 대한 개발 필요
 //    }
 
-    private void validExistCoupon() {
+    private void validateExistCoupon() {
         if (!useYn) {
             throw new CouponException(ErrorCode.COUPON_EXIST, String.valueOf(useYn));
         }
     }
 
-    private void validCouponIssueCount() {
+    private void validateCouponIssueCount() {
         if (coupon.getCouponValue().getIdPerIssuableCount() <= issueCount) {
             throw new CouponException(ErrorCode.ISSUE_COUNT_EXCEED, String.valueOf(issueCount));
         }
     }
 
-    private void validCouponUse() {
+    private void validateCouponUse() {
         if (useYn) {
             throw new CouponException(ErrorCode.COUPON_ALREADY_USE, String.valueOf(useYn));
         }
