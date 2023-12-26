@@ -1,12 +1,12 @@
 package com.programmers.smrtstore.domain.user.presentation.controller;
 
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailAuthResponse.toDetailUserResponse;
 
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.LoginRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailAuthResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +25,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<DetailUserResponse> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<DetailAuthResponse> login(@RequestBody @Valid LoginRequest request) {
         JwtAuthenticationToken authToken = new JwtAuthenticationToken(request.getPrincipal(),
             request.getCredentials());
         Authentication resultToken = authenticationManager.authenticate(authToken);
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         User user = (User) resultToken.getDetails();
-        DetailUserResponse response = toDetailUserResponse(authentication, user);
+        DetailAuthResponse response = toDetailUserResponse(authentication, user);
         return ResponseEntity.ok(response);
     }
 }

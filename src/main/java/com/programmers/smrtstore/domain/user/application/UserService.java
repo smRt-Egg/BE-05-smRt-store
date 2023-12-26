@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.application;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_LOGIN_ID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.domain.entity.User.toUser;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
@@ -11,7 +12,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,8 +46,9 @@ public class UserService {
 //    }
 
     @Transactional(readOnly = true)
-    public Optional<User> findByLoginId(String loginId) {
-        return userRepository.findByAuth_LoginId(loginId);
+    public void findByLoginId(String loginId) {
+        userRepository.findByAuth_LoginId(loginId)
+            .orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
     }
 
     public SignUpUserResponse signUp(SignUpUserRequest request) {
@@ -56,8 +57,11 @@ public class UserService {
         return toSignUpUserResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public DetailUserResponse findByUserId(Long userId) {
-        return null;
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        return DetailUserResponse.toDetailUserResponse(user);
     }
 
     public Long updateUser(Long userId, UpdateUserRequest request) {
