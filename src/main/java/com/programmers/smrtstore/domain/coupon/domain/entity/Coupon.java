@@ -73,7 +73,7 @@ public class Coupon {
         this.couponQuantity = couponQuantity;
     }
 
-    public static Coupon of(CreateCouponRequest request) {
+    public static Coupon from(CreateCouponRequest request) {
 
         return new Coupon(request.getCouponValue(),
                 request.isMembershipCouponYn(),
