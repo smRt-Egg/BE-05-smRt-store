@@ -156,6 +156,9 @@ public class Product {
         if (availableYn) {
             throw new ProductException(ErrorCode.PRODUCT_ALREADY_AVAILABLE);
         }
+        if (releaseDate == null) {
+            throw new ProductException(ErrorCode.PRODUCT_NOT_RELEASED);
+        }
         this.availableYn = true;
     }
 

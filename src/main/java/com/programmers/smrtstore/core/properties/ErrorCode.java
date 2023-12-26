@@ -23,6 +23,8 @@ public enum ErrorCode {
     PRODUCT_ALREADY_RELEASED(BAD_REQUEST, "이미 출시된 상품입니다."),
     PRODUCT_NOT_AVAILABLE(BAD_REQUEST, "상품이 준비중입니다."),
     PRODUCT_ALREADY_AVAILABLE(BAD_REQUEST, "이미 판매중인 상품입니다."),
+    PRODUCT_NOT_USE_OPTION(BAD_REQUEST, "옵션을 사용하지 않는 상품입니다."),
+    PRODUCT_NOT_RELEASED(BAD_REQUEST, "출시되지 않은 상품입니다."),
     // 404
     PRODUCT_HAVE_NO_OPTION(NOT_FOUND, "상품에 옵션이 없습니다.");
 
