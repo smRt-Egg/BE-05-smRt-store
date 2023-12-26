@@ -64,6 +64,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(columnDefinition = "BLOB")
     private String thumbnail;
 
     @Column(nullable = false)
@@ -76,7 +77,7 @@ public class User {
     @Column(nullable = false)
     private boolean marketingAgree;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false)
     private boolean membershipYN;
 
     @Column(nullable = false)
@@ -118,6 +119,22 @@ public class User {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
             .map(GrantedAuthority.class::cast)
             .toList();
+    }
+
+    public void updateUser(String loginId, String password, Integer age, String nickName,
+        String email, String phone,
+        String birth, Gender gender, String thumbnail, boolean marketingAgree,
+        boolean membershipYN) {
+        this.getAuth().updateAuth(loginId, password);
+        this.age = age;
+        this.nickName = nickName;
+        this.email = email;
+        this.phone = phone;
+        this.birth = birth;
+        this.gender = gender;
+        this.thumbnail = thumbnail;
+        this.marketingAgree = marketingAgree;
+        this.membershipYN = membershipYN;
     }
 
     public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {

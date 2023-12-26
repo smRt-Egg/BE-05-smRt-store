@@ -42,8 +42,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public void checkDuplicate(String loginId) {
-        if(userRepository.findByAuth_LoginId(loginId).isPresent())
+        if (userRepository.findByAuth_LoginId(loginId).isPresent()) {
             throw new UserException(DUPLICATE_LOGIN_ID, loginId);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -70,8 +71,14 @@ public class UserService {
         return toDetailUserResponse(user);
     }
 
-    public Long updateUser(Long userId, UpdateUserRequest request) {
-        return null;
+    public DetailUserResponse updateUser(Long userId, UpdateUserRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
+            request.getNickName(),
+            request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
+            request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN());
+        return toDetailUserResponse(user);
     }
 
     public Long deleteUser(Long userId) {

@@ -37,6 +37,11 @@ public class Auth {
         this.password = password;
     }
 
+    public void updateAuth(String loginId, String password) {
+        this.loginId = loginId;
+        this.password = password;
+    }
+
     public static Auth toAuth(String loginId, String password, PasswordEncoder passwordEncoder) {
         return new Auth(loginId, passwordEncoder.encode(password));
     }
