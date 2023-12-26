@@ -13,6 +13,7 @@ public enum Category {
     private final Integer id;
     private final String name;
 
+
     public static Category findById(Integer id) {
         for (Category category : Category.values()) {
             if (category.getId().equals(id)) {
@@ -21,4 +22,5 @@ public enum Category {
         }
         return ERROR;
     }
+
 }
