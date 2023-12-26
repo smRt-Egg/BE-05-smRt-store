@@ -42,8 +42,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public void checkDuplicate(String loginId) {
-        userRepository.findByAuth_LoginId(loginId)
-            .orElseThrow(() -> new UserException(DUPLICATE_LOGIN_ID, loginId));
+        if(userRepository.findByAuth_LoginId(loginId).isPresent())
+            throw new UserException(DUPLICATE_LOGIN_ID, loginId);
     }
 
     @Transactional(readOnly = true)
