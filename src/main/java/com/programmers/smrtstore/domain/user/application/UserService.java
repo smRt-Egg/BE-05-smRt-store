@@ -74,7 +74,7 @@ public class UserService {
             request.getNickName(),
             request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
             request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN(),
-            request.isRepurchaseYN());
+            request.isRepurchaseYN(), passwordEncoder);
         return toDetailUserResponse(user);
     }
 

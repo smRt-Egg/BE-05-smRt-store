@@ -122,8 +122,9 @@ public class User {
     public void updateUser(String loginId, String password, Integer age, String nickName,
         String email, String phone, String birth, Gender gender, String thumbnail,
         boolean marketingAgree,
-        boolean membershipYN, boolean repurchaseYN) {
-        this.getAuth().updateAuth(loginId, password);
+        boolean membershipYN, boolean repurchaseYN, PasswordEncoder passwordEncoder) {
+        this.getAuth().updateLoginId(loginId);
+        this.getAuth().updatePassword(password, passwordEncoder);
         this.age = age;
         this.nickName = nickName;
         this.email = email;
