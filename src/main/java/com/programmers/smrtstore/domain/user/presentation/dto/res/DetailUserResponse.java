@@ -61,7 +61,7 @@ public class DetailUserResponse {
             user.getPoint(),
             user.isMarketingAgree(),
             user.isMembershipYN(),
-            user.isRepurchase(),
+            user.isRepurchaseYN(),
             user.getUpdatedAt(),
             user.getCreatedAt(),
             user.getDeletedAt()

@@ -53,4 +53,7 @@ public class UpdateUserRequest {
 
     @NotNull
     boolean membershipYN;
+
+    @NotNull
+    boolean repurchaseYN;
 }

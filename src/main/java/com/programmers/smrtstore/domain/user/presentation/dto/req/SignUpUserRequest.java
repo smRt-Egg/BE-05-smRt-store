@@ -57,4 +57,7 @@ public class SignUpUserRequest {
 
     @NotNull
     boolean membershipYN;
+
+    @NotNull
+    boolean repurchaseYN;
 }

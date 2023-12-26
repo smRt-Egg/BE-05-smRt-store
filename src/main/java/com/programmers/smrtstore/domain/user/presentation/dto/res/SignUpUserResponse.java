@@ -35,6 +35,8 @@ public class SignUpUserResponse {
 
     boolean membershipYN;
 
+    boolean repurchaseYN;
+
     Integer point;
 
     LocalDateTime updatedTime;
@@ -61,6 +63,7 @@ public class SignUpUserResponse {
             .role(user.getRole())
             .phone(user.getPhone())
             .thumbnail(user.getThumbnail())
+            .repurchaseYN(user.isRepurchaseYN())
             .build();
     }
 }
