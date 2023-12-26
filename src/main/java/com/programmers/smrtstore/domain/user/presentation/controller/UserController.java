@@ -28,20 +28,20 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<DetailUserResponse> me() {
         DetailUserResponse response = userService.getUserInfo();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/update")
+    @PostMapping
     public ResponseEntity<DetailUserResponse> update(@RequestBody
     UpdateUserRequest request) {
         DetailUserResponse response = userService.update(request);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/withdraw")
+    @DeleteMapping
     public ResponseEntity<DetailUserResponse> withdraw() {
         DetailUserResponse response = userService.withdraw();
         return ResponseEntity.ok(response);
