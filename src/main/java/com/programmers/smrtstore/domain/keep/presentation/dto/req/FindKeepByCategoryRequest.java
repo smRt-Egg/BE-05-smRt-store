@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.keep.presentation.dto.req;
 
+import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,5 +8,5 @@ import lombok.Getter;
 @Builder
 public class FindKeepByCategoryRequest {
     Long userId;
-    Long categoryId; // Category category;
+    Category category;
 }

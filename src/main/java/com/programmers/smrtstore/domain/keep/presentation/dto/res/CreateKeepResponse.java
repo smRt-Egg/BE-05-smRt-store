@@ -13,14 +13,18 @@ public class CreateKeepResponse {
     LocalDateTime createdAt;
 
     @Builder
-    private CreateKeepResponse(Keep keep) {
-        this.userId = keep.getUserId();
-        this.productId = keep.getProductId();
-        this.createdAt = keep.getCreatedAt();
+    private CreateKeepResponse(Long userId, Long productId, LocalDateTime createdAt) {
+        this.userId = userId;
+        this.productId = productId;
+        this.createdAt = createdAt;
     }
 
     public static CreateKeepResponse of(Keep keep) {
-        return new CreateKeepResponse(keep);
+        return new CreateKeepResponse(
+                keep.getUserId(),
+                keep.getProductId(),
+                keep.getCreatedAt()
+        );
     }
 
 }
