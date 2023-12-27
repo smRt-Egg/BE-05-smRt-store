@@ -1,10 +1,13 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,8 +43,15 @@ public class Product {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "price", nullable = false)
-    private Integer price;
+    @Column(name = "sale_price", nullable = false)
+    private Integer salePrice;
+
+    @Column(name = "discount_ratio", nullable = false)
+    private Float discountRatio;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "product_quantity")
+    private ProductQuantity productQuantity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
@@ -52,9 +62,6 @@ public class Product {
 
     @Column(name = "content_image")
     private URL contentImage;
-
-    @Column(name = "origin", nullable = false, length = 50)
-    private String origin;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -75,29 +82,31 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean optionYn;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "product_quantity")
-    private ProductQuantity productQuantity;
+    @Column(name = "discount_yn", nullable = false)
+    @JdbcTypeCode(SqlTypes.TINYINT)
+    private boolean discountYn;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ProductOption> productOptions = new ArrayList<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ProductOption> productOptions;
 
     @Builder
-    private Product(String name, Integer price, Integer stockQuantity, Category category,
-        URL thumbnail, URL contentImage, String origin) {
+    private Product(String name, Integer salePrice, Integer stockQuantity,
+        Category category, URL thumbnail, URL contentImage, boolean optionYn) {
         this.name = name;
-        this.price = price;
+        this.salePrice = salePrice;
+        this.discountRatio = 0f;
         this.category = category;
+        this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.thumbnail = thumbnail;
         this.contentImage = contentImage;
-        this.origin = origin;
-        this.productQuantity = ProductQuantity.builder()
-            .stockQuantity(stockQuantity == null ? 0 : stockQuantity)
-            .build();
+        this.optionYn = optionYn;
+        this.discountYn = false;
+        if (optionYn) {
+            this.productOptions = new ArrayList<>();
+        }
     }
 
     public void addOption(ProductOption productOption) {
-        optionYn = true;
         productOptions.add(productOption);
 
     }
@@ -106,10 +115,10 @@ public class Product {
         productQuantity.addStockQuantity(quantity);
     }
 
-    public void addStockQuantity(Integer quantity, ProductOption productOption) {
-        productOptions.stream().filter(option -> option.equals(productOption))
+    public void addStockQuantity(Integer quantity, Long productOptionId) {
+        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
-            .orElseThrow(RuntimeException::new)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
@@ -117,18 +126,15 @@ public class Product {
         productQuantity.removeStockQuantity(quantity);
     }
 
-    public void removeStockQuantity(Integer quantity, ProductOption productOption) {
-        productOptions.stream().filter(option -> option.equals(productOption))
+    public void removeStockQuantity(Integer quantity, Long productOptionId) {
+        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
-            .orElseThrow(RuntimeException::new)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .removeStockQuantity(quantity);
     }
 
     public void removeOption(ProductOption productOption) {
         productOptions.remove(productOption);
-        if (productOptions.isEmpty()) {
-            optionYn = false;
-        }
     }
 
     public Integer getStockQuantity() {
@@ -142,7 +148,7 @@ public class Product {
 
     public void releaseProduct() {
         if (availableYn || releaseDate != null) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_ALREADY_RELEASED);
         }
         this.availableYn = true;
         this.releaseDate = LocalDate.now();
@@ -150,15 +156,80 @@ public class Product {
 
     public void makeNotAvailable() {
         if (!availableYn) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_NOT_AVAILABLE);
         }
         this.availableYn = false;
     }
 
     public void makeAvailable() {
         if (availableYn) {
-            throw new RuntimeException();
+            throw new ProductException(ErrorCode.PRODUCT_ALREADY_AVAILABLE);
+        }
+        if (releaseDate == null) {
+            throw new ProductException(ErrorCode.PRODUCT_NOT_RELEASED);
         }
         this.availableYn = true;
+    }
+
+    private void updateName(String name) {
+        this.name = name;
+    }
+
+    private void updateSalePrice(Integer salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    private void updateStockQuantity(Integer stockQuantity) {
+        this.productQuantity.updateStockQuantity(stockQuantity);
+    }
+
+    private void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    private void updateThumbnail(URL thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    private void updateContentImage(URL contentImage) {
+        this.contentImage = contentImage;
+    }
+
+    public void updateValues(String name, Integer salePrice, Integer stockQuantity,
+        Category category, URL thumbnail, URL contentImage) {
+        if (name != null) {
+            updateName(name);
+        }
+        if (salePrice != null) {
+            updateSalePrice(salePrice);
+        }
+        if (stockQuantity != null) {
+            updateStockQuantity(stockQuantity);
+        }
+        if (category != null) {
+            updateCategory(category);
+        }
+        if (thumbnail != null) {
+            updateThumbnail(thumbnail);
+        }
+        if (contentImage != null) {
+            updateContentImage(contentImage);
+        }
+    }
+
+    public void updateDiscountRatio(Float discountRatio) {
+        if (discountRatio == 0) {
+            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
+        }
+        this.discountRatio = discountRatio;
+        this.discountYn = true;
+    }
+
+    public void disableDiscount() {
+        if (discountRatio == 0 && !discountYn) {
+            throw new ProductException(ErrorCode.PRODUCT_NOT_DISCOUNTED);
+        }
+        this.discountRatio = 0f;
+        this.discountYn = false;
     }
 }

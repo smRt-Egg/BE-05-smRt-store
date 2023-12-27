@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.sql.Timestamp;
 import lombok.AccessLevel;
@@ -19,7 +21,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Entity
-@Table(name = "category_option_TB")
+@Table(name = "product_option_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductOption {
 
@@ -38,15 +40,16 @@ public class ProductOption {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "stock_quantity", nullable = false)
-    private Integer stockQuantity;
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "product_quantity")
+    private ProductQuantity productQuantity;
 
     @CreationTimestamp
     @Column(name = "register_date", nullable = false)
     private Timestamp registerDate;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Builder
@@ -55,19 +58,44 @@ public class ProductOption {
         this.optionTag = optionTag;
         this.optionName = optionName;
         this.price = price == null ? 0 : price;
-        this.stockQuantity = stockQuantity;
+        this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.product = product;
+        this.product.addOption(this);
     }
 
     public void addStockQuantity(Integer quantity) {
-        this.stockQuantity += quantity;
+        this.productQuantity.addStockQuantity(quantity);
     }
 
     public void removeStockQuantity(Integer quantity) {
-        if (this.stockQuantity < quantity) {
-            // TODO: using Custom Exception
-            throw new IllegalArgumentException();
+        this.productQuantity.removeStockQuantity(quantity);
+    }
+
+    public Integer getStockQuantity() {
+        return this.productQuantity.getStockQuantity();
+    }
+
+    private void updateOptionName(String optionName) {
+        this.optionName = optionName;
+    }
+
+    private void updatePrice(Integer price) {
+        this.price = price;
+    }
+
+    private void updateOptionTag(OptionTag optionTag) {
+        this.optionTag = optionTag;
+    }
+
+    public void updateValues(String optionName, Integer price, OptionTag optionTag) {
+        if (optionName != null) {
+            updateOptionName(optionName);
         }
-        this.stockQuantity -= quantity;
+        if (price != null) {
+            updatePrice(price);
+        }
+        if (optionTag != null) {
+            updateOptionTag(optionTag);
+        }
     }
 }

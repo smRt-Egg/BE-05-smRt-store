@@ -1,30 +1,37 @@
-package com.programmers.smrtstore.domain.product.presentation.dto.req;
+package com.programmers.smrtstore.domain.product.application.dto.req;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import java.net.URL;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateProductRequest {
 
     private String name;
-    private Integer price;
+    private Integer salePrice;
+    private Integer stockQuantity;
     private Category category;
     private URL thumbnail;
     private URL contentImage;
-    private String origin;
+    private boolean optionYn;
 
     public Product toEntity() {
         return Product.builder()
             .name(name)
-            .price(price)
+            .salePrice(salePrice)
+            .stockQuantity(stockQuantity)
             .category(category)
             .thumbnail(thumbnail)
             .contentImage(contentImage)
-            .origin(origin)
+            .optionYn(optionYn)
             .build();
     }
 }

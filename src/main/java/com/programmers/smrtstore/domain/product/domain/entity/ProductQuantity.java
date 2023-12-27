@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_QUANTITY_NOT_ENOUGH;
+
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,20 +26,26 @@ public class ProductQuantity {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-    @Builder
     private ProductQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
 
-    public void addStockQuantity(Integer quantity) {
+    public static ProductQuantity from(Integer stockQuantity) {
+        return new ProductQuantity(stockQuantity);
+    }
+
+    protected void addStockQuantity(Integer quantity) {
         this.stockQuantity += quantity;
     }
 
-    public void removeStockQuantity(Integer quantity) {
+    protected void removeStockQuantity(Integer quantity) {
         if (this.stockQuantity < quantity) {
-            // TODO: using custom exception
-            throw new IllegalArgumentException("재고가 부족합니다.");
+            throw new ProductException(PRODUCT_QUANTITY_NOT_ENOUGH);
         }
         this.stockQuantity -= quantity;
+    }
+
+    protected void updateStockQuantity(Integer quantity) {
+        this.stockQuantity = quantity;
     }
 }
