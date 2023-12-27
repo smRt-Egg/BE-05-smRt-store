@@ -21,8 +21,20 @@ public class CouponQuantity {
     @MapsId
     private Coupon coupon;
 
-
+    @Column(nullable = false)
     private Integer value;
+
+    @Version
+    private Integer version;
+
+    private CouponQuantity(Integer value) {
+        this.value = value;
+    }
+
+    public static CouponQuantity from(Integer value) {
+        return new CouponQuantity(value);
+    }
+
 
     public void increase(int num) {
         value+=num;
