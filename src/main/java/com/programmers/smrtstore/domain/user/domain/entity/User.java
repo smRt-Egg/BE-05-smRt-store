@@ -1,10 +1,8 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
-import static com.programmers.smrtstore.domain.user.domain.entity.Auth.toAuth;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -121,8 +119,7 @@ public class User {
 
     public void updateUser(String loginId, String password, Integer age, String nickName,
         String email, String phone, String birth, Gender gender, String thumbnail,
-        boolean marketingAgree,
-        boolean membershipYN, boolean repurchaseYN, PasswordEncoder passwordEncoder) {
+        boolean marketingAgree, PasswordEncoder passwordEncoder) {
         this.getAuth().updateLoginId(loginId);
         this.getAuth().updatePassword(password, passwordEncoder);
         this.age = age;
@@ -133,26 +130,21 @@ public class User {
         this.gender = gender;
         this.thumbnail = thumbnail;
         this.marketingAgree = marketingAgree;
-        this.membershipYN = membershipYN;
-        this.repurchaseYN = repurchaseYN;
+    }
+
+    public void repurchase() {
+        this.repurchaseYN = true;
+    }
+
+    public void joinMembership() {
+        this.membershipYN = true;
+    }
+
+    public void withdrawMembership() {
+        this.membershipYN = false;
     }
 
     public void saveDeleteDate(LocalDateTime time) {
         this.deletedAt = time;
-    }
-
-    public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
-        Auth auth = toAuth(request.getLoginId(), request.getPassword(), passwordEncoder);
-        return new User(
-            auth,
-            request.getAge(),
-            request.getBirth(),
-            request.getEmail(),
-            request.getGender(),
-            request.getRole(),
-            request.getPhone(),
-            request.isMarketingAgree(),
-            request.getNickName(),
-            request.getThumbnail());
     }
 }

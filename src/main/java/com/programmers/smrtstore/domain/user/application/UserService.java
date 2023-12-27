@@ -2,7 +2,6 @@ package com.programmers.smrtstore.domain.user.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_LOGIN_ID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
-import static com.programmers.smrtstore.domain.user.domain.entity.User.toUser;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
@@ -56,7 +55,7 @@ public class UserService {
     }
 
     public SignUpUserResponse signUp(SignUpUserRequest request) {
-        User user = toUser(request, passwordEncoder);
+        User user = request.toUser(passwordEncoder);
         User saved = userRepository.save(user);
         return toSignUpUserResponse(saved);
     }
@@ -66,8 +65,7 @@ public class UserService {
         user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
             request.getNickName(),
             request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
-            request.getThumbnail(), request.isMarketingAgree(), request.isMembershipYN(),
-            request.isRepurchaseYN(), passwordEncoder);
+            request.getThumbnail(), request.isMarketingAgree(), passwordEncoder);
         return toDetailUserResponse(user);
     }
 
