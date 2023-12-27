@@ -111,4 +111,12 @@ public class Coupon {
             throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH, String.valueOf(price));
         }
     }
+
+    public void makeAvailableYes() {
+        availableYn = true;
+    }
+
+    public void makeAvailableNo() {
+        availableYn = false;
+    }
 }
