@@ -41,9 +41,4 @@ public class CouponValue {
         this.minOrderPrice = minOrderPrice;
         this.idPerIssuableCount = idPerIssuableCount;
     }
-
-    public static CouponValue of(String name, String content, Long benefitValue, Long maxDiscountValue, Long minOrderPrice, Integer idPerIssuableCount) {
-        return new CouponValue(name, content, benefitValue, maxDiscountValue, minOrderPrice, idPerIssuableCount);
-    }
-
 }

@@ -75,22 +75,6 @@ public class Coupon {
         this.couponQuantity = couponQuantity;
     }
 
-    public static Coupon from(CreateCouponRequest request) {
-
-        return new Coupon(request.getCouponValue(),
-                request.isMembershipCouponYn(),
-                request.isDuplicationYn(),
-                request.isAvailableYn(),
-                request.getCouponType(),
-                request.getBenefitUnitType(),
-                request.getCustomerManageBenefitType(),
-                request.getCouponPublicationType(),
-                request.getValidPeriodStartDate(),
-                request.getValidPeriodEndDate(),
-                request.getCreatedAt(),
-                request.getCouponQuantity());
-    }
-
     public void validateCoupon() {
         validateEndDate();
         validateAvailable();
