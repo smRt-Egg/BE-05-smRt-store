@@ -283,7 +283,8 @@ class ProductServiceTest {
             .build());
         var expectedId = expectedProduct.getId();
         // Act & Assert
-        assertThrows(ProductException.class, () -> productService.makeProductNotAvailable(expectedId));
+        assertThrows(ProductException.class,
+            () -> productService.makeProductNotAvailable(expectedId));
     }
 
     @Test
@@ -531,7 +532,8 @@ class ProductServiceTest {
         var expectedProductId = expectedProduct.getId();
         var expectedProductOptionId = expectedProductOption.getId();
         // Act
-        var actualResult = productService.removeProductOption(expectedProductId, expectedProductOptionId);
+        var actualResult = productService.removeProductOption(expectedProductId,
+            expectedProductOptionId);
         // Assert
         var actualProductOption = productOptionJPARepository.findById(expectedProductOptionId);
         assertThat(actualResult.getProductOptions()).isEmpty();
@@ -573,7 +575,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void testUpdateProductOption() throws MalformedURLException{
+    void testUpdateProductOption() throws MalformedURLException {
         // Arrange
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
@@ -594,9 +596,9 @@ class ProductServiceTest {
         var expectedOptionId = expectedProductOption.getId();
         UpdateProductOptionRequest expectedRequest = UpdateProductOptionRequest.builder()
             .id(expectedOptionId)
-            .optionName(OPTION_NAME+"1")
+            .optionName(OPTION_NAME + "1")
             .optionTag(OPTION_TAG)
-            .price(PRICE+100)
+            .price(PRICE + 100)
             .build();
         var actualResult = productService.updateProductOption(expectedRequest);
         // Assert
@@ -605,4 +607,81 @@ class ProductServiceTest {
         assertThat(actualResult.getPrice()).isEqualTo(expectedRequest.getPrice());
     }
 
+    @Test
+    void testUpdateProductDiscountRatioSuccess() throws MalformedURLException {
+        // Arrange
+        Product expectedProduct = productJPARepository.save(Product.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .salePrice(SALE_PRICE)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .optionYn(true)
+            .build());
+        var expectedId = expectedProduct.getId();
+        var expectedDiscountRatio = 10.5f;
+        // Act
+        var actualResult = productService.updateProductDiscountRatio(expectedId,
+            expectedDiscountRatio);
+        // Assert
+        assertThat(actualResult.isDiscountYn()).isTrue();
+        assertThat(actualResult.getDiscountRatio()).isEqualTo(expectedDiscountRatio);
+    }
+
+    @Test
+    void testUpdateProductDiscountRatioFail() throws MalformedURLException {
+        // Arrange
+        Product expectedProduct = productJPARepository.save(Product.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .salePrice(SALE_PRICE)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .optionYn(true)
+            .build());
+        var expectedId = expectedProduct.getId();
+        var expectedDiscountRatio = 0f;
+        // Assert
+        assertThrows(ProductException.class,
+            () -> productService.updateProductDiscountRatio(expectedId, expectedDiscountRatio));
+    }
+
+    @Test
+    void testDisableProductDiscountSuccess() throws MalformedURLException {
+        // Arrange
+        Product expectedProduct = productJPARepository.save(Product.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .salePrice(SALE_PRICE)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .optionYn(true)
+            .build());
+        var expectedId = expectedProduct.getId();
+        var expectedDiscountRatio = 10.5f;
+        productService.updateProductDiscountRatio(expectedId,
+            expectedDiscountRatio);
+        // Act
+        var actualResult = productService.disableProductDiscount(expectedId);
+        // Assert
+        assertThat(actualResult.isDiscountYn()).isFalse();
+        assertThat(actualResult.getDiscountRatio()).isZero();
+    }
+
+    @Test
+    void testDisableProductDiscountFail() throws MalformedURLException {
+        // Arrange
+        Product expectedProduct = productJPARepository.save(Product.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .salePrice(SALE_PRICE)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .optionYn(true)
+            .build());
+        var expectedId = expectedProduct.getId();
+        // Act & Assert
+        assertThrows(ProductException.class,
+            () -> productService.disableProductDiscount(expectedId));
+    }
 }

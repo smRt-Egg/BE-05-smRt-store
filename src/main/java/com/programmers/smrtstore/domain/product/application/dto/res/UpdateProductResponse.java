@@ -16,6 +16,7 @@ public class UpdateProductResponse {
     private Long id;
     private String name;
     private Integer salePrice;
+    private Float discountRatio;
     private Category category;
     private Integer stockQuantity;
     private URL thumbnail;
@@ -25,12 +26,14 @@ public class UpdateProductResponse {
     private LocalDate releaseDate;
     private Timestamp createdAt;
     private Timestamp updatedAT;
+    private boolean discountYn;
 
 
     public static UpdateProductResponse from(Product product) {
         return new UpdateProductResponse(product.getId(),
             product.getName(),
             product.getSalePrice(),
+            product.getDiscountRatio(),
             product.getCategory(),
             product.getStockQuantity(),
             product.getThumbnail(),
@@ -39,7 +42,8 @@ public class UpdateProductResponse {
             product.isOptionYn(),
             product.getReleaseDate(),
             product.getCreatedAt(),
-            product.getUpdatedAt()
+            product.getUpdatedAt(),
+            product.isDiscountYn()
         );
     }
 }

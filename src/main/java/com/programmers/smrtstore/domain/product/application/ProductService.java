@@ -134,6 +134,18 @@ public class ProductService {
         return ProductOptionResponse.from(option);
     }
 
+    public ProductResponse updateProductDiscountRatio(Long productId, Float discountRatio) {
+        Product product = getProduct(productId);
+        product.updateDiscountRatio(discountRatio);
+        return ProductResponse.from(product);
+    }
+
+    public ProductResponse disableProductDiscount(Long productId) {
+        Product product = getProduct(productId);
+        product.disableDiscount();
+        return ProductResponse.from(product);
+    }
+
     private Product getProduct(Long productId) {
         return productJPARepository.findById(productId)
             .orElseThrow(() -> new ProductException(

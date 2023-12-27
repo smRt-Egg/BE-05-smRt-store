@@ -17,6 +17,7 @@ public class ProductResponse {
     private Long id;
     private String name;
     private Integer salePrice;
+    private Float discountRatio;
     private Category category;
     private Integer stockQuantity;
     private URL thumbnail;
@@ -26,6 +27,8 @@ public class ProductResponse {
     private Timestamp updatedAt;
     private boolean availableYn;
     private boolean optionYn;
+    private boolean discountYn;
+
     private List<ProductOptionResponse> productOptions;
 
 
@@ -34,6 +37,7 @@ public class ProductResponse {
             product.getId(),
             product.getName(),
             product.getSalePrice(),
+            product.getDiscountRatio(),
             product.getCategory(),
             product.getStockQuantity(),
             product.getThumbnail(),
@@ -43,7 +47,10 @@ public class ProductResponse {
             product.getUpdatedAt(),
             product.isAvailableYn(),
             product.isOptionYn(),
-            product.getProductOptions() == null ? null : product.getProductOptions().stream().map(ProductOptionResponse::from).toList()
+            product.isDiscountYn(),
+            product.getProductOptions() == null ? null
+                : product.getProductOptions().stream().map(ProductOptionResponse::from).toList()
+
         );
     }
 }
