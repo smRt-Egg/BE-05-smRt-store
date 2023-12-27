@@ -61,13 +61,6 @@ public class UserService {
         return toSignUpUserResponse(saved);
     }
 
-    @Transactional(readOnly = true)
-    public DetailUserResponse findByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        return toDetailUserResponse(user);
-    }
-
     public DetailUserResponse update(UpdateUserRequest request) {
         User user = certificatedUser();
         user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),

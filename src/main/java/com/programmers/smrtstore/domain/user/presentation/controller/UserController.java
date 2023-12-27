@@ -22,12 +22,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<DetailUserResponse> findByUserId(@PathVariable Long userId) {
-        DetailUserResponse response = userService.findByUserId(userId);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping
     public ResponseEntity<DetailUserResponse> me() {
         DetailUserResponse response = userService.getUserInfo();
