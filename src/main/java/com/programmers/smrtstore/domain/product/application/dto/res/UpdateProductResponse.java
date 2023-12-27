@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.product.presentation.dto.res;
+package com.programmers.smrtstore.domain.product.application.dto.res;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;

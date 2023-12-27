@@ -1,18 +1,18 @@
 package com.programmers.smrtstore.domain.product.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.res.ProductOptionResponse;
+import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
+import com.programmers.smrtstore.domain.product.application.dto.res.UpdateProductResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJPARepository;
-import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductOptionRequest;
-import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductRequest;
-import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateProductOptionRequest;
-import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateProductRequest;
-import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductOptionResponse;
-import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductResponse;
-import com.programmers.smrtstore.domain.product.presentation.dto.res.UpdateProductResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

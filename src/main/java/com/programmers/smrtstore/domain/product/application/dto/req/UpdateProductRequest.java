@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.product.presentation.dto.req;
+package com.programmers.smrtstore.domain.product.application.dto.req;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import java.net.URL;
