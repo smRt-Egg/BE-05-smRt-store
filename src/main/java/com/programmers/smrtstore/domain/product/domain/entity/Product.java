@@ -46,6 +46,9 @@ public class Product {
     @Column(name = "sale_price", nullable = false)
     private Integer salePrice;
 
+    @Column(name = "discount_ratio", nullable = false)
+    private Float discountRatio;
+
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
     @JoinColumn(name = "product_quantity")
     private ProductQuantity productQuantity;
@@ -79,19 +82,25 @@ public class Product {
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean optionYn;
 
+    @Column(name = "discount_yn", nullable = false)
+    @JdbcTypeCode(SqlTypes.TINYINT)
+    private boolean discountYn;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductOption> productOptions;
 
     @Builder
-    private Product(String name, Integer salePrice, Integer stockQuantity, Category category,
-        URL thumbnail, URL contentImage, boolean optionYn) {
+    private Product(String name, Integer salePrice, Integer stockQuantity,
+        Category category, URL thumbnail, URL contentImage, boolean optionYn) {
         this.name = name;
         this.salePrice = salePrice;
+        this.discountRatio = 0f;
         this.category = category;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.thumbnail = thumbnail;
         this.contentImage = contentImage;
         this.optionYn = optionYn;
+        this.discountYn = false;
         if (optionYn) {
             this.productOptions = new ArrayList<>();
         }
@@ -206,5 +215,21 @@ public class Product {
         if (contentImage != null) {
             updateContentImage(contentImage);
         }
+    }
+
+    public void updateDiscountRatio(Float discountRatio) {
+        if (discountRatio == 0) {
+            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
+        }
+        this.discountRatio = discountRatio;
+        this.discountYn = true;
+    }
+
+    public void disableDiscount() {
+        if (discountRatio == 0 && !discountYn) {
+            throw new ProductException(ErrorCode.PRODUCT_NOT_DISCOUNTED);
+        }
+        this.discountRatio = 0f;
+        this.discountYn = false;
     }
 }
