@@ -16,7 +16,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResp
 import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
