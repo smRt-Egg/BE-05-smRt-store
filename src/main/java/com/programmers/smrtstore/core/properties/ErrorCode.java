@@ -23,7 +23,7 @@ public enum ErrorCode {
     COUPON_ALREADY_USE(OK, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(OK, "유효하지 않은 쿠폰입니다."),
     ORDER_PRICE_NOT_ENOUGH(OK, "쿠폰의 최소 주문 금액 미만입니다."),
-    COUPON_NOT_FOUND(OK, "존재하지 않는 쿠폰번호입니다.");
+    COUPON_NOT_FOUND(NOT_FOUND, "존재하지 않는 쿠폰번호입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
