@@ -2,7 +2,6 @@ package com.programmers.smrtstore.domain.coupon.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
-import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponRequest;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,22 +26,22 @@ public class Coupon {
     private CouponValue couponValue;
 
     @Column(nullable = false)
-    private boolean membershipCouponYn;  //멤버십 쿠폰은 멤버십 유저만 사용 가능하다.
+    private boolean membershipCouponYn;
 
     @Column(nullable = false)
-    private boolean duplicationYn; //중복 가능한 쿠폰인지 ? 중복쿠폰 사용하더라도
+    private boolean duplicationYn;
 
     @Column(nullable = false)
-    private boolean availableYn; // 현재 유효한 쿠폰인지? 쿠폰 사용을 운영자가 아예 막아버릴수도있다!
+    private boolean availableYn;
 
     @Enumerated(EnumType.STRING)
-    private CouponType couponType; //장바구니 쿠폰인지, 배송비 할인 쿠폰인지
+    private CouponType couponType;
 
     @Enumerated(EnumType.STRING)
-    private BenefitUnitType benefitUnitType; //고정금액 할인? 퍼센트 할인?
+    private BenefitUnitType benefitUnitType;
 
     @Enumerated(EnumType.STRING)
-    private CustomerManageBenefitType customerManageBenefitType; //모든고객?첫구매?재구매?마케팅동의고객?
+    private CustomerManageBenefitType customerManageBenefitType;
 
     @Enumerated(EnumType.STRING)
     private CouponPublicationType couponPublicationType; //쿠폰 발행방식 -> 유저에게 바로 뿌리기 / 제품에 걸어놓고 다운로드
@@ -51,7 +50,7 @@ public class Coupon {
     private LocalDateTime validPeriodStartDate;
 
     @Column(nullable = false)
-    private LocalDateTime validPeriodEndDate; //스프링 이벤트로 end date되면 쿠폰 valid 변경하기?
+    private LocalDateTime validPeriodEndDate;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -60,7 +59,7 @@ public class Coupon {
     private CouponQuantity couponQuantity;
 
     @Builder
-    private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, LocalDateTime createdAt, CouponQuantity couponQuantity) {
+    public Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
         this.duplicationYn = duplicationYn;
@@ -71,7 +70,7 @@ public class Coupon {
         this.couponPublicationType = couponPublicationType;
         this.validPeriodStartDate = validPeriodStartDate;
         this.validPeriodEndDate = validPeriodEndDate;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
         this.couponQuantity = couponQuantity;
     }
 

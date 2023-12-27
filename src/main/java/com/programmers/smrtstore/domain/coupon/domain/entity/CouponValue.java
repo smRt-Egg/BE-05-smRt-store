@@ -1,7 +1,5 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity;
 
-import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -33,7 +31,7 @@ public class CouponValue {
     private Integer idPerIssuableCount;
 
     @Builder
-    private CouponValue(String name, String content, Long benefitValue, Long maxDiscountValue, Long minOrderPrice, Integer idPerIssuableCount) {
+    public CouponValue(String name, String content, Long benefitValue, Long maxDiscountValue, Long minOrderPrice, Integer idPerIssuableCount) {
         this.name = name;
         this.content = content;
         this.benefitValue = benefitValue;

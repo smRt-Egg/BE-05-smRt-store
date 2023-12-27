@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "coupon_owned_user_TB")
-public class UserCoupon {
+@Table(name = "coupon_available_user_TB")
+public class CouponAvailableUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,16 +32,16 @@ public class UserCoupon {
     @Column(nullable = false)
     private Integer issueCount;
 
-    private UserCoupon(Coupon coupon, User user) {
+    private CouponAvailableUser(Coupon coupon, User user) {
         this.coupon = coupon;
         this.user = user;
         this.useYn = false;
         this.issueCount = 1;
     }
 
-    public static UserCoupon of(Coupon coupon, User user) {
+    public static CouponAvailableUser of(Coupon coupon, User user) {
         validateCouponWithUser(coupon, user);
-        return new UserCoupon(coupon, user);
+        return new CouponAvailableUser(coupon, user);
     }
 
     public void reIssueCoupon() {
