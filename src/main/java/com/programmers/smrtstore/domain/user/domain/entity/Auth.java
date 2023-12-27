@@ -7,13 +7,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "auth_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@AllArgsConstructor
+@Builder
 public class Auth {
 
     @Id
@@ -24,6 +29,15 @@ public class Auth {
     private String loginId;
 
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
+
+    public Auth(String loginId, String password) {
+        this.loginId = loginId;
+        this.password = password;
+    }
+
+    public static Auth toAuth(String loginId, String password, PasswordEncoder passwordEncoder) {
+        return new Auth(loginId, passwordEncoder.encode(password));
+    }
 }
