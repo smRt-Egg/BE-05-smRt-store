@@ -510,6 +510,35 @@ class ProductServiceTest {
     }
 
     @Test
+    void testRemoveProductOptionSuccess() throws MalformedURLException {
+        // Arrange
+        Product expectedProduct = productJPARepository.save(Product.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .salePrice(SALE_PRICE)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .optionYn(true)
+            .build());
+        ProductOption expectedProductOption = productOptionJPARepository.save(
+            ProductOption.builder()
+                .optionName(OPTION_NAME)
+                .optionTag(OPTION_TAG)
+                .price(PRICE)
+                .stockQuantity(STOCK_QUANTITY)
+                .product(expectedProduct)
+                .build());
+        var expectedProductId = expectedProduct.getId();
+        var expectedProductOptionId = expectedProductOption.getId();
+        // Act
+        var actualResult = productService.removeProductOption(expectedProductId, expectedProductOptionId);
+        // Assert
+        var actualProductOption = productOptionJPARepository.findById(expectedProductOptionId);
+        assertThat(actualResult.getProductOptions()).isEmpty();
+        assertThat(actualProductOption).isEmpty();
+    }
+
+    @Test
     void testUpdateProduct() throws MalformedURLException {
         // Arrange
         Product expectedProduct = productJPARepository.save(Product.builder()

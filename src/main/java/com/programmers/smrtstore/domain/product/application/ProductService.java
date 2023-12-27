@@ -125,6 +125,19 @@ public class ProductService {
         return ProductResponse.from(product);
     }
 
+    public ProductResponse removeProductOption(Long productId, Long productOptionId) {
+        Product product = productJPARepository.findById(productId)
+            .orElseThrow(() -> new ProductException(
+                ErrorCode.PRODUCT_NOT_FOUND));
+        optionValidate(product.isOptionYn());
+        ProductOption productOption = productOptionJPARepository.findById(productOptionId)
+            .orElseThrow(() -> new ProductException(
+                ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        product.removeOption(productOption);
+        productOptionJPARepository.delete(productOption);
+        return ProductResponse.from(product);
+    }
+
     public UpdateProductResponse updateProduct(UpdateProductRequest request) {
         Product product = productJPARepository.findById(request.getId())
             .orElseThrow(() -> new ProductException(
