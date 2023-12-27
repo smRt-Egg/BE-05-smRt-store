@@ -71,7 +71,7 @@ public class UserCoupon {
 
     private static void validateMembership(boolean couponMembership, boolean userMembership) {
         if (couponMembership && !userMembership) {
-            throw new CouponException(ErrorCode.NOT_MEMBERSHIP, String.valueOf(userMembership));
+            throw new CouponException(ErrorCode.NON_MEMBERSHIP, String.valueOf(userMembership));
         }
     }
 
@@ -93,7 +93,7 @@ public class UserCoupon {
 
     private void validateCouponUse() {
         if (useYn) {
-            throw new CouponException(ErrorCode.COUPON_ALREADY_USE, String.valueOf(useYn));
+            throw new CouponException(ErrorCode.COUPON_ALREADY_USED, String.valueOf(useYn));
         }
     }
 
