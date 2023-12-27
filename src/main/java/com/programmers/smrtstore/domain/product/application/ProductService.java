@@ -45,9 +45,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponse getProductById(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         return ProductResponse.from(product);
     }
 
@@ -59,76 +57,58 @@ public class ProductService {
     }
 
     public Long releaseProduct(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         product.releaseProduct();
         return productId;
     }
 
     public Long makeProductAvailable(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         product.makeAvailable();
         return productId;
     }
 
     public Long makeProductNotAvailable(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         product.makeNotAvailable();
         return productId;
     }
 
     public void deleteProduct(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         productJPARepository.delete(product);
     }
 
     public ProductResponse addProductStockQuantity(Long productId, Integer quantityValue) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         product.addStockQuantity(quantityValue);
         return ProductResponse.from(product);
     }
 
     public ProductResponse addProductStockQuantity(Long productId, Long productOptionId,
         Integer quantityValue) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         optionValidate(product.isOptionYn());
         product.addStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
 
     public ProductResponse removeProductStockQuantity(Long productId, Integer quantityValue) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         product.removeStockQuantity(quantityValue);
         return ProductResponse.from(product);
     }
 
     public ProductResponse removeProductStockQuantity(Long productId, Long productOptionId,
         Integer quantityValue) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         optionValidate(product.isOptionYn());
         product.removeStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
 
     public ProductResponse removeProductOption(Long productId, Long productOptionId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         optionValidate(product.isOptionYn());
         ProductOption productOption = productOptionJPARepository.findById(productOptionId)
             .orElseThrow(() -> new ProductException(
@@ -139,9 +119,8 @@ public class ProductService {
     }
 
     public UpdateProductResponse updateProduct(UpdateProductRequest request) {
-        Product product = productJPARepository.findById(request.getId())
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(
+            request.getId());
         product.updateValues(request.getName(), request.getSalePrice(), request.getStockQuantity(),
             request.getCategory(), request.getThumbnail(), request.getContentImage());
         return UpdateProductResponse.from(product);
@@ -153,6 +132,12 @@ public class ProductService {
                 ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         option.updateValues(request.getOptionName(), request.getPrice(), request.getOptionTag());
         return ProductOptionResponse.from(option);
+    }
+
+    private Product getProduct(Long productId) {
+        return productJPARepository.findById(productId)
+            .orElseThrow(() -> new ProductException(
+                ErrorCode.PRODUCT_NOT_FOUND));
     }
 
     private void optionValidate(boolean optionYn) throws ProductException {
