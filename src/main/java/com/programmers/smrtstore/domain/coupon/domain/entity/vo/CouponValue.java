@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.coupon.domain.entity;
+package com.programmers.smrtstore.domain.coupon.domain.entity.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
