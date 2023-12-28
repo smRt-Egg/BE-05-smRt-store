@@ -1,7 +1,11 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.req;
 
+import static com.programmers.smrtstore.domain.user.domain.entity.Auth.toAuth;
+
+import com.programmers.smrtstore.domain.user.domain.entity.Auth;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -9,11 +13,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-@Builder
 public class SignUpUserRequest {
 
     @NotBlank
@@ -59,4 +62,23 @@ public class SignUpUserRequest {
 
     @NotNull
     boolean membershipYN;
+
+    @NotNull
+    boolean repurchaseYN;
+
+    public User toUser(PasswordEncoder passwordEncoder) {
+        Auth auth = toAuth(loginId, password, passwordEncoder);
+        return User.builder()
+            .auth(auth)
+            .age(age)
+            .birth(birth)
+            .email(email)
+            .gender(gender)
+            .role(role)
+            .phone(phone)
+            .marketingAgree(marketingAgree)
+            .nickName(nickName)
+            .thumbnail(thumbnail)
+            .build();
+    }
 }

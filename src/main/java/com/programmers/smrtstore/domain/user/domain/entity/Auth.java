@@ -25,7 +25,7 @@ public class Auth {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String loginId;
 
 
@@ -35,6 +35,14 @@ public class Auth {
     public Auth(String loginId, String password) {
         this.loginId = loginId;
         this.password = password;
+    }
+
+    public void updateLoginId(String loginId) {
+        this.loginId = loginId;
+    }
+
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
     }
 
     public static Auth toAuth(String loginId, String password, PasswordEncoder passwordEncoder) {
