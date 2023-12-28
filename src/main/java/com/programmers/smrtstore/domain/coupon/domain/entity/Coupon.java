@@ -1,6 +1,11 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.BenefitUnitType;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponPublicationType;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CustomerManageBenefitType;
+import com.programmers.smrtstore.domain.coupon.domain.entity.vo.CouponValue;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
@@ -59,7 +64,7 @@ public class Coupon {
     private CouponQuantity couponQuantity;
 
     @Builder
-    public Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
+    private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
         this.duplicationYn = duplicationYn;
