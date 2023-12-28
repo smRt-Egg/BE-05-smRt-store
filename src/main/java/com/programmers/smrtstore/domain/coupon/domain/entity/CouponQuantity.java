@@ -17,7 +17,7 @@ public class CouponQuantity {
     @Column(nullable = false)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "couponQuantity")
     @MapsId
     private Coupon coupon;
 
