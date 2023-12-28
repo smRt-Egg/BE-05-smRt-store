@@ -39,7 +39,7 @@ public class ShippingInfo {
     @Column(name = "delivery_request")
     private String deliveryRequest;
 
-    @Column(name = "delivery_price")
-    private Integer deliveryPrice;
+    @Column(name = "delivery_fee")
+    private Integer deliveryFee;
 
 }
