@@ -50,9 +50,9 @@ public class Auth {
         this.password = passwordEncoder.encode(password);
     }
 
-    public void verifyPassword(PasswordEncoder passwordEncoder, String credentials) {
-        if (!passwordEncoder.matches(credentials, password)) {
-            throw new AuthException(INCORRECT_PASSWORD, credentials);
+    public void verifyPassword(PasswordEncoder passwordEncoder, String password) {
+        if (!passwordEncoder.matches(password, this.password)) {
+            throw new AuthException(INCORRECT_PASSWORD, password);
         }
     }
 }
