@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 List<GrantedAuthority> authorities = getAuthorities(
                     claims.get("roles").asArray(String.class));
 
-                if (userId.describeConstable().isPresent() && !authorities.isEmpty()) {
+                if (userId != null && !authorities.isEmpty()) {
                     JwtAuthenticationContext authentication = new JwtAuthenticationContext(
                         JwtToken.builder()
                             .accessToken(token)
