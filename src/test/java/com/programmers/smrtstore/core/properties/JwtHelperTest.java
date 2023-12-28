@@ -21,14 +21,14 @@ class JwtHelperTest {
     @Test
     void testCreateTokenSuccess() {
         // Arrange
-        String expectedUsername = "test";
+        Long expectedUserId = 1L;
         String[] role = new String[]{"ROLE_USER"};
         JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
         // Act
-        JwtAuthentication actualResult = jwtHelper.sign(expectedUsername, role);
+        JwtAuthentication actualResult = jwtHelper.sign(expectedUserId, role);
         // Assert
-        assertThat(actualResult.getUsername()).isEqualTo(expectedUsername);
+        assertThat(actualResult.getUserId()).isEqualTo(expectedUserId);
         assertThat(actualResult.getRefreshTokenExpiryDate()).isEqualTo(
             new Date(DATE.getTime() + REFRESH_TOKEN_EXPIRY_HOUR * 3600000L));
     }
@@ -37,17 +37,17 @@ class JwtHelperTest {
     @Test
     void testVerifyTokenSuccess(){
         // Arrange
-        String expectedUsername = "test";
+        Long expectedUserId = 1L;
         String[] role = new String[]{"ROLE_USER"};
         JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
-        JwtAuthentication jwtAuthentication = jwtHelper.sign(expectedUsername, role);
+        JwtAuthentication jwtAuthentication = jwtHelper.sign(expectedUserId, role);
         String accessToken = jwtAuthentication.getAccessToken();
         // Act
         var actualResult = jwtHelper.verify(accessToken);
         // Assert
-        assertThat(actualResult).containsKeys("username", "roles", "exp", "iat");
-        assertThat(actualResult.get("username").asString()).isEqualTo(expectedUsername);
+        assertThat(actualResult).containsKeys("userId", "roles", "exp", "iat");
+        assertThat(actualResult.get("userId").asLong()).isEqualTo(expectedUserId);
         assertThat(actualResult.get("roles").asArray(String.class)).contains(role[0]);
     }
 

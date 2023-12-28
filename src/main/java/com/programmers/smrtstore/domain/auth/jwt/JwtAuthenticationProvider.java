@@ -42,7 +42,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             LoginResponse response = authService.login(principal, credentials);
             log.info("로그인 성공");
             List<GrantedAuthority> authorities = response.getAuthorities();
-            JwtAuthentication token = getToken(response.getUsername(), authorities);
+            JwtAuthentication token = getToken(response.getUserId(), authorities);
             JwtAuthenticationToken authenticated =
                 new JwtAuthenticationToken(token, null, authorities);
             authenticated.setDetails(response);
@@ -55,10 +55,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     }
 
-    private JwtAuthentication getToken(String username, List<GrantedAuthority> authorities) {
+    private JwtAuthentication getToken(Long userId, List<GrantedAuthority> authorities) {
         String[] roles = authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .toArray(String[]::new);
-        return jwtHelper.sign(username, roles);
+        return jwtHelper.sign(userId, roles);
     }
 }

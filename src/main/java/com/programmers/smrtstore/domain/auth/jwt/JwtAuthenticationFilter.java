@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.auth.jwt;
 
-import static io.micrometer.common.util.StringUtils.isNotEmpty;
 import static java.util.Collections.emptyList;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -47,17 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 var claims = jwtHelper.verify(token);
 
-                String username = claims.get("username").asString();
+                Long userId = claims.get("userId").asLong();
                 List<GrantedAuthority> authorities = getAuthorities(
                     claims.get("roles").asArray(String.class));
 
-                if (isNotEmpty(username) && !authorities.isEmpty()) {
+                if (userId.describeConstable().isPresent() && !authorities.isEmpty()) {
                     JwtAuthenticationToken authentication = new JwtAuthenticationToken(
                         JwtAuthentication.builder()
                             .accessToken(token)
-                            .username(username)
+                            .userId(userId)
                             .build(), null, authorities
                     );
+                    request.setAttribute("userId", userId);
                     authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);

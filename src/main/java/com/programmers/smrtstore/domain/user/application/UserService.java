@@ -47,9 +47,9 @@ public class UserService {
     private User certificatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
-        String loginId = jwtAuthentication.getUsername();
+        Long userId = jwtAuthentication.getUserId();
 
-        return userRepository.findByAuth_LoginId(loginId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, loginId));
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

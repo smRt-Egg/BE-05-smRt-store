@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class JwtHelper {
 
-    private static final String USERNAME_STR = "username";
+    private static final String USERID_STR = "userId";
     private static final String ROLES_STR = "roles";
     private static final Long HOUR_MILLIS = 3600000L;
 
@@ -51,13 +51,13 @@ public class JwtHelper {
         return new Date(nowDate.getTime() + tokenExpirySeconds);
     }
 
-    public JwtAuthentication sign(String username, String[] roles) {
+    public JwtAuthentication sign(Long userId, String[] roles) {
         Date nowDate = dateStrategy.create();
         String accessToken = create()
             .withIssuer(issuer)
             .withIssuedAt(nowDate)
             .withExpiresAt(calculateExpirySeconds(nowDate, accessTokenExpirySeconds))
-            .withClaim(USERNAME_STR, username)
+            .withClaim(USERID_STR, userId)
             .withArrayClaim(ROLES_STR, roles)
             .sign(algorithm);
         String refreshToken = create()
@@ -66,7 +66,7 @@ public class JwtHelper {
             .withExpiresAt(calculateExpirySeconds(nowDate, refreshTokenExpirySeconds))
             .sign(algorithm);
         return JwtAuthentication.builder()
-            .username(username)
+            .userId(userId)
             .accessToken(accessToken)
             .refreshToken(refreshToken)
             .refreshTokenExpiryDate(calculateExpirySeconds(nowDate, refreshTokenExpirySeconds))
