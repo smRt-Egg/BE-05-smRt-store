@@ -41,8 +41,6 @@ public class OrderSheet {
     @OneToMany(mappedBy = "orderSheet", cascade = CascadeType.ALL)
     private List<OrderedProduct> orderedProducts;
 
-    private Integer total_price;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
