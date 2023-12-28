@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "shipping_info_TB")
+@Table(name = "delivery_info_TB")
 @Entity
 public class ShippingInfo {
 
@@ -21,18 +21,25 @@ public class ShippingInfo {
     @Column(name = "id")
     private Long id;
 
-    private String address_1depth;
+    @Column(name = "address_1depth")
+    private String address1depth;
 
-    private String address_2depth;
+    @Column(name = "address_2depth")
+    private String address2depth;
 
+    @Column(name = "zip_code")
     private String zipCode;
 
+    @Column(name = "receiver_name")
     private String receiverName;
 
+    @Column(name = "receiver_phone")
     private String receiverPhone;
 
-    private String shippingRequest;
+    @Column(name = "delivery_request")
+    private String deliveryRequest;
 
-    private Integer shippingPrice;
+    @Column(name = "delivery_price")
+    private Integer deliveryPrice;
 
 }
