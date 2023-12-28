@@ -55,7 +55,7 @@ public class Coupon {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "coupon", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private CouponQuantity couponQuantity;
 
     @Builder
@@ -92,8 +92,6 @@ public class Coupon {
     }
 
     public Long discountProduct(Product product) { //-> discount 금액이 product detail 페이지에선 보여줘야함
-        Integer price = product.getPrice();
-        validMinPrice(price);
 
         /**
          * 쿠폰 계산만 하는게 아니라 어떤 조합이 좋을지 계산을 해야됨. -> 추후 구현 예정
