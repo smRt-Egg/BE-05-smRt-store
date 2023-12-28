@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.auth.jwt;
 
-import com.programmers.smrtstore.domain.user.application.UserService;
-import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.auth.application.AuthService;
+import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final JwtHelper jwtHelper;
-    private final UserService userService;
+    private final AuthService authService;
 
     @Override
     public boolean supports(Class<?> authentication) {
@@ -39,13 +39,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private Authentication processUserAuthentication(String principal, String credentials) {
         try {
-            User user = userService.login(principal, credentials);
+            LoginResponse response = authService.login(principal, credentials);
             log.info("로그인 성공");
-            List<GrantedAuthority> authorities = user.getAuthorities();
-            JwtAuthentication token = getToken(user.getAuth().getLoginId(), authorities);
+            List<GrantedAuthority> authorities = response.getAuthorities();
+            JwtAuthentication token = getToken(response.getUsername(), authorities);
             JwtAuthenticationToken authenticated =
                 new JwtAuthenticationToken(token, null, authorities);
-            authenticated.setDetails(user);
+            authenticated.setDetails(response);
             return authenticated;
         } catch (IllegalArgumentException e) {
             throw new BadCredentialsException(e.getMessage());

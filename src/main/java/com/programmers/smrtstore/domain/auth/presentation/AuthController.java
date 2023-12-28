@@ -1,0 +1,56 @@
+package com.programmers.smrtstore.domain.auth.presentation;
+
+import com.programmers.smrtstore.domain.auth.application.AuthService;
+import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
+import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
+import com.programmers.smrtstore.domain.auth.application.dto.res.SignUpResponse;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.LoginAPIRequest;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.SignUpAPIRequest;
+import com.programmers.smrtstore.domain.auth.presentation.dto.res.DetailAuthAPIResponse;
+import com.programmers.smrtstore.domain.auth.presentation.dto.res.SignUpAPIResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
+
+    @PostMapping("/signUp")
+    public ResponseEntity<SignUpAPIResponse> signUp(
+        @RequestBody @Valid SignUpAPIRequest request) {
+        SignUpResponse response = authService.signUp(SignUpRequest.from(request));
+        return ResponseEntity.ok(SignUpAPIResponse.from(response));
+    }
+
+    @GetMapping("/exists/{username}")
+    public ResponseEntity<String> checkDuplication(@PathVariable @NotEmpty String username) {
+        authService.checkDuplicateUsername(username);
+        return ResponseEntity.ok("사용 가능한 아이디입니다.");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<DetailAuthAPIResponse> login(@RequestBody @Valid LoginAPIRequest request) {
+        JwtAuthenticationToken authToken = new JwtAuthenticationToken(request.getUsername(),
+            request.getPassword());
+        Authentication resultToken = authenticationManager.authenticate(authToken);
+        JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
+        LoginResponse response = (LoginResponse) resultToken.getDetails();
+        return ResponseEntity.ok(DetailAuthAPIResponse.of(response, authentication));
+    }
+}

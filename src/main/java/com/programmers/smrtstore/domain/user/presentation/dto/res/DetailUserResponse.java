@@ -13,7 +13,6 @@ public class DetailUserResponse {
 
     private Long id;
 
-    private String loginId;
 
     private Integer age;
 
@@ -49,7 +48,6 @@ public class DetailUserResponse {
     public static DetailUserResponse toDetailUserResponse(User user) {
         return new DetailUserResponse(
             user.getId(),
-            user.getAuth().getLoginId(),
             user.getAge(),
             user.getNickName(),
             user.getEmail(),
