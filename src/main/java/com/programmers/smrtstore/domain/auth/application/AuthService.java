@@ -33,9 +33,7 @@ public class AuthService {
     }
 
     public SignUpResponse signUp(@Valid SignUpRequest request) {
-        authRepository.findByUsername(request.getUsername()).ifPresent(auth -> {
-            throw new AuthException(ErrorCode.DUPLICATE_LOGIN_ID);
-        });
+        checkDuplicateUsername(request.getUsername());
         User user = userRepository.save(request.toUserEntity());
         Auth auth = authRepository.save(request.toAuthEntity(user, passwordEncoder));
         return SignUpResponse.from(auth);
