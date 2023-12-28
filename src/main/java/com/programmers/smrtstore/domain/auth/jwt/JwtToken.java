@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class JwtAuthentication {
+public class JwtToken {
 
     private Long userId;
     private String accessToken;

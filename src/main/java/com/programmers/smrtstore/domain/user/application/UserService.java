@@ -3,7 +3,7 @@ package com.programmers.smrtstore.domain.user.application;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -46,8 +46,8 @@ public class UserService {
 
     private User certificatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
-        Long userId = jwtAuthentication.getUserId();
+        JwtToken jwtToken = (JwtToken) authentication.getPrincipal();
+        Long userId = jwtToken.getUserId();
 
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));

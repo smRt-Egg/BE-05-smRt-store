@@ -51,8 +51,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     claims.get("roles").asArray(String.class));
 
                 if (userId.describeConstable().isPresent() && !authorities.isEmpty()) {
-                    JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-                        JwtAuthentication.builder()
+                    JwtAuthenticationContext authentication = new JwtAuthenticationContext(
+                        JwtToken.builder()
                             .accessToken(token)
                             .userId(userId)
                             .build(), null, authorities

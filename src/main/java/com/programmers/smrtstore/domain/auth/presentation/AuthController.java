@@ -4,8 +4,8 @@ import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
 import com.programmers.smrtstore.domain.auth.application.dto.res.SignUpResponse;
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationToken;
+import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationContext;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.LoginAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.SignUpAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.res.DetailAuthAPIResponse;
@@ -46,10 +46,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<DetailAuthAPIResponse> login(@RequestBody @Valid LoginAPIRequest request) {
-        JwtAuthenticationToken authToken = new JwtAuthenticationToken(request.getUsername(),
+        JwtAuthenticationContext authToken = new JwtAuthenticationContext(request.getUsername(),
             request.getPassword());
         Authentication resultToken = authenticationManager.authenticate(authToken);
-        JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
+        JwtToken authentication = (JwtToken) resultToken.getPrincipal();
         LoginResponse response = (LoginResponse) resultToken.getDetails();
         return ResponseEntity.ok(DetailAuthAPIResponse.of(response, authentication));
     }

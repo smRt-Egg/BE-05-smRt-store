@@ -24,16 +24,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
+        return (JwtAuthenticationContext.class.isAssignableFrom(authentication));
     }
 
     @Override
     public Authentication authenticate(Authentication authentication)
         throws AuthenticationException {
-        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        JwtAuthenticationContext jwtAuthenticationContext = (JwtAuthenticationContext) authentication;
         return processUserAuthentication(
-            String.valueOf(jwtAuthenticationToken.getPrincipal()),
-            jwtAuthenticationToken.getCredentials()
+            String.valueOf(jwtAuthenticationContext.getPrincipal()),
+            jwtAuthenticationContext.getCredentials()
         );
     }
 
@@ -42,9 +42,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             LoginResponse response = authService.login(principal, credentials);
             log.info("로그인 성공");
             List<GrantedAuthority> authorities = response.getAuthorities();
-            JwtAuthentication token = getToken(response.getUserId(), authorities);
-            JwtAuthenticationToken authenticated =
-                new JwtAuthenticationToken(token, null, authorities);
+            JwtToken token = getToken(response.getUserId(), authorities);
+            JwtAuthenticationContext authenticated =
+                new JwtAuthenticationContext(token, null, authorities);
             authenticated.setDetails(response);
             return authenticated;
         } catch (IllegalArgumentException e) {
@@ -55,7 +55,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     }
 
-    private JwtAuthentication getToken(Long userId, List<GrantedAuthority> authorities) {
+    private JwtToken getToken(Long userId, List<GrantedAuthority> authorities) {
         String[] roles = authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .toArray(String[]::new);

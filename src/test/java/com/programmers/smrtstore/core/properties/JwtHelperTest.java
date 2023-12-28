@@ -2,8 +2,8 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
 import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class JwtHelperTest {
         JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
         // Act
-        JwtAuthentication actualResult = jwtHelper.sign(expectedUserId, role);
+        JwtToken actualResult = jwtHelper.sign(expectedUserId, role);
         // Assert
         assertThat(actualResult.getUserId()).isEqualTo(expectedUserId);
         assertThat(actualResult.getRefreshTokenExpiryDate()).isEqualTo(
@@ -41,8 +41,8 @@ class JwtHelperTest {
         String[] role = new String[]{"ROLE_USER"};
         JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
-        JwtAuthentication jwtAuthentication = jwtHelper.sign(expectedUserId, role);
-        String accessToken = jwtAuthentication.getAccessToken();
+        JwtToken jwtToken = jwtHelper.sign(expectedUserId, role);
+        String accessToken = jwtToken.getAccessToken();
         // Act
         var actualResult = jwtHelper.verify(accessToken);
         // Assert

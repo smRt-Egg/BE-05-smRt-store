@@ -51,7 +51,7 @@ public class JwtHelper {
         return new Date(nowDate.getTime() + tokenExpirySeconds);
     }
 
-    public JwtAuthentication sign(Long userId, String[] roles) {
+    public JwtToken sign(Long userId, String[] roles) {
         Date nowDate = dateStrategy.create();
         String accessToken = create()
             .withIssuer(issuer)
@@ -65,7 +65,7 @@ public class JwtHelper {
             .withIssuedAt(nowDate)
             .withExpiresAt(calculateExpirySeconds(nowDate, refreshTokenExpirySeconds))
             .sign(algorithm);
-        return JwtAuthentication.builder()
+        return JwtToken.builder()
             .userId(userId)
             .accessToken(accessToken)
             .refreshToken(refreshToken)
