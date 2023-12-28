@@ -11,6 +11,8 @@ import lombok.Getter;
 @Getter
 public class SignUpUserResponse {
 
+    Long id;
+
     String loginId;
 
     String password;
@@ -35,6 +37,8 @@ public class SignUpUserResponse {
 
     boolean membershipYN;
 
+    boolean repurchaseYN;
+
     Integer point;
 
     LocalDateTime updatedTime;
@@ -45,6 +49,7 @@ public class SignUpUserResponse {
 
     public static SignUpUserResponse toSignUpUserResponse(User user) {
         return SignUpUserResponse.builder()
+            .id(user.getId())
             .age(user.getAge())
             .birth(user.getBirth())
             .createdTime(user.getCreatedAt())
@@ -61,6 +66,7 @@ public class SignUpUserResponse {
             .role(user.getRole())
             .phone(user.getPhone())
             .thumbnail(user.getThumbnail())
+            .repurchaseYN(user.isRepurchaseYN())
             .build();
     }
 }

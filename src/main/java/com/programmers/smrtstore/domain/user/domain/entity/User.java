@@ -1,10 +1,8 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
-import static com.programmers.smrtstore.domain.user.domain.entity.Auth.toAuth;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,6 +62,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(columnDefinition = "BLOB")
     private String thumbnail;
 
     @Column(nullable = false)
@@ -76,11 +75,11 @@ public class User {
     @Column(nullable = false)
     private boolean marketingAgree;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false)
     private boolean membershipYN;
 
     @Column(nullable = false)
-    private boolean repurchase;
+    private boolean repurchaseYN;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -92,15 +91,13 @@ public class User {
     private LocalDateTime deletedAt;
 
     public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role,
-        boolean membershipYN, String phone, boolean marketingAgree,
-        String nickName, String thumbnail) {
+        String phone, boolean marketingAgree, String nickName, String thumbnail) {
         this.age = age;
         this.auth = auth;
         this.birth = birth;
         this.email = email;
         this.gender = gender;
         this.role = role;
-        this.membershipYN = membershipYN;
         this.phone = phone;
         this.marketingAgree = marketingAgree;
         this.nickName = nickName;
@@ -120,19 +117,34 @@ public class User {
             .toList();
     }
 
-    public static User toUser(SignUpUserRequest request, PasswordEncoder passwordEncoder) {
-        Auth auth = toAuth(request.getLoginId(), request.getPassword(), passwordEncoder);
-        return new User(
-            auth,
-            request.getAge(),
-            request.getBirth(),
-            request.getEmail(),
-            request.getGender(),
-            request.getRole(),
-            request.isMembershipYN(),
-            request.getPhone(),
-            request.isMarketingAgree(),
-            request.getNickName(),
-            request.getThumbnail());
+    public void updateUser(String loginId, String password, Integer age, String nickName,
+        String email, String phone, String birth, Gender gender, String thumbnail,
+        boolean marketingAgree, PasswordEncoder passwordEncoder) {
+        this.getAuth().updateLoginId(loginId);
+        this.getAuth().updatePassword(password, passwordEncoder);
+        this.age = age;
+        this.nickName = nickName;
+        this.email = email;
+        this.phone = phone;
+        this.birth = birth;
+        this.gender = gender;
+        this.thumbnail = thumbnail;
+        this.marketingAgree = marketingAgree;
+    }
+
+    public void repurchase() {
+        this.repurchaseYN = true;
+    }
+
+    public void joinMembership() {
+        this.membershipYN = true;
+    }
+
+    public void withdrawMembership() {
+        this.membershipYN = false;
+    }
+
+    public void saveDeleteDate(LocalDateTime time) {
+        this.deletedAt = time;
     }
 }
