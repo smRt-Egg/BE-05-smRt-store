@@ -31,7 +31,7 @@ public class OrderSheet {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
