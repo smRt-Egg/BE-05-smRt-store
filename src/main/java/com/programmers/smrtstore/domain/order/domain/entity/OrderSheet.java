@@ -18,6 +18,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,13 +35,10 @@ public class OrderSheet {
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "shipping_info_id")
-    private ShippingInfo shippingInfo;
-
     @OneToMany(mappedBy = "orderSheet", cascade = CascadeType.ALL)
     private List<OrderedProduct> orderedProducts;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

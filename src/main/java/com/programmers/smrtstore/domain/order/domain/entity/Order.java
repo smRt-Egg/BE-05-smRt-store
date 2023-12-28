@@ -1,21 +1,19 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
+import com.programmers.smrtstore.core.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
-import com.programmers.smrtstore.domain.order.domain.entity.enums.PaymentMethod;
+import com.programmers.smrtstore.domain.order.domain.entity.vo.PaymentInfo;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "order_TB")
 @Entity
-public class Order {
+public class Order extends TimestampBaseEntity {
 
     @Id
     @Column(name = "id")
@@ -38,26 +36,17 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @Column(name = "payment_method")
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
     @Column(name = "total_price")
     private Integer totalPrice;
 
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_info_id")
+    private DeliveryInfo deliveryInfo;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    @Embedded
+    private PaymentInfo paymentInfo;
 
 }
