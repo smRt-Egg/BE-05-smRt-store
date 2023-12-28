@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Map;
 
 
-public class Jwt {
+public class JwtHelper {
 
     private static final String USERNAME_STR = "username";
     private static final String ROLES_STR = "roles";
@@ -26,7 +26,7 @@ public class Jwt {
     private final JWTVerifier jwtVerifier;
     private final DateStrategy dateStrategy;
 
-    public Jwt(String issuer, String clientSecret, int accessTokenExpiryHour,
+    public JwtHelper(String issuer, String clientSecret, int accessTokenExpiryHour,
         int refreshTokenExpiryHour, DateStrategy dateStrategy) {
         this.issuer = issuer;
         this.accessTokenExpirySeconds = hourToMillis(accessTokenExpiryHour);

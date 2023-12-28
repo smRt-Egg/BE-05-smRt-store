@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String IDENTIFICATION_TYPE = "Bearer ";
 
     private final String headerKey;
-    private final Jwt jwt;
+    private final JwtHelper jwtHelper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 token = token.replace(IDENTIFICATION_TYPE, "");
             }
             try {
-                var claims = jwt.verify(token);
+                var claims = jwtHelper.verify(token);
 
                 String username = claims.get("username").asString();
                 List<GrantedAuthority> authorities = getAuthorities(

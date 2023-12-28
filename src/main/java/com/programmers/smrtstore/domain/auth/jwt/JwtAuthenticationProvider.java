@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
-    private final Jwt jwt;
+    private final JwtHelper jwtHelper;
     private final UserService userService;
 
     @Override
@@ -59,6 +59,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String[] roles = authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .toArray(String[]::new);
-        return jwt.sign(username, roles);
+        return jwtHelper.sign(username, roles);
     }
 }
