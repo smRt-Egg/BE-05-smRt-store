@@ -1,9 +1,5 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
-
-import com.programmers.smrtstore.domain.user.exception.UserException;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,8 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +20,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "user_TB")
@@ -39,10 +32,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "auth_id")
-    private Auth auth;
 
     private Integer age;
 
@@ -90,10 +79,9 @@ public class User {
 
     private LocalDateTime deletedAt;
 
-    public User(Auth auth, Integer age, String birth, String email, Gender gender, Role role,
+    public User(Integer age, String birth, String email, Gender gender, Role role,
         String phone, boolean marketingAgree, String nickName, String thumbnail) {
         this.age = age;
-        this.auth = auth;
         this.birth = birth;
         this.email = email;
         this.gender = gender;
@@ -105,23 +93,15 @@ public class User {
         this.point = 0;
     }
 
-    public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
-        if (!passwordEncoder.matches(credentials, auth.getPassword())) {
-            throw new UserException(INCORRECT_PASSWORD, credentials);
-        }
-    }
-
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
             .map(GrantedAuthority.class::cast)
             .toList();
     }
 
-    public void updateUser(String loginId, String password, Integer age, String nickName,
+    public void updateUser(Integer age, String nickName,
         String email, String phone, String birth, Gender gender, String thumbnail,
-        boolean marketingAgree, PasswordEncoder passwordEncoder) {
-        this.getAuth().updateLoginId(loginId);
-        this.getAuth().updatePassword(password, passwordEncoder);
+        boolean marketingAgree) {
         this.age = age;
         this.nickName = nickName;
         this.email = email;

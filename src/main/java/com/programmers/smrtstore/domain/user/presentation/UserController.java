@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.user.presentation.controller;
+package com.programmers.smrtstore.domain.user.presentation;
 
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
