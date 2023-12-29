@@ -26,20 +26,23 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Cart extends TimestampBaseEntity {
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<CartProduct> cartProducts = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<CartProduct> cartProducts = new ArrayList<>();
 
     @Builder
     private Cart(User user) {
