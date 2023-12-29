@@ -2,14 +2,14 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.programmers.smrtstore.domain.auth.jwt.Jwt;
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
+import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("Test JWT Token Create, Verify")
-class JwtTest {
+class JwtHelperTest {
 
     private static final Date DATE = new Date();
     private static final String ISSUER = "issuer";
@@ -21,14 +21,14 @@ class JwtTest {
     @Test
     void testCreateTokenSuccess() {
         // Arrange
-        String expectedUsername = "test";
+        Long expectedUserId = 1L;
         String[] role = new String[]{"ROLE_USER"};
-        Jwt jwt = new Jwt(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
+        JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
         // Act
-        JwtAuthentication actualResult = jwt.sign(expectedUsername, role);
+        JwtToken actualResult = jwtHelper.sign(expectedUserId, role);
         // Assert
-        assertThat(actualResult.getUsername()).isEqualTo(expectedUsername);
+        assertThat(actualResult.getUserId()).isEqualTo(expectedUserId);
         assertThat(actualResult.getRefreshTokenExpiryDate()).isEqualTo(
             new Date(DATE.getTime() + REFRESH_TOKEN_EXPIRY_HOUR * 3600000L));
     }
@@ -37,17 +37,17 @@ class JwtTest {
     @Test
     void testVerifyTokenSuccess(){
         // Arrange
-        String expectedUsername = "test";
+        Long expectedUserId = 1L;
         String[] role = new String[]{"ROLE_USER"};
-        Jwt jwt = new Jwt(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
+        JwtHelper jwtHelper = new JwtHelper(ISSUER, CLIENT_SECRET, ACCESS_TOKEN_EXPIRY_HOUR,
             REFRESH_TOKEN_EXPIRY_HOUR, () -> DATE);
-        JwtAuthentication jwtAuthentication = jwt.sign(expectedUsername, role);
-        String accessToken = jwtAuthentication.getAccessToken();
+        JwtToken jwtToken = jwtHelper.sign(expectedUserId, role);
+        String accessToken = jwtToken.getAccessToken();
         // Act
-        var actualResult = jwt.verify(accessToken);
+        var actualResult = jwtHelper.verify(accessToken);
         // Assert
-        assertThat(actualResult).containsKeys("username", "roles", "exp", "iat");
-        assertThat(actualResult.get("username").asString()).isEqualTo(expectedUsername);
+        assertThat(actualResult).containsKeys("userId", "roles", "exp", "iat");
+        assertThat(actualResult.get("userId").asLong()).isEqualTo(expectedUserId);
         assertThat(actualResult.get("roles").asArray(String.class)).contains(role[0]);
     }
 
