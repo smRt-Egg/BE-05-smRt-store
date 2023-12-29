@@ -46,7 +46,8 @@ public class AuthService {
 
     public ReissueResponse reissue(String username, String refreshToken) {
         jwtHelper.verify(refreshToken);
-        TokenEntity tokenEntity = tokenEntityJPARepository.findByRefreshToken(refreshToken)
+        TokenEntity tokenEntity = tokenEntityJPARepository.findByUsernameAndRefreshToken(username,
+                refreshToken)
             .orElseThrow(() -> new AuthException(ErrorCode.TOKEN_NOT_FOUND));
         Auth auth = tokenEntity.getAuth();
         var token = jwtHelper.sign(auth.getUser().getId(),
