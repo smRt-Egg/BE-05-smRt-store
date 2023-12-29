@@ -21,21 +21,23 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
-    public ResponseEntity<ProfileUserResponse> profile(@RequestAttribute(value = "userId") Long userId) {
+    public ResponseEntity<ProfileUserResponse> profile(
+        @RequestAttribute(value = "userId") Long userId) {
         ProfileUserResponse response = userService.getUserInfo(userId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/profile")
-    public ResponseEntity<ProfileUserResponse> update(@RequestAttribute(value = "userId") Long userId, @RequestBody
+    public ResponseEntity<ProfileUserResponse> update(
+        @RequestAttribute(value = "userId") Long userId, @RequestBody
     UpdateUserRequest request) {
         ProfileUserResponse response = userService.update(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping
-    public ResponseEntity<ProfileUserResponse> withdraw(Long userId) {
-        ProfileUserResponse response = userService.withdraw(userId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> withdraw(@RequestAttribute(value = "userId") Long userId) {
+        userService.withdraw(userId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -47,7 +47,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<DetailAuthAPIResponse> login(@RequestBody @Valid LoginAPIRequest request) {
+    public ResponseEntity<DetailAuthAPIResponse> login(
+        @RequestBody @Valid LoginAPIRequest request) {
         JwtAuthenticationContext authToken = new JwtAuthenticationContext(request.getUsername(),
             request.getPassword());
         Authentication resultToken = authenticationManager.authenticate(authToken);
@@ -57,8 +58,9 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestAttribute(value = "userId") Long userId, @RequestBody @Valid UpdatePasswordRequest request) {
+    public ResponseEntity<Void> updatePassword(@RequestAttribute(value = "userId") Long userId,
+        @RequestBody @Valid UpdatePasswordRequest request) {
         authService.updatePassword(userId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

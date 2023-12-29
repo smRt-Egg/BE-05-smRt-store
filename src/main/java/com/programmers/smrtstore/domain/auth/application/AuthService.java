@@ -11,7 +11,6 @@ import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePassword
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,7 @@ public class AuthService {
     }
 
     // TODO: reissue
-    public void reissue(){
+    public void reissue() {
 
     }
 

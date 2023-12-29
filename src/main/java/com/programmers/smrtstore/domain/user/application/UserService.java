@@ -37,10 +37,9 @@ public class UserService {
         return from(user);
     }
 
-    public ProfileUserResponse withdraw(Long userId) {
+    public void withdraw(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         user.saveDeleteDate(LocalDateTime.now());
-        return from(user);
     }
 }
