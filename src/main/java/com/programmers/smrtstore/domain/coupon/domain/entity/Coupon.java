@@ -60,7 +60,7 @@ public class Coupon {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private CouponQuantity couponQuantity;
 
     @Builder
@@ -91,7 +91,7 @@ public class Coupon {
     }
 
     private  void validateEndDate() {
-        if (validPeriodEndDate.isAfter(LocalDateTime.now())) {
+        if (validPeriodEndDate.isBefore(LocalDateTime.now())) {
             throw new CouponException(ErrorCode.COUPON_DATE_INVALID, validPeriodEndDate.toString());
         }
     }
