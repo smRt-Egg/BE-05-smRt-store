@@ -1,12 +1,17 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
+import com.programmers.smrtstore.core.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
-import com.programmers.smrtstore.domain.order.domain.entity.enums.PaymentMethod;
+import com.programmers.smrtstore.domain.order.domain.entity.vo.PaymentInfo;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -17,23 +22,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "order_TB")
 @Entity
-public class Order {
+public class Order extends TimestampBaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private String id;
 
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "order_sheet_id")
+    private OrderSheet orderSheet;
 
-    private Long shippingInfoId;
-
-    private LocalDateTime orderDate;
-
+    @Column(name = "order_status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    private PaymentMethod paymentMethod;
-
+    @Column(name = "total_price")
     private Integer totalPrice;
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_info_id")
+    private DeliveryInfo deliveryInfo;
+
+    @Embedded
+    private PaymentInfo paymentInfo;
 
 }

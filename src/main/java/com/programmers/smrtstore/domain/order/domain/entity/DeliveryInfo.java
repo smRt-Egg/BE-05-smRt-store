@@ -1,6 +1,9 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
+import com.programmers.smrtstore.domain.order.domain.entity.vo.DeliveryAddress;
+import com.programmers.smrtstore.domain.order.domain.entity.vo.ReceiverInfo;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,27 +15,25 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "shipping_info_TB")
+@Table(name = "delivery_info_TB")
 @Entity
-public class ShippingInfo {
+public class DeliveryInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    private String address_1depth;
+    @Embedded
+    private DeliveryAddress deliveryAddress;
 
-    private String address_2depth;
+    @Embedded
+    private ReceiverInfo receiverInfo;
 
-    private String zipCode;
+    @Column(name = "delivery_request")
+    private String deliveryRequest;
 
-    private String receiverName;
-
-    private String receiverPhone;
-
-    private String shippingRequest;
-
-    private Integer shippingPrice;
+    @Column(name = "delivery_fee")
+    private Integer deliveryFee;
 
 }

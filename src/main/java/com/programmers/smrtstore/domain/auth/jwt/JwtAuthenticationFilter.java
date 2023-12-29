@@ -1,8 +1,8 @@
 package com.programmers.smrtstore.domain.auth.jwt;
 
-import static io.micrometer.common.util.StringUtils.isNotEmpty;
 import static java.util.Collections.emptyList;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,8 +25,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String IDENTIFICATION_TYPE = "Bearer ";
+
     private final String headerKey;
-    private final Jwt jwt;
+    private final JwtHelper jwtHelper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -36,20 +38,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.getHeader(headerKey), StandardCharsets.UTF_8) : null;
 
         if (token != null) {
+            if (!token.contains(IDENTIFICATION_TYPE)) {
+                throw new JWTVerificationException("Invalid token type");
+            } else {
+                token = token.replace(IDENTIFICATION_TYPE, "");
+            }
             try {
-                var claims = jwt.verify(token);
+                var claims = jwtHelper.verify(token);
 
-                String username = claims.get("username").asString();
+                Long userId = claims.get("userId").asLong();
                 List<GrantedAuthority> authorities = getAuthorities(
                     claims.get("roles").asArray(String.class));
 
-                if (isNotEmpty(username) && !authorities.isEmpty()) {
-                    JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-                        JwtAuthentication.builder()
+                if (userId != null && !authorities.isEmpty()) {
+                    JwtAuthenticationContext authentication = new JwtAuthenticationContext(
+                        JwtToken.builder()
                             .accessToken(token)
-                            .username(username)
+                            .userId(userId)
                             .build(), null, authorities
                     );
+                    request.setAttribute("userId", userId);
                     authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -1,23 +1,18 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_LOGIN_ID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse.toSignUpUserResponse;
 
-import com.programmers.smrtstore.domain.auth.jwt.JwtAuthentication;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.SignUpUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.SignUpUserResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,27 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
 
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public User login(String principal, String credentials) {
-        User user = userRepository.findByAuth_LoginId(principal)
-            .orElseThrow(
-                () -> new UserException(USER_NOT_FOUND, principal));
-        if (user.getDeletedAt() != null) {
-            throw new UserException(USER_NOT_FOUND, principal);
-        }
-        user.checkPassword(passwordEncoder, credentials);
-        return user;
-    }
-
-    @Transactional(readOnly = true)
-    public void checkDuplicate(String loginId) {
-        if (userRepository.findByAuth_LoginId(loginId).isPresent()) {
-            throw new UserException(DUPLICATE_LOGIN_ID, loginId);
-        }
-    }
 
     @Transactional(readOnly = true)
     public DetailUserResponse getUserInfo() {
@@ -54,18 +30,11 @@ public class UserService {
         return toDetailUserResponse(user);
     }
 
-    public SignUpUserResponse signUp(SignUpUserRequest request) {
-        User user = request.toUser(passwordEncoder);
-        User saved = userRepository.save(user);
-        return toSignUpUserResponse(saved);
-    }
-
     public DetailUserResponse update(UpdateUserRequest request) {
         User user = certificatedUser();
-        user.updateUser(request.getLoginId(), request.getPassword(), request.getAge(),
-            request.getNickName(),
-            request.getEmail(), request.getPhone(), request.getBirth(), request.getGender(),
-            request.getThumbnail(), request.isMarketingAgree(), passwordEncoder);
+        user.updateUser(request.getAge(), request.getNickName(), request.getEmail(),
+            request.getPhone(), request.getBirth(), request.getGender(), request.getThumbnail(),
+            request.isMarketingAgree());
         return toDetailUserResponse(user);
     }
 
@@ -77,10 +46,10 @@ public class UserService {
 
     private User certificatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication.getPrincipal();
-        String loginId = jwtAuthentication.getUsername();
+        JwtToken jwtToken = (JwtToken) authentication.getPrincipal();
+        Long userId = jwtToken.getUserId();
 
-        return userRepository.findByAuth_LoginId(loginId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, loginId));
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
 }
