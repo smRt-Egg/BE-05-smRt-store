@@ -27,14 +27,6 @@ public enum ErrorCode {
     PRODUCT_NOT_RELEASED(BAD_REQUEST, "출시되지 않은 상품입니다."),
     PRODUCT_NOT_DISCOUNTED(BAD_REQUEST, "할인을 진행하지 않은 상품입니다."),
     PRODUCT_DISCOUNT_RATIO_NOT_VALID(BAD_REQUEST, "할인율이 올바르지 않습니다."),
-    // 404
-    USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    // 409
-    DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
-    // 500
-    SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다."),
-    // 200
-
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
     COUPON_NOT_ENOUGH(BAD_REQUEST, "쿠폰 재고가 부족합니다."),
     COUPON_DATE_INVALID(BAD_REQUEST, "쿠폰 유효 기간이 끝났습니다."),
@@ -43,7 +35,13 @@ public enum ErrorCode {
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
-    COUPON_NOT_FOUND(NOT_FOUND, "존재하지 않는 쿠폰번호입니다.");
+    // 404
+    USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    COUPON_NOT_FOUND(NOT_FOUND, "존재하지 않는 쿠폰번호입니다."),
+    // 409
+    DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
+    // 500
+    SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
