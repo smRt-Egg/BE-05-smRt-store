@@ -1,11 +1,11 @@
 package com.programmers.smrtstore.core.config;
 
 import com.programmers.smrtstore.core.properties.JwtProperties;
-import com.programmers.smrtstore.domain.auth.jwt.Jwt;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAccessDeniedHandler;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationEntryPoint;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationFilter;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationProvider;
+import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -67,8 +67,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    protected Jwt jwt() {
-        return new Jwt(
+    protected JwtHelper jwt() {
+        return new JwtHelper(
             jwtProperties.getIssuer(),
             jwtProperties.getClientSecret(),
             jwtProperties.getAccessTokenExpiryHour(),
