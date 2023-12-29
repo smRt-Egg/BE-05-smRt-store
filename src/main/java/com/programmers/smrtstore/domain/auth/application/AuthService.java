@@ -47,7 +47,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public void checkDuplicateUsername(String username) {
         authRepository.findByUsername(username).ifPresent(auth -> {
-            throw new AuthException(ErrorCode.DUPLICATE_LOGIN_ID);
+            throw new AuthException(ErrorCode.DUPLICATE_USERNAME);
         });
     }
 }
