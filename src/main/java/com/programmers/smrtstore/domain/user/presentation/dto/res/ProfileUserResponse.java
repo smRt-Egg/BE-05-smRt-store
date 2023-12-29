@@ -1,9 +1,7 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,7 +27,7 @@ public class ProfileUserResponse {
 
     private boolean marketingAgree;
 
-    public static ProfileUserResponse toDetailUserResponse(User user) {
+    public static ProfileUserResponse from(User user) {
         return new ProfileUserResponse(
             user.getId(),
             user.getAge(),
