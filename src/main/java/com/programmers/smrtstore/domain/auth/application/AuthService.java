@@ -59,8 +59,15 @@ public class AuthService {
 
     public void updateRefreshToken(String username, JwtToken jwtToken) {
         TokenEntity tokenEntity = tokenEntityJPARepository.findByUsername(username)
-            .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
-        tokenEntity.updateRefreshToken(jwtToken.getRefreshToken(), jwtToken.getRefreshTokenExpiryDate());
+            .orElseGet(() -> {
+                Auth auth = authJPARepository.findByUsername(username)
+                    .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
+                return tokenEntityJPARepository.save(TokenEntity.builder()
+                    .auth(auth)
+                    .build());
+            });
+        tokenEntity.updateRefreshToken(jwtToken.getRefreshToken(),
+            jwtToken.getRefreshTokenExpiryDate());
     }
 
     @Transactional(readOnly = true)

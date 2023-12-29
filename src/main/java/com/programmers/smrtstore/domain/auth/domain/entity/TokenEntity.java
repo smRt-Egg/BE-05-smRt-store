@@ -29,7 +29,7 @@ public class TokenEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @Column(name = "refresh_token_expiry_date", nullable = false)
+    @Column(name = "refresh_token_expiry_date")
     private Date refreshTokenExpiryDate;
 
     @OneToOne(optional = false, orphanRemoval = true, cascade = CascadeType.ALL)
