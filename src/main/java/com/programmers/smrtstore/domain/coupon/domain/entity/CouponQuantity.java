@@ -13,13 +13,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "coupon_quantity_TB")
 public class CouponQuantity {
 
-    @Id
-    @Column(nullable = false)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "couponQuantity")
-    @MapsId
-    private Coupon coupon;
 
     @Column(nullable = false)
     private Integer value;
@@ -46,4 +41,5 @@ public class CouponQuantity {
         }
         value-=num;
     }
+
 }
