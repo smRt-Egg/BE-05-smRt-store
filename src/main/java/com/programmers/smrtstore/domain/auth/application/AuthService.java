@@ -11,6 +11,7 @@ import com.programmers.smrtstore.domain.auth.exception.AuthException;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJPARepository;
 import com.programmers.smrtstore.domain.auth.infrastructure.TokenEntityJPARepository;
 import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,11 @@ public class AuthService {
         return ReissueResponse.of(token, auth.getUser().getRole());
     }
 
+    public void updateRefreshToken(String username, JwtToken jwtToken) {
+        TokenEntity tokenEntity = tokenEntityJPARepository.findByUsername(username)
+            .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
+        tokenEntity.updateRefreshToken(jwtToken.getRefreshToken(), jwtToken.getRefreshTokenExpiryDate());
+    }
 
     @Transactional(readOnly = true)
     public void checkDuplicateUsername(String username) {

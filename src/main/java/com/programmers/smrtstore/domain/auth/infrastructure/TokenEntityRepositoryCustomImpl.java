@@ -24,4 +24,12 @@ public class TokenEntityRepositoryCustomImpl implements TokenEntityRepositoryCus
                 tokenEntity.refreshToken.eq(refreshToken))
             .fetchFirst());
     }
+
+    @Override
+    public Optional<TokenEntity> findByUsername(String username) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(tokenEntity)
+            .leftJoin(auth).on(tokenEntity.auth.eq(auth))
+            .where(auth.username.eq(username))
+            .fetchFirst());
+    }
 }

@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.auth.domain.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,13 +26,13 @@ public class TokenEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "refresh_token", nullable = false)
+    @Column(name = "refresh_token")
     private String refreshToken;
 
     @Column(name = "refresh_token_expiry_date", nullable = false)
     private Date refreshTokenExpiryDate;
 
-    @OneToOne(optional = false, orphanRemoval = true)
+    @OneToOne(optional = false, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "auth_id", nullable = false)
     private Auth auth;
 

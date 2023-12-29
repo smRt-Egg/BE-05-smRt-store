@@ -7,4 +7,6 @@ public interface TokenEntityRepositoryCustom {
 
     Optional<TokenEntity> findByUsernameAndRefreshToken(String username, String refreshToken);
 
+    Optional<TokenEntity> findByUsername(String username);
+
 }
