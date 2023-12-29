@@ -9,10 +9,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class DetailUserResponse {
+public class ProfileUserResponse {
 
     private Long id;
-
 
     private Integer age;
 
@@ -28,25 +27,10 @@ public class DetailUserResponse {
 
     private String thumbnail;
 
-    private Role role;
-
-    private Integer point;
-
     private boolean marketingAgree;
 
-    private boolean membershipYN;
-
-    private boolean repurchase;
-
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime deletedAt;
-
-
-    public static DetailUserResponse toDetailUserResponse(User user) {
-        return new DetailUserResponse(
+    public static ProfileUserResponse toDetailUserResponse(User user) {
+        return new ProfileUserResponse(
             user.getId(),
             user.getAge(),
             user.getNickName(),
@@ -55,14 +39,7 @@ public class DetailUserResponse {
             user.getBirth(),
             user.getGender(),
             user.getThumbnail(),
-            user.getRole(),
-            user.getPoint(),
-            user.isMarketingAgree(),
-            user.isMembershipYN(),
-            user.isRepurchaseYN(),
-            user.getUpdatedAt(),
-            user.getCreatedAt(),
-            user.getDeletedAt()
+            user.isMarketingAgree()
         );
     }
 }
