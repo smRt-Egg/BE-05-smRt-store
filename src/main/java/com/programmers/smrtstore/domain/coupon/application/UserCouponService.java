@@ -81,6 +81,9 @@ public class UserCouponService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
 
+        Coupon coupon = couponJpaRepository.findById(couponId)
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, "false"));
+
         return couponQueryRepository.findCouponByUserIdAndCouponId(userId, couponId)
                 .map(c -> UserCouponResponse.toDto(c))
                 .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_AVAILABLE_USER, "false"));
@@ -95,4 +98,5 @@ public class UserCouponService {
 
         return couponQueryRepository.findUserCouponCount(userId);
     }
+
 }
