@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.user.presentation;
 
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,11 @@ public class UserController {
     public ResponseEntity<Void> withdraw(@RequestAttribute(value = "userId") Long userId) {
         userService.withdraw(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/home")
+    public ResponseEntity<MyHomeResponse> myHome(@RequestAttribute(value = "userId") Long userId) {
+        MyHomeResponse response = userService.getMyHome(userId);
+        return ResponseEntity.ok(response);
     }
 }
