@@ -40,6 +40,6 @@ public class UserService {
     public void withdraw(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.saveDeleteDate(LocalDateTime.now());
+        user.saveDeleteDate();
     }
 }
