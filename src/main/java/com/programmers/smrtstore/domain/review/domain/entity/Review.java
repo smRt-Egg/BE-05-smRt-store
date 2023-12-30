@@ -31,28 +31,34 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends TimestampBaseEntity {
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<ReviewLike> reviewLikes = new LinkedList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
     private Product product;
+
     @Column(name = "title", nullable = false, length = 100)
     private String title;
+
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "review_score", nullable = false)
     private ReviewScore reviewScore;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<ReviewLike> reviewLikes = new LinkedList<>();
 
     @Builder
     private Review(User user, Product product, String title, String content,
