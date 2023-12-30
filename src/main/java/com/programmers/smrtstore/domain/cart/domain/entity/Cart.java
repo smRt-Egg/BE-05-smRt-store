@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.cart.domain.entity;
 
-import com.programmers.smrtstore.core.base.TimestampBaseEntity;
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,20 +11,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "cart_TB")
 @Entity
-public class Cart extends TimestampBaseEntity {
+public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,39 +35,48 @@ public class Cart extends TimestampBaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "total_price", nullable = false)
-    private Integer totalPrice;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<CartProduct> cartProducts = new ArrayList<>();
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @Builder
-    private Cart(User user) {
+    private Cart(User user, Product product, Integer quantity) {
         this.user = user;
-        this.quantity = 0;
-        this.totalPrice = 0;
+        this.product = product;
+        this.quantity = quantity;
+        this.price = calculatePrice(product, quantity);
     }
 
-    public void addCartProduct(CartProduct cartProduct) {
-        cartProducts.add(cartProduct);
-        this.quantity = calculateQuantity();
-        this.totalPrice = calculateTotalPrice();
+    private static Integer calculatePrice(Product product, Integer quantity) {
+        if (product.isDiscountYn()) {
+            int salePrice = product.getSalePrice();
+            return (salePrice - (int) (salePrice * product.getDiscountRatio() / 100)) * quantity;
+        }
+        return product.getSalePrice() * quantity;
     }
 
-    public void removeCartProduct(CartProduct cartProduct) {
-        cartProducts.remove(cartProduct);
-        this.quantity = calculateQuantity();
-        this.totalPrice = calculateTotalPrice();
+    public void addQuantity(Integer quantity) {
+        this.quantity += quantity;
+        this.price = calculatePrice(product, this.quantity);
     }
 
-    private Integer calculateQuantity() {
-        return cartProducts.stream().map(CartProduct::getQuantity).reduce(0, Integer::sum);
+    public void removeQuantity(Integer quantity) {
+        this.quantity -= quantity;
+        this.price = calculatePrice(product, this.quantity);
     }
 
-    private Integer calculateTotalPrice() {
-        return cartProducts.stream().map(CartProduct::getPrice).reduce(0, Integer::sum);
-    }
 }
