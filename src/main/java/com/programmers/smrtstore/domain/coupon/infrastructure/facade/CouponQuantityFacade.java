@@ -6,8 +6,6 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,7 +14,6 @@ public class CouponQuantityFacade {
 
     private final CouponQueryRepository couponQueryRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void decrease(Long couponId)  {
 
         while (true) {
