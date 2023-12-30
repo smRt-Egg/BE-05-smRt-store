@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponQueryRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponAvailableUserJpaRepository;
+import com.programmers.smrtstore.domain.coupon.infrastructure.facade.CouponQuantityFacade;
 import com.programmers.smrtstore.domain.coupon.presentation.req.OrderCouponRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.req.SaveCouponRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.req.UpdateUserCouponRequest;
@@ -19,6 +20,7 @@ import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -32,32 +34,35 @@ import java.util.stream.Collectors;
 public class UserCouponService {
 
     private final CouponQueryRepository couponQueryRepository;
-
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
     private final UserRepository userRepository;
+    private final CouponJpaRepository couponJpaRepository;
     private final ProductJPARepository productJPARepository;
+    private final CouponQuantityFacade facade;
+
+    @Transactional(readOnly = true)
     public SaveCouponResponse save(SaveCouponRequest request, Long userId) {
         Long couponId = request.getCouponId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
 
-        Coupon coupon = couponQueryRepository.findCouponByIdWithPessimistic(couponId)
+        Coupon coupon = couponJpaRepository.findById(couponId)
                 .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, "false"));
 
-        Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId,userId);
-        //처음부터 가져올때 User,UserCoupon,Coupon 페치조인하면 아래서 userRepository,couponJpaRepository 여기서 추가쿼리 안나감! -> 불가. user 유무 검증이 필수라서 페치조인x
+        //유저가 쿠폰을 발급받은적 있는지
+        Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId);
 
-        if (couponAvailableUser.isPresent()) { //기존 가입 유저는 기존 쿠폰 이력 관리를 해줘야함!
-            CouponAvailableUser cu = couponAvailableUser.get();
-            cu.reIssueCoupon();
-
-            return SaveCouponResponse.toDto(cu);
-        }
-
-        CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
-
-        return SaveCouponResponse.toDto(savedCouponAvailableUser);
+        return couponAvailableUser
+                .map(cu -> {
+                    cu.reIssueCoupon();
+                    facade.decrease(couponId);
+                    return SaveCouponResponse.toDto(cu);
+                })
+                .orElseGet(() -> {
+                    CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
+                    facade.decrease(couponId);
+                    return SaveCouponResponse.toDto(savedCouponAvailableUser);
+                });
     }
-
 
 }
