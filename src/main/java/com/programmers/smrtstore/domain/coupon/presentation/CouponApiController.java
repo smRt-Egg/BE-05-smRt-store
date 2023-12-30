@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.coupon.presentation;
 
 import com.programmers.smrtstore.domain.coupon.application.UserCouponService;
 import com.programmers.smrtstore.domain.coupon.presentation.req.SaveCouponRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class CouponApiController {
 
     @PostMapping("/product/{userId}/coupons")
     public void save(@RequestAttribute(value = "userId") Long userId, @PathVariable Long id,
-                     @RequestBody SaveCouponRequest request) {
+                     @RequestBody @Valid SaveCouponRequest request) {
         couponService.save(request,userId);
     }
 }
