@@ -22,41 +22,33 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @Entity
 @Table(name = "review_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends TimestampBaseEntity {
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<ReviewLike> reviewLikes = new LinkedList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
-
     @Column(name = "title", nullable = false, length = 100)
     private String title;
-
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "review_score", nullable = false)
     private ReviewScore reviewScore;
-
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReviewLike> reviewLikes = new LinkedList<>();
 
     @Builder
     private Review(User user, Product product, String title, String content,
@@ -66,6 +58,10 @@ public class Review extends TimestampBaseEntity {
         this.title = title;
         this.content = content;
         this.reviewScore = reviewScore;
+    }
+
+    public int getReviewLikeCount() {
+        return this.reviewLikes.size();
     }
 
     protected void addReviewLike(ReviewLike reviewLike) {
