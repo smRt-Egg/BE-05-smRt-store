@@ -33,6 +33,7 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     // 500
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다."),
+    EMAIL_SENDING_ERROR(INTERNAL_SERVER_ERROR, "본인 인증을 위한 이메일 전송에 실패하였습니다."),
     // 200
 
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
