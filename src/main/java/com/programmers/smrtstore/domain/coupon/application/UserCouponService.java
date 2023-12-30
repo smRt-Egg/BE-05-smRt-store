@@ -40,7 +40,7 @@ public class UserCouponService {
     private final ProductJPARepository productJPARepository;
     private final CouponQuantityFacade facade;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public SaveCouponResponse save(SaveCouponRequest request, Long userId) {
         Long couponId = request.getCouponId();
         User user = userRepository.findById(userId)
