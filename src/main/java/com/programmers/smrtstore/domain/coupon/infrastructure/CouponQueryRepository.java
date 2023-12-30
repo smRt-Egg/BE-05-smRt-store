@@ -1,12 +1,11 @@
 package com.programmers.smrtstore.domain.coupon.infrastructure;
 
-import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
-import com.programmers.smrtstore.domain.coupon.domain.entity.QCoupon;
+import com.programmers.smrtstore.domain.coupon.domain.entity.*;
 
-import com.programmers.smrtstore.domain.coupon.domain.entity.CouponAvailableUser;
-import com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser;
+import com.programmers.smrtstore.domain.product.domain.entity.QProduct;
 import com.programmers.smrtstore.domain.user.domain.entity.QUser;
 
+import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -24,15 +23,16 @@ public class CouponQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    public Optional<Coupon> findCouponByIdWithPessimistic(Long id) {
-        QCoupon qCoupon = QCoupon.coupon;
-        Coupon coupon = queryFactory
-                .selectFrom(qCoupon)
-                .where(qCoupon.id.eq(id))
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+    public CouponQuantity findCouponQuantity(Long couponId) {
+        QCouponQuantity qCouponQuantity = QCouponQuantity.couponQuantity;
+        return queryFactory
+                .select(qCouponQuantity)
+                .from(qCouponQuantity)
+                .where(qCouponQuantity.id.eq(couponId))
                 .fetchOne();
-
-        return Optional.ofNullable(coupon);
     }
+
+
 
 }
