@@ -64,5 +64,35 @@ public class UserCouponService {
                 });
     }
 
+    @Transactional(readOnly = true)
+    public List<UserCouponResponse> getCouponsByUserId(Long userId) {   //쿠폰 리스트 (마이페이지)
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
+
+        return couponQueryRepository.findUserCoupons(userId).stream()
+                .map(coupon -> UserCouponResponse.toDto(coupon))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public UserCouponResponse getCouponByUserIdAndCouponId(Long userId, Long couponId) {   //쿠폰 단일 (마이페이지)
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
+
+        return couponQueryRepository.findCouponByUserIdAndCouponId(userId, couponId)
+                .map(c -> UserCouponResponse.toDto(c))
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_AVAILABLE_USER, "false"));
+
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUserCouponQuantity(Long userId) { //유저의쿠폰 잔여개수
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
+
+        return couponQueryRepository.findUserCouponCount(userId);
+    }
 }
