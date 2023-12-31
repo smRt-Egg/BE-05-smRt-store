@@ -24,8 +24,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         Integer total = queryFactory
             .select(order.totalPrice.sum())
-            .from(orderSheet)
-            .join(orderSheet.order, order)
+            .from(order)
+            .join(order.orderSheet, orderSheet)
             .where(orderSheet.user.id.eq(userId)
                 .and(order.orderDate.between(startDateTime, endDateTime))
                 .and(order.orderStatus.eq(PAYMENT_COMPLETED))
