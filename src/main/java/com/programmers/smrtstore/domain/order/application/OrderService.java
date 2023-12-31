@@ -6,6 +6,8 @@ import com.programmers.smrtstore.domain.order.presentation.dto.req.UpdateOrderRe
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderSheetResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderResponse;
+import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
+import java.util.List;
 
 public interface OrderService {
 
@@ -22,5 +24,7 @@ public interface OrderService {
     Integer calculateUserMonthlyTotalSpending(Long userId, int month, int year);
 
     Integer getTotalPriceByOrderId(Long orderId);
+
+    List<OrderedProductResponse> getProductsForOrder(Long orderId);
 
 }

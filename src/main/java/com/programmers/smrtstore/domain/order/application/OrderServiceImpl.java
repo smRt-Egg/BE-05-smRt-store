@@ -16,6 +16,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.util.DateTimeUtils;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,15 @@ public class OrderServiceImpl implements OrderService {
     public Integer getTotalPriceByOrderId(Long orderId) {
         Order order = checkOrderExistence(orderId);
         return order.getTotalPrice();
+    }
+
+    @Override
+    public List<OrderedProductResponse> getProductsForOrder(Long orderId) {
+        return orderJpaRepository.findByIdWithOrderSheetIncludeDeleted(orderId)
+            .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)))
+            .getOrderSheet().getOrderedProducts().stream()
+            .map(OrderedProductResponse::from)
+            .toList();
     }
 
     private User checkUserExistence(Long userId) {
