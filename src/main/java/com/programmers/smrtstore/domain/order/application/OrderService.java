@@ -19,4 +19,6 @@ public interface OrderService {
 
     Long updateOrder(Long orderId, UpdateOrderRequest request);
 
+    Integer calculateUserMonthlyTotalSpending(Long userId, int month, int year);
+
 }
