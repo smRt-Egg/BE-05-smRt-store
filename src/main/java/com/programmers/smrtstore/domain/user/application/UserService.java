@@ -31,9 +31,7 @@ public class UserService {
     public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.updateUser(request.getAge(), request.getNickName(), request.getEmail(),
-            request.getPhone(), request.getBirth(), request.getGender(), request.getThumbnail(),
-            request.isMarketingAgree());
+        user.updateUser(request);
         return from(user);
     }
 
