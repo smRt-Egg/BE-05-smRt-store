@@ -12,6 +12,7 @@ import com.programmers.smrtstore.domain.order.presentation.dto.req.UpdateOrderRe
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderSheetResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderResponse;
+import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -64,7 +65,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Integer getTotalPriceByOrderId(Long orderId) {
-        Order order = checkOrderExistence(orderId);
+        Order order = orderJpaRepository.findByIdIncludeDeleted(orderId)
+            .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)));
         return order.getTotalPrice();
     }
 
@@ -80,10 +82,5 @@ public class OrderServiceImpl implements OrderService {
     private User checkUserExistence(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-    }
-
-    private Order checkOrderExistence(Long orderId) {
-        return orderJpaRepository.findById(orderId)
-            .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)));
     }
 }
