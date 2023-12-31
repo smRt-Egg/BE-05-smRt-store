@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.application;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_SENDING_ERROR;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 
@@ -9,8 +10,11 @@ import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-
 
     @Transactional(readOnly = true)
     public DetailUserResponse getUserInfo() {
@@ -51,5 +54,10 @@ public class UserService {
 
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    }
+
+
+    public void sendCodeToEmail(String mail) {
+
     }
 }
