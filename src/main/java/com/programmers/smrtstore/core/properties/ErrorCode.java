@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // 200
     KEEP_NOT_FOUND_ERROR(OK, "찜이 존재하지 않습니다."),
-    PRODUCT_NOT_FOUND(OK, "상품을 찾을 수 없습니다."),
-    PRODUCT_OPTION_NOT_FOUND(OK, "상품 옵션을 찾을 수 없습니다."),
     // 400
     INCORRECT_PASSWORD(BAD_REQUEST, "비밀번호가 잘못되었습니다."),
     PRODUCT_QUANTITY_NOT_ENOUGH(BAD_REQUEST, "상품의 재고가 부족합니다."),
@@ -37,7 +35,10 @@ public enum ErrorCode {
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(NOT_FOUND, "상품을 찾을 수 없습니다."),
+    PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
     COUPON_NOT_FOUND(NOT_FOUND, "존재하지 않는 쿠폰번호입니다."),
+    TOKEN_NOT_FOUND(NOT_FOUND, "토큰을 찾을 수 없습니다."),
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     // 500
