@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class RedisService {
+
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void setValues(String key, String data) {
@@ -29,7 +30,9 @@ public class RedisService {
     @Transactional(readOnly = true)
     public String getValues(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
-        if(values.get(key) == null) return "false";
+        if (values.get(key) == null) {
+            return "false";
+        }
         return (String) values.get(key);
     }
 
@@ -49,7 +52,8 @@ public class RedisService {
     @Transactional(readOnly = true)
     public String getHashOps(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
-        return Boolean.TRUE.equals(values.hasKey(key, hashKey)) ? (String) redisTemplate.opsForHash().get(key, hashKey) : "";
+        return Boolean.TRUE.equals(values.hasKey(key, hashKey))
+            ? (String) redisTemplate.opsForHash().get(key, hashKey) : "";
     }
 
     public void deleteHashOps(String key, String hashKey) {

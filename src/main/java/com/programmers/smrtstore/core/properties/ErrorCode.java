@@ -29,8 +29,10 @@ public enum ErrorCode {
     PRODUCT_DISCOUNT_RATIO_NOT_VALID(BAD_REQUEST, "할인율이 올바르지 않습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    ALGORITHM_NOT_FOUND(NOT_FOUND, "본인 인증 코드를 만들기 위한 알고리즘이 존재하지 않습니다."),
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
+    DUPLICATE_EMAIL(CONFLICT, "이미 가입되어 있는 이메일입니다."),
     // 500
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다."),
     EMAIL_SENDING_ERROR(INTERNAL_SERVER_ERROR, "본인 인증을 위한 이메일 전송에 실패하였습니다."),
