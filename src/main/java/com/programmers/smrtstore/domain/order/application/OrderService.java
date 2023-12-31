@@ -21,4 +21,6 @@ public interface OrderService {
 
     Integer calculateUserMonthlyTotalSpending(Long userId, int month, int year);
 
+    Integer getTotalPriceByOrderId(Long orderId);
+
 }
