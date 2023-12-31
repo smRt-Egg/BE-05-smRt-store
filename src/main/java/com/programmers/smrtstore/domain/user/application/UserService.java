@@ -31,14 +31,15 @@ public class UserService {
     public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.updateUser(request);
+        user.updateUser(request.getAge(), request.getNickName(), request.getEmail(),
+            request.getPhone(), request.getBirth(), request.getGender(), request.getThumbnail(),
+            request.isMarketingAgree());
         return from(user);
     }
 
-    public ProfileUserResponse withdraw(Long userId) {
+    public void withdraw(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.saveDeleteDate(LocalDateTime.now());
-        return from(user);
+        user.saveDeleteDate();
     }
 }

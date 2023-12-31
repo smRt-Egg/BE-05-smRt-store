@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.auth.application.dto.res.SignUpResponse;
 import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
 import com.programmers.smrtstore.domain.auth.exception.AuthException;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthRepository;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import jakarta.validation.Valid;
@@ -40,7 +41,7 @@ public class AuthService {
     }
 
     // TODO: reissue
-    public void reissue(){
+    public void reissue() {
 
     }
 
@@ -49,5 +50,10 @@ public class AuthService {
         authRepository.findByUsername(username).ifPresent(auth -> {
             throw new AuthException(ErrorCode.DUPLICATE_USERNAME);
         });
+    }
+
+    public void updatePassword(Long userId, UpdatePasswordRequest request) {
+        Auth auth = authRepository.findByUserId(userId).get();
+        auth.updatePassword(request.getPassword(), passwordEncoder);
     }
 }

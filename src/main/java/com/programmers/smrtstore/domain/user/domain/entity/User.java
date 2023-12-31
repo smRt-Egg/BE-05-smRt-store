@@ -123,7 +123,7 @@ public class User {
         this.membershipYN = false;
     }
 
-    public void saveDeleteDate(LocalDateTime time) {
-        this.deletedAt = time;
+    public void saveDeleteDate() {
+        this.deletedAt = LocalDateTime.now();
     }
 }
