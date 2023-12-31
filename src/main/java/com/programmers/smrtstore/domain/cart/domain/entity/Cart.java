@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.cart.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.Column;
@@ -73,6 +75,9 @@ public class Cart {
     }
 
     public void removeQuantity(Integer quantity) {
+        if (this.quantity - quantity <= 0) {
+            throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
+        }
         this.quantity -= quantity;
         this.price = calculatePrice(product, this.quantity);
     }
