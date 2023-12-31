@@ -13,6 +13,7 @@ import lombok.Getter;
 
 @Getter
 public class SignUpAPIRequest {
+
     @NotBlank
     @Size(max = 12, min = 4, message = "Login Id는 4~12자리여야 합니다.")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Login ID는 영문자 또는 숫자만 가능합니다.")
@@ -32,7 +33,8 @@ public class SignUpAPIRequest {
     @Size(min = 1, max = 10, message = "별명은 1~10자여야 합니다.")
     private String nickName;
 
-    @NotBlank @Email
+    @NotBlank
+    @Email
     private String email;
 
     @NotBlank
