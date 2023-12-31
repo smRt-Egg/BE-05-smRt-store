@@ -1,7 +1,10 @@
 package com.programmers.smrtstore.domain.order.application;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.ORDER_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
+import com.programmers.smrtstore.domain.order.domain.entity.Order;
+import com.programmers.smrtstore.domain.order.exception.OrderException;
 import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderRequest;
 import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderSheetRequest;
@@ -56,8 +59,19 @@ public class OrderServiceImpl implements OrderService {
         return orderJpaRepository.calculateMonthlyTotalSpending(userId, month, year);
     }
 
+    @Override
+    public Integer getTotalPriceByOrderId(Long orderId) {
+        Order order = checkOrderExistence(orderId);
+        return order.getTotalPrice();
+    }
+
     private User checkUserExistence(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    }
+
+    private Order checkOrderExistence(Long orderId) {
+        return orderJpaRepository.findById(orderId)
+            .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)));
     }
 }
