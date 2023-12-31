@@ -3,10 +3,12 @@ package com.programmers.smrtstore.domain.auth.presentation;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
+import com.programmers.smrtstore.domain.auth.application.dto.res.ReissueResponse;
 import com.programmers.smrtstore.domain.auth.application.dto.res.SignUpResponse;
 import com.programmers.smrtstore.domain.auth.jwt.JwtAuthenticationContext;
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.LoginAPIRequest;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.ReissueAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.SignUpAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.res.DetailAuthAPIResponse;
@@ -55,6 +57,14 @@ public class AuthController {
         JwtToken authentication = (JwtToken) resultToken.getPrincipal();
         LoginResponse response = (LoginResponse) resultToken.getDetails();
         return ResponseEntity.ok(DetailAuthAPIResponse.of(response, authentication));
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<DetailAuthAPIResponse> reissue(
+        @RequestBody @Valid ReissueAPIRequest request) {
+        ReissueResponse response = authService.reissue(request.getUsername(),
+            request.getRefreshToken());
+        return ResponseEntity.ok(DetailAuthAPIResponse.from(response));
     }
 
     @PostMapping("/password")
