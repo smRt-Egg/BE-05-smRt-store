@@ -1,15 +1,15 @@
-package com.programmers.smrtstore.domain.product.exception;
+package com.programmers.smrtstore.domain.auth.exception;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.exception.exceptionClass.CustomException;
 
-public class ProductException extends CustomException {
+public class AuthException extends CustomException {
 
-    public ProductException(ErrorCode errorCode) {
+    public AuthException(ErrorCode errorCode) {
         super(errorCode, null);
     }
 
-    public ProductException(ErrorCode errorCode,
+    public AuthException(ErrorCode errorCode,
         String runtimeValue) {
         super(errorCode, runtimeValue);
     }
