@@ -42,7 +42,4 @@ public class OrderSheet {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "orderSheet", cascade = CascadeType.ALL)
-    private Order order;
-
 }
