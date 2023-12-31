@@ -38,7 +38,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse getOrderById(Long orderId) {
-        return null;
+        Order order = orderJpaRepository.findByIdWithOrderSheetAndUser(orderId)
+            .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)));
+        return OrderResponse.from(order);
     }
 
     @Override
