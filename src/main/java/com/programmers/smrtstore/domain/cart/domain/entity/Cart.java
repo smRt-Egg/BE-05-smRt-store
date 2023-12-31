@@ -29,7 +29,7 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,10 +64,6 @@ public class Cart {
     }
 
     private static Integer calculatePrice(Product product, Integer quantity) {
-        if (product.isDiscountYn()) {
-            int salePrice = product.getSalePrice();
-            return (salePrice - (int) (salePrice * product.getDiscountRatio() / 100)) * quantity;
-        }
         return product.getSalePrice() * quantity;
     }
 
