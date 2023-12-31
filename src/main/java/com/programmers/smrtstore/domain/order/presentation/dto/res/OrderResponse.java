@@ -3,7 +3,7 @@ package com.programmers.smrtstore.domain.order.presentation.dto.res;
 import com.programmers.smrtstore.domain.order.domain.entity.Order;
 import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.order.domain.entity.vo.PaymentInfo;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,13 +25,13 @@ public class OrderResponse {
 
     private List<OrderedProductResponse> products;
 
-    private DetailUserResponse orderer;
+    private ProfileUserResponse orderer;
 
     @Builder
     private OrderResponse(
         String id, OrderStatus orderStatus, Integer totalPrice, String orderDate,
         PaymentInfo paymentInfo, String deliveryInfo, List<OrderedProductResponse> products,
-        DetailUserResponse orderer
+        ProfileUserResponse orderer
     ) {
         this.id = id;
         this.orderStatus = orderStatus;
@@ -54,7 +54,7 @@ public class OrderResponse {
             .products(order.getOrderSheet().getOrderedProducts().stream()
                 .map(OrderedProductResponse::from)
                 .toList())
-            .orderer(DetailUserResponse.toDetailUserResponse(order.getOrderSheet().getUser()))
+            .orderer(ProfileUserResponse.from(order.getOrderSheet().getUser()))
             .build();
     }
 }
