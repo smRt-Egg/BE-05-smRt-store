@@ -17,6 +17,7 @@ public class ProductResponse {
     private Long id;
     private String name;
     private Integer price;
+    private Integer salePrice;
     private Float discountRatio;
     private Category category;
     private Integer stockQuantity;
@@ -37,6 +38,7 @@ public class ProductResponse {
             product.getId(),
             product.getName(),
             product.getPrice(),
+            product.getSalePrice(),
             product.getDiscountRatio(),
             product.getCategory(),
             product.getStockQuantity(),

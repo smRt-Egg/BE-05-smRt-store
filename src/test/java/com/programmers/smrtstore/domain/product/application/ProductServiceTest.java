@@ -567,7 +567,7 @@ class ProductServiceTest {
         // Assert
         assertThat(actualResult.getName()).isEqualTo(expectedRequest.getName());
         assertThat(actualResult.getCategory()).isEqualTo(expectedRequest.getCategory());
-        assertThat(actualResult.getSalePrice()).isEqualTo(expectedRequest.getSalePrice());
+        assertThat(actualResult.getPrice()).isEqualTo(expectedRequest.getSalePrice());
         assertThat(actualResult.getStockQuantity()).isEqualTo(expectedRequest.getStockQuantity());
         assertThat(actualResult.getThumbnail()).isEqualTo(expectedRequest.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(expectedRequest.getContentImage());
