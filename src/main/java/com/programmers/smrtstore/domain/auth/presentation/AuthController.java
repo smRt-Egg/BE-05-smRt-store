@@ -10,6 +10,7 @@ import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.LoginAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.ReissueAPIRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.SignUpAPIRequest;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
 import com.programmers.smrtstore.domain.auth.presentation.dto.res.DetailAuthAPIResponse;
 import com.programmers.smrtstore.domain.auth.presentation.dto.res.SignUpAPIResponse;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,5 +65,12 @@ public class AuthController {
         ReissueResponse response = authService.reissue(request.getUsername(),
             request.getRefreshToken());
         return ResponseEntity.ok(DetailAuthAPIResponse.from(response));
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<Void> updatePassword(@RequestAttribute(value = "userId") Long userId,
+        @RequestBody @Valid UpdatePasswordRequest request) {
+        authService.updatePassword(userId, request);
+        return ResponseEntity.noContent().build();
     }
 }

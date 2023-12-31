@@ -12,6 +12,7 @@ import com.programmers.smrtstore.domain.auth.infrastructure.AuthJPARepository;
 import com.programmers.smrtstore.domain.auth.infrastructure.TokenEntityJPARepository;
 import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
+import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +76,10 @@ public class AuthService {
         authJPARepository.findByUsername(username).ifPresent(auth -> {
             throw new AuthException(ErrorCode.DUPLICATE_USERNAME);
         });
+    }
+
+    public void updatePassword(Long userId, UpdatePasswordRequest request) {
+        Auth auth = authJPARepository.findByUserId(userId).orElseThrow(()->new AuthException(ErrorCode.USER_NOT_FOUND));
+        auth.updatePassword(request.getPassword(), passwordEncoder);
     }
 }
