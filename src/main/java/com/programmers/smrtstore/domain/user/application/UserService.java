@@ -23,7 +23,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     @Transactional(readOnly = true)
     public DetailUserResponse getUserInfo() {
         User user = certificatedUser();
@@ -51,5 +50,10 @@ public class UserService {
 
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    }
+
+
+    public void sendCodeToEmail(String mail) {
+
     }
 }

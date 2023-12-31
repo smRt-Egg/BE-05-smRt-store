@@ -3,6 +3,8 @@ package com.programmers.smrtstore.domain.user.presentation;
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,5 +39,11 @@ public class UserController {
     public ResponseEntity<DetailUserResponse> withdraw() {
         DetailUserResponse response = userService.withdraw();
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/email/request")
+    public ResponseEntity<Void> sendMail(@RequestParam("email") @Valid @Email String mail) {
+        userService.sendCodeToEmail(mail);
+        return ResponseEntity.ok().build();
     }
 }
