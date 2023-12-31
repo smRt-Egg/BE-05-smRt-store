@@ -32,7 +32,7 @@ public class UpdateProductResponse {
     public static UpdateProductResponse from(Product product) {
         return new UpdateProductResponse(product.getId(),
             product.getName(),
-            product.getSalePrice(),
+            product.getPrice(),
             product.getDiscountRatio(),
             product.getCategory(),
             product.getStockQuantity(),
