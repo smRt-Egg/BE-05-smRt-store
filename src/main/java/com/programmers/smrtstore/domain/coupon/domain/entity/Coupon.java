@@ -40,20 +40,15 @@ public class Coupon {
     private boolean availableYn;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CouponType couponType;
 
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private BenefitUnitType benefitUnitType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CustomerManageBenefitType customerManageBenefitType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CouponPublicationType couponPublicationType; //쿠폰 발행방식 -> 유저에게 바로 뿌리기 / 제품에 걸어놓고 다운로드
 
     @Column(nullable = false)
@@ -63,11 +58,9 @@ public class Coupon {
     private LocalDateTime validPeriodEndDate;
 
     @CreationTimestamp
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn(name = "coupon_quantity_id")
     private CouponQuantity couponQuantity;
 
     @Builder
