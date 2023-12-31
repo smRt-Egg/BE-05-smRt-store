@@ -12,14 +12,12 @@ import org.springframework.security.core.GrantedAuthority;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginResponse {
 
-    private String username;
     private Long userId;
     private Role role;
     private List<GrantedAuthority> authorities;
 
     public static LoginResponse from(Auth auth) {
         return new LoginResponse(
-            auth.getUsername(),
             auth.getUser().getId(),
             auth.getUser().getRole(),
             auth.getUser().getAuthorities()

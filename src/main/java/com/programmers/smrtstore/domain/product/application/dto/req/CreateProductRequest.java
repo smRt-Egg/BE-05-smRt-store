@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class CreateProductRequest {
 
     private String name;
-    private Integer price;
+    private Integer salePrice;
     private Integer stockQuantity;
     private Category category;
     private URL thumbnail;
@@ -26,7 +26,7 @@ public class CreateProductRequest {
     public Product toEntity() {
         return Product.builder()
             .name(name)
-            .price(price)
+            .salePrice(salePrice)
             .stockQuantity(stockQuantity)
             .category(category)
             .thumbnail(thumbnail)

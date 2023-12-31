@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
-import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -100,15 +99,17 @@ public class User {
             .toList();
     }
 
-    public void updateUser(UpdateUserRequest request) {
-        this.age = request.getAge();
-        this.nickName = request.getNickName();
-        this.email = request.getEmail();
-        this.phone = request.getPhone();
-        this.birth = request.getBirth();
-        this.gender = request.getGender();
-        this.thumbnail = request.getThumbnail();
-        this.marketingAgree = request.isMarketingAgree();
+    public void updateUser(Integer age, String nickName,
+        String email, String phone, String birth, Gender gender, String thumbnail,
+        boolean marketingAgree) {
+        this.age = age;
+        this.nickName = nickName;
+        this.email = email;
+        this.phone = phone;
+        this.birth = birth;
+        this.gender = gender;
+        this.thumbnail = thumbnail;
+        this.marketingAgree = marketingAgree;
     }
 
     public void repurchase() {
@@ -123,7 +124,7 @@ public class User {
         this.membershipYN = false;
     }
 
-    public void saveDeleteDate() {
-        this.deletedAt = LocalDateTime.now();
+    public void saveDeleteDate(LocalDateTime time) {
+        this.deletedAt = time;
     }
 }

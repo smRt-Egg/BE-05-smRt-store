@@ -6,7 +6,7 @@ import com.programmers.smrtstore.exception.exceptionClass.CustomException;
 public class ProductException extends CustomException {
 
     public ProductException(ErrorCode errorCode) {
-        super(errorCode, null);
+        super(errorCode, errorCode.getMessage());
     }
 
     public ProductException(ErrorCode errorCode,

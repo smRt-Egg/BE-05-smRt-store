@@ -46,7 +46,6 @@ public class SignUpRequest {
             .marketingAgree(marketingAgree)
             .nickName(nickName)
             .thumbnail(thumbnail)
-            .point(0)
             .build();
     }
 

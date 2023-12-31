@@ -15,7 +15,6 @@ public class UpdateProductResponse {
 
     private Long id;
     private String name;
-    private Integer price;
     private Integer salePrice;
     private Float discountRatio;
     private Category category;
@@ -33,7 +32,6 @@ public class UpdateProductResponse {
     public static UpdateProductResponse from(Product product) {
         return new UpdateProductResponse(product.getId(),
             product.getName(),
-            product.getPrice(),
             product.getSalePrice(),
             product.getDiscountRatio(),
             product.getCategory(),

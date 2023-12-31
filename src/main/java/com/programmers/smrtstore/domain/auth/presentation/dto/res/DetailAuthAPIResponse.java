@@ -1,7 +1,6 @@
 package com.programmers.smrtstore.domain.auth.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
-import com.programmers.smrtstore.domain.auth.application.dto.res.ReissueResponse;
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,15 +21,6 @@ public class DetailAuthAPIResponse {
             authentication.getAccessToken(),
             authentication.getRefreshToken(),
             authentication.getRefreshTokenExpiryDate().toString(),
-            response.getRole().name()
-        );
-    }
-
-    public static DetailAuthAPIResponse from(ReissueResponse response) {
-        return new DetailAuthAPIResponse(
-            response.getAccessToken(),
-            response.getRefreshToken(),
-            response.getRefreshTokenExpiryDate().toString(),
             response.getRole().name()
         );
     }

@@ -46,7 +46,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             JwtAuthenticationContext authenticated =
                 new JwtAuthenticationContext(token, null, authorities);
             authenticated.setDetails(response);
-            authService.updateRefreshToken(response.getUsername(), token);
             return authenticated;
         } catch (IllegalArgumentException e) {
             throw new BadCredentialsException(e.getMessage());
