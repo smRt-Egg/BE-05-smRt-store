@@ -1,15 +1,18 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse.from;
+import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +25,31 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public ProfileUserResponse getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        return from(user);
+    public DetailUserResponse getUserInfo() {
+        User user = certificatedUser();
+        return toDetailUserResponse(user);
     }
 
-    public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.updateUser(request);
-        return from(user);
+    public DetailUserResponse update(UpdateUserRequest request) {
+        User user = certificatedUser();
+        user.updateUser(request.getAge(), request.getNickName(), request.getEmail(),
+            request.getPhone(), request.getBirth(), request.getGender(), request.getThumbnail(),
+            request.isMarketingAgree());
+        return toDetailUserResponse(user);
     }
 
-    public void withdraw(Long userId) {
-        User user = userRepository.findById(userId)
+    public DetailUserResponse withdraw() {
+        User user = certificatedUser();
+        user.saveDeleteDate(LocalDateTime.now());
+        return toDetailUserResponse(user);
+    }
+
+    private User certificatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JwtToken jwtToken = (JwtToken) authentication.getPrincipal();
+        Long userId = jwtToken.getUserId();
+
+        return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        user.saveDeleteDate();
     }
 }

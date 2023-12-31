@@ -43,8 +43,8 @@ public class Product {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "price", nullable = false)
-    private Integer price;
+    @Column(name = "sale_price", nullable = false)
+    private Integer salePrice;
 
     @Column(name = "discount_ratio", nullable = false)
     private Float discountRatio;
@@ -90,10 +90,10 @@ public class Product {
     private List<ProductOption> productOptions;
 
     @Builder
-    private Product(String name, Integer price, Integer stockQuantity,
+    private Product(String name, Integer salePrice, Integer stockQuantity,
         Category category, URL thumbnail, URL contentImage, boolean optionYn) {
         this.name = name;
-        this.price = price;
+        this.salePrice = salePrice;
         this.discountRatio = 0f;
         this.category = category;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
@@ -106,15 +106,9 @@ public class Product {
         }
     }
 
-    public Integer getSalePrice() {
-        if (discountYn) {
-            return price - (int) (price * discountRatio / 100);
-        }
-        return price;
-    }
-
     public void addOption(ProductOption productOption) {
         productOptions.add(productOption);
+
     }
 
     public void addStockQuantity(Integer quantity) {
@@ -181,8 +175,8 @@ public class Product {
         this.name = name;
     }
 
-    private void updatePrice(Integer price) {
-        this.price = price;
+    private void updateSalePrice(Integer salePrice) {
+        this.salePrice = salePrice;
     }
 
     private void updateStockQuantity(Integer stockQuantity) {
@@ -201,13 +195,13 @@ public class Product {
         this.contentImage = contentImage;
     }
 
-    public void updateValues(String name, Integer price, Integer stockQuantity,
+    public void updateValues(String name, Integer salePrice, Integer stockQuantity,
         Category category, URL thumbnail, URL contentImage) {
         if (name != null) {
             updateName(name);
         }
-        if (price != null) {
-            updatePrice(price);
+        if (salePrice != null) {
+            updateSalePrice(salePrice);
         }
         if (stockQuantity != null) {
             updateStockQuantity(stockQuantity);
