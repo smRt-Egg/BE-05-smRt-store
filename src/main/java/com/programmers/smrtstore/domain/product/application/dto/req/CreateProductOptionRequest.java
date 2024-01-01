@@ -1,8 +1,8 @@
 package com.programmers.smrtstore.domain.product.application.dto.req;
 
-import com.programmers.smrtstore.domain.product.domain.entity.OptionTag;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

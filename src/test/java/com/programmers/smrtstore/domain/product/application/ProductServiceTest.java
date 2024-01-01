@@ -8,10 +8,10 @@ import com.programmers.smrtstore.domain.product.application.dto.req.CreateProduc
 import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
-import com.programmers.smrtstore.domain.product.domain.entity.OptionTag;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJPARepository;
