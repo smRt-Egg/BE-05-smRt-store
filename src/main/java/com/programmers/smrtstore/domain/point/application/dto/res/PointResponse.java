@@ -1,7 +1,7 @@
-package com.programmers.smrtstore.domain.point.presentation.dto.res;
+package com.programmers.smrtstore.domain.point.application.dto.res;
 
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
-import com.programmers.smrtstore.domain.point.domain.entity.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,10 +27,10 @@ public class PointResponse {
         this.pointValue = point.getPointValue();
         this.issuedAt = point.getIssuedAt();
         this.expiredAt = point.getExpiredAt();
-        this.membershipApplyYn = point.getMemberShipApplyYn();
+        this.membershipApplyYn = point.getMembershipApplyYn();
     }
 
-    public static PointResponse of(Point point) {
+    public static PointResponse from(Point point) {
         return new PointResponse(point);
     }
 }
