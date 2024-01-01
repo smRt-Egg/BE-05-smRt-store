@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.keep.domain.entity;
 
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,17 +24,18 @@ public class Keep {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "product_id")
-    private Long productId;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    public Keep(Long userId, Long productId) {
+    public Keep(Long userId, Product product) {
         this.userId = userId;
-        this.productId = productId;
+        this.product = product;
         this.createdAt = LocalDateTime.now();
     }
 }

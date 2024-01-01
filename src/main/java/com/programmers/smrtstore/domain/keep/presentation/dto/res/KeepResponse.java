@@ -21,5 +21,4 @@ public class KeepResponse {
         this.salePrice = salePrice;
         this.contentImage = contentImage;
     }
-
 }

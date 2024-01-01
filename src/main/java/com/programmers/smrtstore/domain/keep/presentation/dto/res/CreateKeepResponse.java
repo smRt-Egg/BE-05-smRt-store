@@ -22,7 +22,7 @@ public class CreateKeepResponse {
     public static CreateKeepResponse of(Keep keep) {
         return new CreateKeepResponse(
                 keep.getUserId(),
-                keep.getProductId(),
+                keep.getProduct().getId(),
                 keep.getCreatedAt()
         );
     }

@@ -13,12 +13,17 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResp
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,25 +41,39 @@ class KeepServiceTest {
 
     @Autowired
     private KeepService keepService;
-
     @Autowired
     private KeepJpaRepository keepRepository;
+    @Autowired
+    private ProductJPARepository productRepository;
 
+    private Long userId = 1L;
+    private Long productId1;
+    private Long productId2;
     @BeforeEach
-    void init() {
-        List<Keep> keeps = new ArrayList<>();
-        for (long i = 0; i < 100; i++) {
-            Keep keep = Keep.builder().userId(i).productId(i % 10).build();
-            keeps.add(keep);
+    void init() throws Exception{
+        List<Product> productList = new ArrayList<>();
+        for(int i = 0; i < 20; i++) {
+            Product product = Product.builder()
+                    .name("productName" + i)
+                    .price(i * 1000)
+                    .stockQuantity(i+1)
+                    .category(Category.TEMP)
+                    .contentImage(new URL("https://www.naver.com"))
+                    .thumbnail(new URL("https://www.naver.com"))
+                    .build();
+            productList.add(product);
         }
+        productRepository.saveAll(productList);
+        productId1 = productList.get(0).getId();
+        productId2 = productList.get(1).getId();
 
-        for (long i = 0; i < 10; i++) {
-            for (long j = 0; j <= i; j++) {
-                Keep keep = Keep.builder().userId(j).productId(i).build();
-                keeps.add(keep);
-            }
+        for(int i = 0; i < 20; i++) {
+            Keep keep = Keep.builder()
+                    .userId(Integer.toUnsignedLong(i))
+                    .product(productList.get(i))
+                    .build();
+            keepRepository.save(keep);
         }
-        keepRepository.saveAll(keeps);
     }
 
     @DisplayName("keep을 생성할 수 있다.")
@@ -62,23 +81,21 @@ class KeepServiceTest {
     void createKeepTest() {
         //Given
         CreateKeepRequest createKeepRequest = CreateKeepRequest.builder()
-                .userId(1L)
-                .productId(2L)
+                .userId(userId)
+                .productId(productId1)
                 .build();
         //When
         CreateKeepResponse keep = keepService.createKeep(createKeepRequest);
         //Then
-        assertThat(keep.getUserId()).isEqualTo(1L);
-        assertThat(keep.getProductId()).isEqualTo(2L);
+        assertThat(keep.getUserId()).isEqualTo(userId);
+        assertThat(keep.getProductId()).isEqualTo(productId1);
         assertThat(keep.getCreatedAt().getDayOfMonth()).isEqualTo(LocalDateTime.now().getDayOfMonth());
     }
 
     @DisplayName("userId를 활용해 조회할 수 있다.")
     @Test
     void getByUserIdTest() {
-        //Given
-        Long userId = 1L;
-        //When
+        //Given //When
         List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId);
         //Then
         assertThat(keepsByUserId).isNotEmpty();
@@ -132,7 +149,7 @@ class KeepServiceTest {
         //When
         List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(request);
         //Then
-        assertThat(keepByUserAndCategory).isEmpty();
+        assertThat(keepByUserAndCategory).isNotEmpty();
      }
 
 }

@@ -13,6 +13,9 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingRes
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import java.util.List;
+
+import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +23,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KeepService {
     private final KeepJpaRepository keepRepository;
+    private final ProductJPARepository productRepository;
 
     public CreateKeepResponse createKeep(CreateKeepRequest request) {
         Keep keep = Keep.builder()
                 .userId(request.getUserId())
-                .productId(request.getProductId())
+                .product(productRepository.findById(request.getProductId()).orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND)))
                 .build();
         Keep saveKeepEntity = keepRepository.save(keep);
         return CreateKeepResponse.of(saveKeepEntity);
