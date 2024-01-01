@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.review.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
@@ -31,16 +32,19 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ProductJPARepository productJPARepository;
     private final ReviewLikeJPARepository reviewLikeJPARepository;
+    private final OrderJpaRepository orderJpaRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request) {
+        if (!orderJpaRepository.verifyOrderDelivered(request.getUserId(), request.getProductId())) {
+            throw new ReviewException(ErrorCode.REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT);
+        }
+        if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
+            throw new ReviewException(ErrorCode.REVIEW_ALREADY_EXIST);
+        }
         User user = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
         Product product = productJPARepository.findById(request.getProductId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
-        reviewJPARepository.findByUserAndProduct(user, product)
-            .ifPresent(review -> {
-                throw new ReviewException(ErrorCode.REVIEW_ALREADY_EXIST);
-            });
         Review review = reviewJPARepository.save(Review.builder()
             .title(request.getTitle())
             .content(request.getContent())

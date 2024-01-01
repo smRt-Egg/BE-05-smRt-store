@@ -9,9 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReviewJPARepository extends JpaRepository<Review, Long> {
-
-    Optional<Review> findByUserAndProduct(User user, Product product);
+public interface ReviewJPARepository extends JpaRepository<Review, Long>, ReviewQueryRepository {
 
     List<Review> findByProduct(Product product);
 
