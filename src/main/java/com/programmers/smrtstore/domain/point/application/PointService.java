@@ -50,7 +50,7 @@ public class PointService {
 
         if (user.isMembershipYN()) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
-            acmPoint += calculateExpectedAcmPoint(orderedProducts, userId);
+            acmPoint = calculateExpectedAcmPoint(acmPoint, orderedProducts, userId);
         }
 
         Point point = request.toEntity(PointStatus.ACCUMULATED, acmPoint, user.isMembershipYN());
@@ -62,14 +62,14 @@ public class PointService {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
-    public int calculateExpectedAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
+    public int calculateExpectedAcmPoint(int defaultPoint, List<OrderedProductResponse> orderedProducts, Long userId) {
 
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
 
         int userMonthlyTotalSpending = orderService.calculateUserMonthlyTotalSpending(userId, month, year);
-        return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
+        return defaultPoint + calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
     private int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
