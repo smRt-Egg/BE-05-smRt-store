@@ -27,6 +27,8 @@ public enum ErrorCode {
     PRODUCT_NOT_RELEASED(BAD_REQUEST, "출시되지 않은 상품입니다."),
     PRODUCT_NOT_DISCOUNTED(BAD_REQUEST, "할인을 진행하지 않은 상품입니다."),
     PRODUCT_DISCOUNT_RATIO_NOT_VALID(BAD_REQUEST, "할인율이 올바르지 않습니다."),
+    // 401
+    VERIFICATION_CODE_ERROR(UNAUTHORIZED, "인증 코드가 올바르지 않습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ALGORITHM_NOT_FOUND(NOT_FOUND, "본인 인증 코드를 만들기 위한 알고리즘이 존재하지 않습니다."),

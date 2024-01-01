@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.user.application;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ALGORITHM_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
+import static com.programmers.smrtstore.core.properties.ErrorCode.VERIFICATION_CODE_ERROR;
 import static com.programmers.smrtstore.domain.user.presentation.dto.res.DetailUserResponse.toDetailUserResponse;
 
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
@@ -91,5 +92,11 @@ public class UserService {
         } catch (NoSuchAlgorithmException e) {
             throw new UserException(ALGORITHM_NOT_FOUND);
         }
+    }
+
+    public void verifyCode(String userEmail, String code) {
+        String savedCode = redisService.getValues(VERIFICATION_CODE_PRIFIX + userEmail);
+        boolean verifyResult = redisService.checkExistsValue(savedCode) && savedCode.equals(code);
+        if(!verifyResult) throw new UserException(VERIFICATION_CODE_ERROR, code);
     }
 }

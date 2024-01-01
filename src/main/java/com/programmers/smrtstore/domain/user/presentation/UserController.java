@@ -50,4 +50,11 @@ public class UserController {
         log.info("보내기 성공");
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/verification")
+    public ResponseEntity<String> verify(@RequestParam("email") @Valid @Email String userEmail,
+                                        @RequestParam("code") String code) {
+        userService.verifyCode(userEmail, code);
+        return ResponseEntity.ok("인증에 성공했습니다.");
+    }
 }
