@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewQueryRepositoryImpl {
+public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public Boolean validateReviewExist(Long userId, Long productId) {
         return !queryFactory.selectFrom(review)
             .where(review.user.id.eq(userId), review.product.id.eq(productId))
