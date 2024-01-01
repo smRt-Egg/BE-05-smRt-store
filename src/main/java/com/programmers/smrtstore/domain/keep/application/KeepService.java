@@ -31,8 +31,7 @@ public class KeepService {
     }
 
     public List<KeepResponse> getAllKeepsByUserId(Long userId) {
-        List<Keep> keepListFindByUserId = keepRepository.findAllByUserId(userId);
-        return keepListFindByUserId.stream().map(KeepResponse::of).toList();
+        return keepRepository.findAllByUserId(userId);
     }
 
     public DeleteKeepResponse deleteKeep(DeleteKeepRequest request) {
