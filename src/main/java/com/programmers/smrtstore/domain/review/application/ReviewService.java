@@ -41,10 +41,8 @@ public class ReviewService {
         if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_ALREADY_EXIST);
         }
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
-        Product product = productJPARepository.findById(request.getProductId())
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+        User user = getUser(request.getUserId());
+        Product product = getProduct(request.getProductId());
         Review review = reviewJPARepository.save(Review.builder()
             .title(request.getTitle())
             .content(request.getContent())
@@ -57,15 +55,13 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewResponse getReviewById(Long reviewId) {
-        Review review = reviewJPARepository.findById(reviewId)
-            .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = getReview(reviewId);
         return ReviewResponse.from(review);
     }
 
     @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByProductId(Long productId) {
-        Product product = productJPARepository.findById(productId)
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
         return reviewJPARepository.findByProduct(product)
             .stream()
             .map(ReviewResponse::from)
@@ -74,8 +70,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
+        User user = getUser(userId);
         return reviewJPARepository.findByUser(user)
             .stream()
             .map(ReviewResponse::from)
@@ -83,8 +78,7 @@ public class ReviewService {
     }
 
     public ReviewResponse updateReview(UpdateReviewRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
+        User user = getUser(request.getUserId());
         Review review = reviewJPARepository.findByIdAndUser(request.getReviewId(), user)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
         review.updateValues(request.getTitle(), request.getContent(), request.getReviewScore());
@@ -92,17 +86,14 @@ public class ReviewService {
     }
 
     public Long deleteReview(Long reviewId) {
-        Review review = reviewJPARepository.findById(reviewId)
-            .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = getReview(reviewId);
         reviewJPARepository.delete(review);
         return review.getId();
     }
 
     public Long likeReview(ReviewLikeRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
-        Review review = reviewJPARepository.findById(request.getReviewId())
-            .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+        User user = getUser(request.getUserId());
+        Review review = getReview(request.getReviewId());
         reviewLikeJPARepository.findByUserAndReview(user, review).ifPresent(reviewLike -> {
             throw new ReviewException(ErrorCode.REVIEW_LIKE_ALREADY_EXIST);
         });
@@ -114,14 +105,26 @@ public class ReviewService {
     }
 
     public Long dislikeReview(ReviewLikeRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
-        Review review = reviewJPARepository.findById(request.getReviewId())
-            .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+        User user = getUser(request.getUserId());
+        Review review = getReview(request.getReviewId());
         ReviewLike reviewLike = reviewLikeJPARepository.findByUserAndReview(user, review)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_LIKE_NOT_FOUND));
         reviewLikeJPARepository.delete(reviewLike);
         return review.getId();
     }
 
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
+    }
+
+    private Product getProduct(Long productId) {
+        return productJPARepository.findById(productId)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    private Review getReview(Long reviewId) {
+        return reviewJPARepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+    }
 }
