@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.product.application.dto.req;
 
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import java.net.URL;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
