@@ -1,10 +1,10 @@
 package com.programmers.smrtstore.domain.product.application.dto.res;
 
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,8 +24,8 @@ public class ProductResponse {
     private URL thumbnail;
     private URL contentImage;
     private LocalDate releaseDate;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private boolean availableYn;
     private boolean optionYn;
     private boolean discountYn;
