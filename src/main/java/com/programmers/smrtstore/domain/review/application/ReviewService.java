@@ -13,8 +13,8 @@ import com.programmers.smrtstore.domain.review.application.dto.res.ReviewRespons
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
 import com.programmers.smrtstore.domain.review.exception.ReviewException;
-import com.programmers.smrtstore.domain.review.infrastructure.ReviewJPARepository;
-import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJPARepository;
+import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepository;
+import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -28,10 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReviewService {
 
-    private final ReviewJPARepository reviewJPARepository;
+    private final ReviewJpaRepository reviewJPARepository;
     private final UserRepository userRepository;
     private final ProductJPARepository productJPARepository;
-    private final ReviewLikeJPARepository reviewLikeJPARepository;
+    private final ReviewLikeJpaRepository reviewLikeJPARepository;
     private final OrderJpaRepository orderJpaRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request) {
