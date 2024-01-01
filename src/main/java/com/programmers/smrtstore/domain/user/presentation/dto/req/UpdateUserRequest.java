@@ -13,17 +13,6 @@ import lombok.Getter;
 @Getter
 public class UpdateUserRequest {
 
-    @NotBlank
-    @Size(max = 12, min = 4, message = "Login Id는 4~12자리여야 합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Login ID는 영문자 또는 숫자만 가능합니다.")
-    String loginId;
-
-    @NotBlank
-    @Size(min = 8, max = 20, message = "비밀번호는 8~20자리여야 합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?\\\\|]+$",
-        message = "비밀번호는 영문자, 숫자, 특수문자만 허용됩니다.")
-    String password;
-
     @Min(value = 7, message = "나이는 7살 이상이어야 합니다.")
     @Max(value = 200, message = "나이는 200살 이하여야 합니다.")
     Integer age;
@@ -53,7 +42,4 @@ public class UpdateUserRequest {
 
     @NotNull
     boolean membershipYN;
-
-    @NotNull
-    boolean repurchaseYN;
 }
