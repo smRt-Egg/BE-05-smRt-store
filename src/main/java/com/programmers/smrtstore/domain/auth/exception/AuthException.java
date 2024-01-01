@@ -6,7 +6,7 @@ import com.programmers.smrtstore.exception.exceptionClass.CustomException;
 public class AuthException extends CustomException {
 
     public AuthException(ErrorCode errorCode) {
-        super(errorCode, null);
+        super(errorCode);
     }
 
     public AuthException(ErrorCode errorCode,
