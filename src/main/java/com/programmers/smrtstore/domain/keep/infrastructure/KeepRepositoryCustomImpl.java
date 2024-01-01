@@ -5,12 +5,11 @@ import static com.programmers.smrtstore.domain.product.domain.entity.QProduct.pr
 
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class KeepRepositoryCustomImpl implements KeepRepositoryCustom {
