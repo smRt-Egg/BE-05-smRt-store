@@ -97,7 +97,7 @@ public class PointService {
         return isHigherThanMaxAvailablePoint(point) ? MAX_AVAILABLE_POINT : point;
     }
 
-    private static int calculateAdditionalPointByRate(int available, int totalPrice, int rate, int nextRate) {
+    private int calculateAdditionalPointByRate(int available, int totalPrice, int rate, int nextRate) {
         if (available > totalPrice) {
             return totalPrice * rate / 100;
         } else {
