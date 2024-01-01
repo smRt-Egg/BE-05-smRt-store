@@ -40,16 +40,20 @@ public class Coupon {
     private boolean availableYn;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CouponType couponType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BenefitUnitType benefitUnitType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CustomerManageBenefitType customerManageBenefitType;
 
     @Enumerated(EnumType.STRING)
-    private CouponPublicationType couponPublicationType; //쿠폰 발행방식 -> 유저에게 바로 뿌리기 / 제품에 걸어놓고 다운로드
+    @Column(nullable = false)
+    private CouponPublicationType couponPublicationType;
 
     @Column(nullable = false)
     private LocalDateTime validPeriodStartDate;
@@ -58,9 +62,11 @@ public class Coupon {
     private LocalDateTime validPeriodEndDate;
 
     @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn(name = "coupon_quantity_id")
     private CouponQuantity couponQuantity;
 
     @Builder
@@ -84,34 +90,55 @@ public class Coupon {
         validateAvailable();
     }
 
-    private  void validateAvailable() {
+    private void validateAvailable() {
         if (!availableYn) {
-            throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE, String.valueOf(availableYn));
+            throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE);
         }
     }
 
-    private  void validateEndDate() {
+    private void validateEndDate() {
         if (validPeriodEndDate.isBefore(LocalDateTime.now())) {
-            throw new CouponException(ErrorCode.COUPON_DATE_INVALID, validPeriodEndDate.toString());
+            throw new CouponException(ErrorCode.COUPON_DATE_INVALID);
         }
     }
 
-    public Long discountProduct(Product product) { //-> discount 금액이 product detail 페이지에선 보여줘야함
+    //TODO: 오직 Product 단일 페이지에서 사용될 Product 할인 메서드
+    // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
+    public Long discountProduct(Product product) {
+        validMinPrice(product.getPrice());
+        if (couponType == CouponType.SHIPPING_PRICE) {
+            return couponValue.getBenefitValue();
+        }
+        Long discountPrice = 0L;
+        switch (benefitUnitType) {
+            case AMOUNT:
+                discountPrice = discountAmount(product.getPrice());
+            case PERCENT:
+                discountPrice = discountPercent(product.getPrice());
+        }
+        return discountPrice;
+    }
 
-        /**
-         * 쿠폰 계산만 하는게 아니라 어떤 조합이 좋을지 계산을 해야됨. -> 추후 구현 예정
-         *if (BenefitUnitType.AMOUNT == benefitUnitType) {
-         *             return couponValue.getBenefitValue();
-         *         }
-         *         return price * (couponValue.getBenefitValue());
-         */
-        return null;
+    private Long discountPercent(Integer price) {
+        Long discountPrice = couponValue.getBenefitValue() * price;
+        if (discountPrice < couponValue.getMaxDiscountValue())
+            return discountPrice;
+        else
+            return couponValue.getMaxDiscountValue();
 
     }
 
-    public void validMinPrice(Integer price) { //product detail에서 하나의 제품에 쿠폰이 되는지?
+    private Long discountAmount(Integer price) {
+        if (couponValue.getBenefitValue() > price) {
+            return price.longValue();
+        } else
+            return couponValue.getBenefitValue();
+
+    }
+
+    private void validMinPrice(Integer price) {
         if (price < couponValue.getMinOrderPrice()) {
-            throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH, String.valueOf(price));
+            throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH);
         }
     }
 
