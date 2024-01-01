@@ -89,11 +89,11 @@ public class ProductQnAService {
 
     void checkUserValid(Long tokenUserId, Long requestUserId) {
         if(!tokenUserId.equals(requestUserId)) {
-            throw new RuntimeException();
+            throw new QnAException(ErrorCode.USER_NOT_FOUND);
         }
     }
 
     void checkUserExist(Long userId) {
-        userRepository.findById(userId).orElseThrow();
+        userRepository.findById(userId).orElseThrow(() -> new QnAException(ErrorCode.USER_NOT_FOUND));
     }
 }
