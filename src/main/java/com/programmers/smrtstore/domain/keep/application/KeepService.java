@@ -7,12 +7,14 @@ import com.programmers.smrtstore.domain.keep.infrastructure.KeepJpaRepository;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.CreateKeepRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.DeleteKeepRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
-import com.programmers.smrtstore.domain.keep.presentation.dto.res.*;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResponse;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,8 @@ public class KeepService {
     }
 
     public List<KeepResponse> getAllKeepsByUserId(Long userId) {
-        return keepRepository.findKeepByUser(userId);
+        List<Keep> keepListFindByUserId = keepRepository.findAllByUserId(userId);
+        return keepListFindByUserId.stream().map(KeepResponse::of).toList();
     }
 
     public DeleteKeepResponse deleteKeep(DeleteKeepRequest request) {

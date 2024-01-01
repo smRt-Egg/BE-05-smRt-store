@@ -8,10 +8,10 @@ import com.programmers.smrtstore.domain.product.application.dto.req.CreateProduc
 import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
-import com.programmers.smrtstore.domain.product.domain.entity.OptionTag;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJPARepository;
@@ -56,7 +56,7 @@ class ProductServiceTest {
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -68,7 +68,7 @@ class ProductServiceTest {
         assertThat(actualResult.getId()).isNotNull();
         assertThat(actualResult.getName()).isEqualTo(request.getName());
         assertThat(actualResult.getCategory()).isEqualTo(request.getCategory());
-        assertThat(actualResult.getSalePrice()).isEqualTo(request.getSalePrice());
+        assertThat(actualResult.getPrice()).isEqualTo(request.getPrice());
         assertThat(actualResult.getStockQuantity()).isEqualTo(request.getStockQuantity());
         assertThat(actualResult.getThumbnail()).isEqualTo(request.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(request.getContentImage());
@@ -83,7 +83,7 @@ class ProductServiceTest {
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -109,7 +109,7 @@ class ProductServiceTest {
         assertThat(actualResult.getId()).isNotNull();
         assertThat(actualResult.getName()).isEqualTo(request.getName());
         assertThat(actualResult.getCategory()).isEqualTo(request.getCategory());
-        assertThat(actualResult.getSalePrice()).isEqualTo(request.getSalePrice());
+        assertThat(actualResult.getPrice()).isEqualTo(request.getPrice());
         assertThat(actualResult.getStockQuantity()).isEqualTo(200);
         assertThat(actualResult.getThumbnail()).isEqualTo(request.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(request.getContentImage());
@@ -126,7 +126,7 @@ class ProductServiceTest {
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -157,7 +157,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -171,7 +171,7 @@ class ProductServiceTest {
         assertThat(actualResult.getName()).isEqualTo(expectedResult.getName());
         assertThat(actualResult.getThumbnail()).isEqualTo(expectedResult.getThumbnail());
         assertThat(actualResult.getCategory()).isEqualTo(expectedResult.getCategory());
-        assertThat(actualResult.getSalePrice()).isEqualTo(expectedResult.getSalePrice());
+        assertThat(actualResult.getPrice()).isEqualTo(expectedResult.getPrice());
         assertThat(actualResult.getStockQuantity()).isEqualTo(expectedResult.getStockQuantity());
         assertThat(actualResult.getCreatedAt()).isEqualTo(expectedResult.getCreatedAt());
     }
@@ -189,7 +189,7 @@ class ProductServiceTest {
             Product.builder()
                 .name(NAME)
                 .category(CATEGORY)
-                .salePrice(SALE_PRICE)
+                .price(SALE_PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .thumbnail(new URL(THUMBNAIL_STR))
                 .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -198,7 +198,7 @@ class ProductServiceTest {
             Product.builder()
                 .name(NAME)
                 .category(CATEGORY)
-                .salePrice(SALE_PRICE)
+                .price(SALE_PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .thumbnail(new URL(THUMBNAIL_STR))
                 .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -218,7 +218,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -238,7 +238,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -255,7 +255,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -275,7 +275,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -293,7 +293,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -314,7 +314,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -331,7 +331,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -348,7 +348,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -366,7 +366,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -386,7 +386,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -415,7 +415,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -438,7 +438,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -457,7 +457,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -488,7 +488,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -516,7 +516,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -546,7 +546,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
@@ -567,7 +567,7 @@ class ProductServiceTest {
         // Assert
         assertThat(actualResult.getName()).isEqualTo(expectedRequest.getName());
         assertThat(actualResult.getCategory()).isEqualTo(expectedRequest.getCategory());
-        assertThat(actualResult.getSalePrice()).isEqualTo(expectedRequest.getSalePrice());
+        assertThat(actualResult.getPrice()).isEqualTo(expectedRequest.getSalePrice());
         assertThat(actualResult.getStockQuantity()).isEqualTo(expectedRequest.getStockQuantity());
         assertThat(actualResult.getThumbnail()).isEqualTo(expectedRequest.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(expectedRequest.getContentImage());
@@ -580,7 +580,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -613,7 +613,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -634,7 +634,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -652,7 +652,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)
@@ -674,7 +674,7 @@ class ProductServiceTest {
         Product expectedProduct = productJPARepository.save(Product.builder()
             .name(NAME)
             .category(CATEGORY)
-            .salePrice(SALE_PRICE)
+            .price(SALE_PRICE)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
             .optionYn(true)

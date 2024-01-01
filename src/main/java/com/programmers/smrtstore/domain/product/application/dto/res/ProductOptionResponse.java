@@ -1,8 +1,8 @@
 package com.programmers.smrtstore.domain.product.application.dto.res;
 
-import com.programmers.smrtstore.domain.product.domain.entity.OptionTag;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
-import java.sql.Timestamp;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class ProductOptionResponse {
     private String optionName;
     private Integer price;
     private Integer stockQuantity;
-    private Timestamp registerDate;
+    private LocalDateTime registerDate;
 
     public static ProductOptionResponse from(ProductOption productOption) {
         return new ProductOptionResponse(

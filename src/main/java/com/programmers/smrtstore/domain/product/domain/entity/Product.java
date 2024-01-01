@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,8 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -43,8 +44,8 @@ public class Product {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "sale_price", nullable = false)
-    private Integer salePrice;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
     @Column(name = "discount_ratio", nullable = false)
     private Float discountRatio;
@@ -68,11 +69,11 @@ public class Product {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "available_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
@@ -90,10 +91,10 @@ public class Product {
     private List<ProductOption> productOptions;
 
     @Builder
-    private Product(String name, Integer salePrice, Integer stockQuantity,
+    private Product(String name, Integer price, Integer stockQuantity,
         Category category, URL thumbnail, URL contentImage, boolean optionYn) {
         this.name = name;
-        this.salePrice = salePrice;
+        this.price = price;
         this.discountRatio = 0f;
         this.category = category;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
@@ -106,9 +107,15 @@ public class Product {
         }
     }
 
+    public Integer getSalePrice() {
+        if (discountYn) {
+            return price - (int) (price * discountRatio / 100);
+        }
+        return price;
+    }
+
     public void addOption(ProductOption productOption) {
         productOptions.add(productOption);
-
     }
 
     public void addStockQuantity(Integer quantity) {
@@ -175,8 +182,8 @@ public class Product {
         this.name = name;
     }
 
-    private void updateSalePrice(Integer salePrice) {
-        this.salePrice = salePrice;
+    private void updatePrice(Integer price) {
+        this.price = price;
     }
 
     private void updateStockQuantity(Integer stockQuantity) {
@@ -195,13 +202,13 @@ public class Product {
         this.contentImage = contentImage;
     }
 
-    public void updateValues(String name, Integer salePrice, Integer stockQuantity,
+    public void updateValues(String name, Integer price, Integer stockQuantity,
         Category category, URL thumbnail, URL contentImage) {
         if (name != null) {
             updateName(name);
         }
-        if (salePrice != null) {
-            updateSalePrice(salePrice);
+        if (price != null) {
+            updatePrice(price);
         }
         if (stockQuantity != null) {
             updateStockQuantity(stockQuantity);

@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public class ProductOption {
 
     @CreationTimestamp
     @Column(name = "register_date", nullable = false)
-    private Timestamp registerDate;
+    private LocalDateTime registerDate;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
