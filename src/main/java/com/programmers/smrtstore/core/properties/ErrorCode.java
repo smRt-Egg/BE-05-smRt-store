@@ -36,6 +36,7 @@ public enum ErrorCode {
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    QUESTION_NOT_FOUND(NOT_FOUND, "문의를 찾을 수 없습니다"),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(NOT_FOUND, "상품을 찾을 수 없습니다."),
     PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
