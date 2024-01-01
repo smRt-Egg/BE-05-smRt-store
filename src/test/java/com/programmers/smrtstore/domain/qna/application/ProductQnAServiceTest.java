@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.qna.application;
 
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductAnswer;
@@ -74,14 +74,14 @@ class ProductQnAServiceTest {
         // 상품이 등록되어 있어야 한다.
         product1 = Product.builder()
                 .name("productName")
-                .salePrice(1000)
+                .price(1000)
                 .stockQuantity(10)
                 .category(Category.TEMP)
                 .thumbnail(new URL("https://www.naver.com"))
                 .build();
         product2 = Product.builder()
                 .name("productName2")
-                .salePrice(10000)
+                .price(10000)
                 .stockQuantity(101)
                 .category(Category.TEMP)
                 .thumbnail(new URL("https://www.google.com"))
