@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.exception;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.exception.dto.ErrorResponse;
 import com.programmers.smrtstore.exception.dto.ValidationErrorResponse;
 import com.programmers.smrtstore.exception.exceptionClass.CustomException;
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -43,5 +46,22 @@ public class GlobalExceptionHandler {
             errors.add(error);
         }
         return ResponseEntity.badRequest().body(errors);
+    }
+
+
+    @ExceptionHandler(value = {AuthenticationException.class})
+    protected ResponseEntity<ErrorResponse> handleAuthenticationException(
+        AuthenticationException e, HttpServletRequest request
+    ) {
+        return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_UNAUTHORIZED,
+            null);
+    }
+
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    protected ResponseEntity<ErrorResponse> handleAccessDeniedException(
+        AccessDeniedException e, HttpServletRequest request
+    ) {
+        return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_ACCESS_DENIED,
+            null);
     }
 }

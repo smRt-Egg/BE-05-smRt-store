@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,10 @@ public enum ErrorCode {
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
+    // 401
+    SECURITY_UNAUTHORIZED(UNAUTHORIZED, "유효한 인증 정보가 부족합니다."),
+    // 403
+    SECURITY_ACCESS_DENIED(UNAUTHORIZED, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
