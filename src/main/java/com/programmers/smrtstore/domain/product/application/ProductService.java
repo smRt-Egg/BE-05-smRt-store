@@ -11,8 +11,8 @@ import com.programmers.smrtstore.domain.product.application.dto.res.UpdateProduc
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductService {
 
-    private final ProductJPARepository productJPARepository;
-    private final ProductOptionJPARepository productOptionJPARepository;
+    private final ProductJpaRepository productJPARepository;
+    private final ProductOptionJpaRepository productOptionJPARepository;
 
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = productJPARepository.save(request.toEntity());
