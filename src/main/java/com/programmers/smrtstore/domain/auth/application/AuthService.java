@@ -8,8 +8,8 @@ import com.programmers.smrtstore.domain.auth.application.dto.res.SignUpResponse;
 import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
 import com.programmers.smrtstore.domain.auth.domain.entity.TokenEntity;
 import com.programmers.smrtstore.domain.auth.exception.AuthException;
-import com.programmers.smrtstore.domain.auth.infrastructure.AuthJPARepository;
-import com.programmers.smrtstore.domain.auth.infrastructure.TokenEntityJPARepository;
+import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
+import com.programmers.smrtstore.domain.auth.infrastructure.TokenEntityJpaRepository;
 import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
-    private final AuthJPARepository authJPARepository;
+    private final AuthJpaRepository authJPARepository;
     private final UserRepository userRepository;
-    private final TokenEntityJPARepository tokenEntityJPARepository;
+    private final TokenEntityJpaRepository tokenEntityJPARepository;
     private final JwtHelper jwtHelper;
 
     @Transactional(readOnly = true)
