@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface PointRepositoryCustom {
 
     Optional<PointResponse> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus);
+    Optional<PointResponse> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus);
 }

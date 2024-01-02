@@ -30,4 +30,17 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
             .fetchOne()
         ).map(PointResponse::from);
     }
+
+    @Override
+    public Optional<PointResponse> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus) {
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(point)
+                .where(
+                    point.orderId.eq(orderId),
+                    point.pointStatus.eq(pointStatus)
+                )
+                .fetchOne()
+            )
+            .map(PointResponse::from);
+    }
 }
