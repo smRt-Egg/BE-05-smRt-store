@@ -30,7 +30,8 @@ public class GlobalExceptionHandler {
         BindException.class,
         MethodArgumentNotValidException.class
     })
-    public ResponseEntity<List<ValidationErrorResponse>> validationError(BindException e) {
+    protected ResponseEntity<List<ValidationErrorResponse>> validationException(BindException e,
+        HttpServletRequest request) {
         BindingResult bindingResult = e.getBindingResult();
         List<ValidationErrorResponse> errors = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
