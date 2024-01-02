@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCoupon.coupon;
+import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableProduct.couponAvailableProduct;
+import static com.programmers.smrtstore.domain.product.domain.entity.QProduct.product;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser.couponAvailableUser;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponQuantity.couponQuantity;
 
@@ -60,15 +62,25 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
 
     @Override
     public Long findUserCouponCount(Long userId) {
-        QCouponAvailableUser qCouponAvailableUser = couponAvailableUser;
 
         return queryFactory
                 .select(coupon)
-                .from(qCouponAvailableUser)
+                .from(couponAvailableUser)
                 .join(coupon)
-                .on(qCouponAvailableUser.coupon.id.eq(coupon.id))
-                .where(qCouponAvailableUser.user.id.eq(userId))
+                .on(couponAvailableUser.coupon.id.eq(coupon.id))
+                .where(couponAvailableUser.user.id.eq(userId))
                 .fetchCount();
+    }
+
+    @Override
+    public List<Coupon> findCouponByProductId(Long productId) {
+        return queryFactory
+                .select(coupon)
+                .from(couponAvailableProduct)
+                .join(product)
+                .on(couponAvailableProduct.product.id.eq(coupon.id))
+                .where(product.id.eq(productId))
+                .fetch();
     }
 
 }
