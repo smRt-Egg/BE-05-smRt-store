@@ -109,7 +109,7 @@ public class ReviewService {
         Review review = getReview(request.getReviewId());
         ReviewLike reviewLike = reviewLikeJPARepository.findByUserAndReview(user, review)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_LIKE_NOT_FOUND));
-        reviewLikeJPARepository.delete(reviewLike);
+        review.removeReviewLike(reviewLike);
         return review.getId();
     }
 
