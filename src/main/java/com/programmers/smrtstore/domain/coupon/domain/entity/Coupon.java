@@ -85,23 +85,6 @@ public class Coupon {
         this.couponQuantity = couponQuantity;
     }
 
-    public void validateCoupon() {
-        validateEndDate();
-        validateAvailable();
-    }
-
-    private void validateAvailable() {
-        if (!availableYn) {
-            throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE);
-        }
-    }
-
-    private void validateEndDate() {
-        if (validPeriodEndDate.isBefore(LocalDateTime.now())) {
-            throw new CouponException(ErrorCode.COUPON_DATE_INVALID);
-        }
-    }
-
     //TODO: 오직 Product 단일 페이지에서 사용될 Product 할인 메서드
     // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
     public Long discountProduct(Product product) {
@@ -125,6 +108,23 @@ public class Coupon {
 
     public void makeAvailableNo() {
         availableYn = false;
+    }
+
+    public void validateCoupon() {
+        validateEndDate();
+        validateAvailable();
+    }
+
+    private void validateAvailable() {
+        if (!availableYn) {
+            throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+    }
+
+    private void validateEndDate() {
+        if (validPeriodEndDate.isBefore(LocalDateTime.now())) {
+            throw new CouponException(ErrorCode.COUPON_DATE_INVALID);
+        }
     }
 
     private Long discountPercent(Integer price) {
