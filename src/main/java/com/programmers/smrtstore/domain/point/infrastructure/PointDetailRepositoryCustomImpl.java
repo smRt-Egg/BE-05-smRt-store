@@ -2,7 +2,7 @@ package com.programmers.smrtstore.domain.point.infrastructure;
 
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
 
-import com.programmers.smrtstore.domain.point.presentation.dto.res.PointDetailCustomResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
