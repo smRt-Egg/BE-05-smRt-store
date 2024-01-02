@@ -14,9 +14,13 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
 
     @Override
     public Boolean validateReviewExist(Long userId, Long productId) {
-        return !queryFactory.selectFrom(review)
-            .where(review.user.id.eq(userId), review.product.id.eq(productId))
-            .fetch().isEmpty();
+        Integer result = queryFactory
+            .selectOne()
+            .from(review)
+            .where(review.user.id.eq(userId).and(review.product.id.eq(productId)))
+            .fetchFirst();
+
+        return result != null;
     }
 
 }
