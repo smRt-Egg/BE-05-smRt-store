@@ -2,6 +2,7 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -38,7 +39,7 @@ public enum ErrorCode {
     // 401
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "유효한 인증 정보가 부족합니다."),
     // 403
-    SECURITY_ACCESS_DENIED(UNAUTHORIZED, "접근 권한이 없습니다."),
+    SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),

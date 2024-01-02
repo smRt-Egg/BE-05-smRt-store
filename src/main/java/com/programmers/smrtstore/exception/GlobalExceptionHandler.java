@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.exception.dto.ErrorResponse;
 import com.programmers.smrtstore.exception.dto.ValidationErrorResponse;
@@ -49,12 +50,12 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(value = {AuthenticationException.class})
+    @ExceptionHandler(value = {AuthenticationException.class, JWTVerificationException.class})
     protected ResponseEntity<ErrorResponse> handleAuthenticationException(
         AuthenticationException e, HttpServletRequest request
     ) {
         return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_UNAUTHORIZED,
-            null);
+            e.getMessage());
     }
 
     @ExceptionHandler(value = {AccessDeniedException.class})
@@ -62,6 +63,6 @@ public class GlobalExceptionHandler {
         AccessDeniedException e, HttpServletRequest request
     ) {
         return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_ACCESS_DENIED,
-            null);
+            e.getMessage());
     }
 }
