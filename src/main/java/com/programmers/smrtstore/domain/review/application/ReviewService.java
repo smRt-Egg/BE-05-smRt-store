@@ -4,7 +4,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
@@ -30,7 +30,7 @@ public class ReviewService {
 
     private final ReviewJpaRepository reviewJPARepository;
     private final UserRepository userRepository;
-    private final ProductJPARepository productJPARepository;
+    private final ProductJpaRepository productJPARepository;
     private final ReviewLikeJpaRepository reviewLikeJPARepository;
     private final OrderJpaRepository orderJpaRepository;
 
