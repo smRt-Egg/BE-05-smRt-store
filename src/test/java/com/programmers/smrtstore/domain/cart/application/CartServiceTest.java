@@ -8,9 +8,9 @@ import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartReque
 import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
 import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -41,7 +41,7 @@ class CartServiceTest {
     @Autowired
     private CartJPARepository cartJPARepository;
     @Autowired
-    private ProductJPARepository productJPARepository;
+    private ProductJpaRepository productJPARepository;
     @Autowired
     private UserRepository userRepository;
     private User expectedUser;

@@ -10,7 +10,7 @@ import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CartService {
 
     private final CartJPARepository cartJPARepository;
-    private final ProductJPARepository productJPARepository;
+    private final ProductJpaRepository productJPARepository;
     private final UserRepository userRepository;
 
     public CreateCartResponse createCart(CreateCartRequest request) {
