@@ -1,14 +1,10 @@
 package com.programmers.smrtstore.domain.coupon.presentation.res;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
-import com.programmers.smrtstore.domain.coupon.domain.entity.CouponQuantity;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.BenefitUnitType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponPublicationType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CustomerManageBenefitType;
-import com.programmers.smrtstore.domain.coupon.domain.entity.vo.CouponValue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +34,7 @@ public class CouponResponse {
     private final LocalDateTime validPeriodEndDate;
     private final Integer quantity;
 
-    public static CouponResponse of(Coupon coupon) {
+    public static CouponResponse from(Coupon coupon) {
         return CouponResponse.builder()
                 .name(coupon.getCouponValue().getName())
                 .content(coupon.getCouponValue().getContent())

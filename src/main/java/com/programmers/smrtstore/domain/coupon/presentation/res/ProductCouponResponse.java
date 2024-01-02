@@ -1,6 +1,18 @@
 package com.programmers.smrtstore.domain.coupon.presentation.res;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductCouponResponse {
-    //여기서는 Product에 맞는 coupon list전부와
-    // 함께 쿠폰에 대한 최고 할인 결과값도 같이 가져가야함
+    private List<UserCouponResponse>issuableCoupons;
+    private List<UserCouponResponse>unIssuableCoupons;
+    private List<DiscountCoupon> maxDiscountCoupons;
+    public static ProductCouponResponse of(List<UserCouponResponse> issuableCoupons, List<UserCouponResponse> unIssuableCoupons, List<DiscountCoupon> maxDiscountCoupons) {
+        return new ProductCouponResponse(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
+    }
 }
