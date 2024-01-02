@@ -38,6 +38,7 @@ public enum ErrorCode {
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
     // 401
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "유효한 인증 정보가 부족합니다."),
+    SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
     // 403
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404

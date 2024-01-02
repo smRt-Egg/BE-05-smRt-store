@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.exception;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.exception.dto.ErrorResponse;
 import com.programmers.smrtstore.exception.dto.ValidationErrorResponse;
@@ -49,6 +50,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    @ExceptionHandler(value = {TokenExpiredException.class})
+    protected ResponseEntity<ErrorResponse> handleTokenExpiredException(
+        TokenExpiredException e, HttpServletRequest request
+    ) {
+        return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_TOKEN_EXPIRED,
+            e.getMessage());
+    }
 
     @ExceptionHandler(value = {AuthenticationException.class, JWTVerificationException.class})
     protected ResponseEntity<ErrorResponse> handleAuthenticationException(
