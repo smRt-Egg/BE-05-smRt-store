@@ -39,6 +39,8 @@ public enum ErrorCode {
     REVIEW_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
     REVIEW_LIKE_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 좋아요 하였습니다."),
     REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT(BAD_REQUEST, "주문하지 않은 상품에 대한 리뷰는 작성할 수 없습니다."),
+    CART_QUANTITY_NOT_ENOUGH(BAD_REQUEST, "장바구니의 상품 갯수는 0이하일 수 없습니다."),
+    CART_ALREADY_EXIST(BAD_REQUEST, "이미 장바구니에 담긴 상품입니다."),
     // 401
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
@@ -54,6 +56,7 @@ public enum ErrorCode {
     TOKEN_NOT_FOUND(NOT_FOUND, "토큰을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_LIKE_NOT_FOUND(NOT_FOUND, "리뷰 좋아요를 찾을 수 없습니다."),
+    CART_NOT_FOUND(NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     // 500
