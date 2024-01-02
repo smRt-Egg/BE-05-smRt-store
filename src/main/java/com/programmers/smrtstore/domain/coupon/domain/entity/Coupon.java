@@ -105,7 +105,7 @@ public class Coupon {
     //TODO: 오직 Product 단일 페이지에서 사용될 Product 할인 메서드
     // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
     public Long discountProduct(Product product) {
-        validMinPrice(product.getPrice());
+        validateMinPrice(product.getPrice());
         if (couponType == CouponType.SHIPPING_PRICE) {
             return couponValue.getBenefitValue();
         }
@@ -119,8 +119,16 @@ public class Coupon {
         return discountPrice;
     }
 
+    public void makeAvailableYes() { //admin 개발하면 그때 검증 로직 추가 예정
+        availableYn = true;
+    }
+
+    public void makeAvailableNo() {
+        availableYn = false;
+    }
+
     private Long discountPercent(Integer price) {
-        Long discountPrice = couponValue.getBenefitValue() * price;
+        Long discountPrice = couponValue.getBenefitValue() * price/100;
         if (discountPrice < couponValue.getMaxDiscountValue())
             return discountPrice;
         else
@@ -136,17 +144,10 @@ public class Coupon {
 
     }
 
-    private void validMinPrice(Integer price) {
+    private void validateMinPrice(Integer price) {
         if (price < couponValue.getMinOrderPrice()) {
             throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH);
         }
     }
 
-    public void makeAvailableYes() {
-        availableYn = true;
-    }
-
-    public void makeAvailableNo() {
-        availableYn = false;
-    }
 }
