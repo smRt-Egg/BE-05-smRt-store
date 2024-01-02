@@ -1,7 +1,6 @@
 package com.programmers.smrtstore.domain.coupon.infrastructure;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.*;
-import com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
@@ -14,7 +13,6 @@ import java.util.Optional;
 
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCoupon.coupon;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableProduct.couponAvailableProduct;
-import static com.programmers.smrtstore.domain.product.domain.entity.QProduct.product;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser.couponAvailableUser;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponQuantity.couponQuantity;
 
@@ -77,9 +75,9 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
         return queryFactory
                 .select(coupon)
                 .from(couponAvailableProduct)
-                .join(product)
-                .on(couponAvailableProduct.product.id.eq(coupon.id))
-                .where(product.id.eq(productId))
+                .join(coupon)
+                .on(couponAvailableProduct.coupon.id.eq(coupon.id))
+                .where(couponAvailableProduct.product.id.eq(productId))
                 .fetch();
     }
 

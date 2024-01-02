@@ -75,6 +75,39 @@ public class CouponService {
         return couponJpaRepository.findUserCouponCount(userId);
     }
 
+    //Todo: product detail 페이지에서 사용될 메서드
+    @Transactional(readOnly = true)
+    public ProductCouponResponse getCouponByProductIdAndUserId(Long productId, Long userId) {
+
+        User user = getUser(userId);
+        Product product = productJpaRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        List<Coupon> coupons = couponJpaRepository.findCouponByProductId(productId);//product에 해당되는 모든 쿠폰
+
+        List<UserCouponResponse> issuableCoupons = new ArrayList<>();
+        List<UserCouponResponse> unIssuableCoupons = new ArrayList<>();
+
+        List<Coupon> discountCoupons = new ArrayList<>();
+
+        for (Coupon coupon : coupons) {
+            try {
+                CouponAvailableUser.validateCouponWithUser(coupon, user);
+                issuableCoupons.add(UserCouponResponse.from(coupon));
+                //TODO: 여기까지 검증한 것이 product에 걸려있고, user가 사용할 수 있는지 검증. 단 product 단품에 적용되는지는 모름 -> coupon.discountProduct()
+
+                discountCoupons.add(coupon);
+
+            } catch (CouponException e) {
+                unIssuableCoupons.add(UserCouponResponse.from(coupon));
+            }
+        }
+        //TODO: 메모리 관리 뭐가 좋을지?
+        Calculator calculator = new Calculator();
+        List<DiscountCoupon> maxDiscountCoupons = calculator.discount(discountCoupons, product);
+
+        return ProductCouponResponse.of(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
+    }
 
     private User getUser(Long userId) {
         User user = userRepository.findById(userId)
