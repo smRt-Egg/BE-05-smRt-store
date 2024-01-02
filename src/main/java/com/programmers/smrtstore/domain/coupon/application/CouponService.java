@@ -9,7 +9,9 @@ import com.programmers.smrtstore.domain.coupon.infrastructure.CouponAvailableUse
 import com.programmers.smrtstore.domain.coupon.infrastructure.facade.CouponQuantityFacade;
 import com.programmers.smrtstore.domain.coupon.presentation.req.SaveCouponRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.res.*;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,11 +27,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserCouponService {
+public class CouponService {
 
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
     private final UserRepository userRepository;
-    private final ProductJPARepository productJPARepository;
+    private final ProductJpaRepository productJpaRepository;
     private final CouponJpaRepository couponJpaRepository;
     private final CouponQuantityFacade couponQuantityFacade;
 
@@ -72,6 +75,7 @@ public class UserCouponService {
         return couponJpaRepository.findUserCouponCount(userId);
     }
 
+
     private User getUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
@@ -83,6 +87,5 @@ public class UserCouponService {
         Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId);
         return couponAvailableUser;
     }
-
 
 }
