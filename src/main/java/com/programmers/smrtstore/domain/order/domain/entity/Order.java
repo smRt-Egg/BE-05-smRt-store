@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
-import com.programmers.smrtstore.core.base.TimestampBaseEntity;
+import com.programmers.smrtstore.common.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.order.domain.entity.vo.PaymentInfo;
 import jakarta.persistence.CascadeType;
