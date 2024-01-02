@@ -39,31 +39,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             if (!token.contains(IDENTIFICATION_TYPE)) {
-                throw new JWTVerificationException("Invalid token type");
+                request.setAttribute("exception", new JWTVerificationException("Invalid token type"));
             } else {
                 token = token.replace(IDENTIFICATION_TYPE, "");
-            }
-            try {
-                var claims = jwtHelper.verify(token);
+                try {
+                    var claims = jwtHelper.verify(token);
 
-                Long userId = claims.get("userId").asLong();
-                List<GrantedAuthority> authorities = getAuthorities(
-                    claims.get("roles").asArray(String.class));
+                    Long userId = claims.get("userId").asLong();
+                    List<GrantedAuthority> authorities = getAuthorities(
+                        claims.get("roles").asArray(String.class));
 
-                if (userId != null && !authorities.isEmpty()) {
-                    JwtAuthenticationContext authentication = new JwtAuthenticationContext(
-                        JwtToken.builder()
-                            .accessToken(token)
-                            .userId(userId)
-                            .build(), null, authorities
-                    );
-                    request.setAttribute("userId", userId);
-                    authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (userId != null && !authorities.isEmpty()) {
+                        JwtAuthenticationContext authentication = new JwtAuthenticationContext(
+                            JwtToken.builder()
+                                .accessToken(token)
+                                .userId(userId)
+                                .build(), null, authorities
+                        );
+                        request.setAttribute("userId", userId);
+                        authentication.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                } catch (Exception e) {
+                    request.setAttribute("exception", e);
                 }
-            } catch (Exception e) {
-                log.warn("Jwt processing failed: {}", e.getMessage());
             }
         }
 

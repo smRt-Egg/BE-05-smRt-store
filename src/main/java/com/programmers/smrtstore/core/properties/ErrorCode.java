@@ -2,9 +2,11 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +39,12 @@ public enum ErrorCode {
     REVIEW_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
     REVIEW_LIKE_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 좋아요 하였습니다."),
     REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT(BAD_REQUEST, "주문하지 않은 상품에 대한 리뷰는 작성할 수 없습니다."),
+    // 401
+    MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
+    SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
+    SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
+    // 403
+    SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
