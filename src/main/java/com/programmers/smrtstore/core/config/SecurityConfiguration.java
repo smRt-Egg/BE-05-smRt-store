@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -27,6 +28,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
     private final JwtProperties jwtProperties;
@@ -48,7 +50,8 @@ public class SecurityConfiguration {
                     SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/auth/**").permitAll())
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/**").permitAll()) // TODO: 개발 완료시 .authenticated()로 변경
             .addFilterBefore(jwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exceptionHandling -> {

@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.keep.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.programmers.smrtstore.domain.keep.domain.entity.Keep;
 import com.programmers.smrtstore.domain.keep.exception.KeepException;
 import com.programmers.smrtstore.domain.keep.infrastructure.KeepJpaRepository;
@@ -10,7 +13,12 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResp
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,15 +27,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

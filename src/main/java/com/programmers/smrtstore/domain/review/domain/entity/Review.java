@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.review.domain.entity;
 
-import com.programmers.smrtstore.core.base.TimestampBaseEntity;
+import com.programmers.smrtstore.common.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.CascadeType;

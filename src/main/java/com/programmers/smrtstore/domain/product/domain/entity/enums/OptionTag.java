@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.product.domain.entity;
+package com.programmers.smrtstore.domain.product.domain.entity.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
