@@ -29,13 +29,13 @@ public class PointDetail {
     private Long userId;
 
     @Column(name = "point_amount")
-    private int pointAmount;
+    private Integer pointAmount;
 
     @Column(name = "origin_acm_id")
     private Long originAcmId;
 
     @Builder
-    private PointDetail(Long pointId, Long userId, int pointAmount, Long originAcmId) {
+    private PointDetail(Long pointId, Long userId, Integer pointAmount, Long originAcmId) {
         this.pointId = pointId;
         this.userId = userId;
         this.pointAmount = pointAmount;

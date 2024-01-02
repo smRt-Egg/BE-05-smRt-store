@@ -39,7 +39,7 @@ public class Point {
     private PointStatus pointStatus;
 
     @Column(name = "point_value", nullable = false)
-    private int pointValue;
+    private Integer pointValue;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "issued_at", nullable = false)
@@ -53,7 +53,7 @@ public class Point {
     private Boolean membershipApplyYn;
 
     @Builder
-    private Point(Long userId, Long orderId, PointStatus pointStatus, int pointValue, Boolean membershipApplyYn) {
+    private Point(Long userId, Long orderId, PointStatus pointStatus, Integer pointValue, Boolean membershipApplyYn) {
         this.userId = userId;
         this.orderId = orderId;
         this.pointStatus = pointStatus;
