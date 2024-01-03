@@ -25,7 +25,14 @@ public class PointDetailService {
     private final PointDetailJpaRepository pointDetailRepository;
 
     public Long saveAccumulationHistory(PointDetailRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long pointId = request.getPointId();
+        PointResponse point = pointFacade.getPointById(pointId);
+        PointDetail pointDetail = request.toEntity(point.getPointValue(), pointId);
+        pointDetailRepository.save(pointDetail);
+        return pointDetail.getId();
     }
 
     public Long saveAccumulationCancelHistory(PointDetailRequest request) {
