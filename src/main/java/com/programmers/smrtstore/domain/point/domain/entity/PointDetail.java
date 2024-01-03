@@ -7,11 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "point_detail")
+@Table(name = "point_detail_TB")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointDetail {
@@ -28,8 +29,16 @@ public class PointDetail {
     private Long userId;
 
     @Column(name = "point_amount")
-    private int pointAmount;
+    private Integer pointAmount;
 
-    @Column(name = "origin_earn_id")
-    private Long originEarnId;
+    @Column(name = "origin_acm_id")
+    private Long originAcmId;
+
+    @Builder
+    private PointDetail(Long pointId, Long userId, Integer pointAmount, Long originAcmId) {
+        this.pointId = pointId;
+        this.userId = userId;
+        this.pointAmount = pointAmount;
+        this.originAcmId = originAcmId;
+    }
 }
