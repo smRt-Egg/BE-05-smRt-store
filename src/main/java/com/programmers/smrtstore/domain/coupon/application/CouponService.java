@@ -46,14 +46,10 @@ public class CouponService {
 
         return couponAvailableUser
                 .map(cu -> {
-                    cu.reIssueCoupon();
-                    couponQuantityFacade.decrease(couponId);
-                    return cu.getId();
+                    return reIssueCoupon(cu, couponId);
                 })
                 .orElseGet(() -> {
-                    CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
-                    couponQuantityFacade.decrease(couponId);
-                    return savedCouponAvailableUser.getId();
+                    return firstIssueCoupon(coupon, user, couponId);
                 });
     }
 
@@ -64,7 +60,7 @@ public class CouponService {
 
         return couponJpaRepository.findUserCoupons(userId).stream()
                 .map(coupon -> UserCouponResponse.from(coupon))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -85,10 +81,13 @@ public class CouponService {
 
         List<Coupon> coupons = couponJpaRepository.findCouponByProductId(productId);//product에 해당되는 모든 쿠폰
 
+        return getProductCoupon(coupons, user, product);
+    }
+
+    private  ProductCouponResponse getProductCoupon(List<Coupon> coupons, User user, Product product) {
         List<UserCouponResponse> issuableCoupons = new ArrayList<>();
         List<UserCouponResponse> unIssuableCoupons = new ArrayList<>();
-
-        List<Coupon> discountCoupons = new ArrayList<>();
+        List<Coupon> applicableCoupons = new ArrayList<>();
 
         for (Coupon coupon : coupons) {
             try {
@@ -96,7 +95,7 @@ public class CouponService {
                 issuableCoupons.add(UserCouponResponse.from(coupon));
                 //TODO: 여기까지 검증한 것이 product에 걸려있고, user가 사용할 수 있는지 검증. 단 product 단품에 적용되는지는 모름 -> coupon.discountProduct()
 
-                discountCoupons.add(coupon);
+                applicableCoupons.add(coupon);
 
             } catch (CouponException e) {
                 unIssuableCoupons.add(UserCouponResponse.from(coupon));
@@ -104,7 +103,7 @@ public class CouponService {
         }
         //TODO: 메모리 관리 뭐가 좋을지?
         ProductDiscountCalculator productDiscountCalculator = new ProductDiscountCalculator();
-        List<DiscountCoupon> maxDiscountCoupons = productDiscountCalculator.discount(discountCoupons, product.getSalePrice());
+        List<DiscountCoupon> maxDiscountCoupons = productDiscountCalculator.discount(applicableCoupons, product.getSalePrice());
 
         return ProductCouponResponse.of(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
     }
@@ -119,6 +118,18 @@ public class CouponService {
     private Optional<CouponAvailableUser> checkUserHasCoupon(Long userId, Long couponId) {
         Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId);
         return couponAvailableUser;
+    }
+
+    private Long reIssueCoupon(CouponAvailableUser cu, Long couponId) {
+        cu.reIssueCoupon();
+        couponQuantityFacade.decrease(couponId);
+        return cu.getId();
+    }
+
+    private Long firstIssueCoupon(Coupon coupon, User user, Long couponId) {
+        CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
+        couponQuantityFacade.decrease(couponId);
+        return savedCouponAvailableUser.getId();
     }
 
 }
