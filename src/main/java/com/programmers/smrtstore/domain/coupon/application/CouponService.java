@@ -42,7 +42,7 @@ public class CouponService {
         Coupon coupon = couponJpaRepository.findById(couponId)
                 .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
-        Optional<CouponAvailableUser> couponAvailableUser = getCouponAvailableUser(userId, couponId);
+        Optional<CouponAvailableUser> couponAvailableUser = checkUserHasCoupon(userId, couponId);
 
         return couponAvailableUser
                 .map(cu -> {
@@ -116,7 +116,7 @@ public class CouponService {
     }
 
     // TODO: 유저가 쿠폰을 발급받은적 있는지
-    private Optional<CouponAvailableUser> getCouponAvailableUser(Long userId, Long couponId) {
+    private Optional<CouponAvailableUser> checkUserHasCoupon(Long userId, Long couponId) {
         Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId);
         return couponAvailableUser;
     }
