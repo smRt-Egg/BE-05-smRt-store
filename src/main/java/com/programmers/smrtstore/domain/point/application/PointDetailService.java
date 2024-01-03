@@ -38,7 +38,7 @@ public class PointDetailService {
 
         Point point = pointRepository.findById(pointId)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND, String.valueOf(pointId)));
-        PointDetail pointDetail = request.toEntity(point);
+        PointDetail pointDetail = request.toEntity(point.getPointValue(), pointId);
         pointDetailRepository.save(pointDetail);
         return pointDetail.getId();
     }
