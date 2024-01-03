@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.point.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
@@ -46,25 +47,28 @@ public class PointService {
 
         User user = validateUserExists(userId);
 
-        int acmPoint = calculateAcmPoint(orderId, user);
-        Point point = request.toEntity(PointStatus.ACCUMULATED, acmPoint, user.isMembershipYN());
+        OrderExpectedPointDto expectedPoint = calculateAcmPoint(orderId, user);
+        Point point = request.toEntity(PointStatus.ACCUMULATED, expectedPoint.getTotalPoint(), user.isMembershipYN());
         pointRepository.save(point);
         return PointResponse.from(point);
     }
 
-    public int calculateAcmPoint(Long orderId, User user) {
+    public OrderExpectedPointDto calculateAcmPoint(Long orderId, User user) {
 
         // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
         int defaultPoint = calculateDefaultPoint(orderId);
 
+        int additionalPoint = 0;
         if (user.isMembershipYN()) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
             // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
-            int additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
-            // 멤버십 적용된 최종 적립 (=구매적립)
-            return defaultPoint + additionalPoint;
+            additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
         }
-        return defaultPoint;
+        return OrderExpectedPointDto.of(
+            defaultPoint,
+            additionalPoint,
+            defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
+        );
     }
 
     public int calculateDefaultPoint(Long orderId) {
