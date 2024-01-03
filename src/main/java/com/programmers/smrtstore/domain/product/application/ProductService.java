@@ -33,7 +33,7 @@ public class ProductService {
 
     public ProductResponse createProduct(CreateProductRequest request,
         List<CreateProductOptionRequest> optionRequests) {
-        optionValidate(request.isOptionYn());
+        optionValidate(request.isCombinationYn());
         Product product = request.toEntity();
         List<ProductOption> productOptions = optionRequests.stream()
             .map(optionRequest -> optionRequest.toEntity(product))
@@ -88,7 +88,7 @@ public class ProductService {
     public ProductResponse addProductStockQuantity(Long productId, Long productOptionId,
         Integer quantityValue) {
         Product product = getProduct(productId);
-        optionValidate(product.isOptionYn());
+        optionValidate(product.isCombinationYn());
         product.addStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
@@ -102,14 +102,14 @@ public class ProductService {
     public ProductResponse removeProductStockQuantity(Long productId, Long productOptionId,
         Integer quantityValue) {
         Product product = getProduct(productId);
-        optionValidate(product.isOptionYn());
+        optionValidate(product.isCombinationYn());
         product.removeStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
 
     public ProductResponse removeProductOption(Long productId, Long productOptionId) {
         Product product = getProduct(productId);
-        optionValidate(product.isOptionYn());
+        optionValidate(product.isCombinationYn());
         ProductOption productOption = productOptionJPARepository.findById(productOptionId)
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_OPTION_NOT_FOUND));

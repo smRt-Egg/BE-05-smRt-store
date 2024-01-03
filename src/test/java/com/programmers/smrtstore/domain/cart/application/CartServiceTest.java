@@ -65,7 +65,7 @@ class CartServiceTest {
             .name("test")
             .price(PRODUCT_PRICE)
             .stockQuantity(100)
-            .optionYn(false)
+            .combinationYn(false)
             .category(Category.TEMP)
             .thumbnail(new URL("http://localhost:8080"))
             .contentImage(new URL("http://localhost"))

@@ -27,7 +27,7 @@ public class ProductResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean availableYn;
-    private boolean optionYn;
+    private boolean combinationYn;
     private boolean discountYn;
 
     private List<ProductOptionResponse> productOptions;
@@ -48,7 +48,7 @@ public class ProductResponse {
             product.getCreatedAt(),
             product.getUpdatedAt(),
             product.isAvailableYn(),
-            product.isOptionYn(),
+            product.isCombinationYn(),
             product.isDiscountYn(),
             product.getProductOptions() == null ? null
                 : product.getProductOptions().stream().map(ProductOptionResponse::from).toList()

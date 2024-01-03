@@ -23,7 +23,7 @@ public class UpdateProductResponse {
     private URL thumbnail;
     private URL contentImage;
     private boolean availableYn;
-    private boolean optionYn;
+    private boolean combinationYn;
     private LocalDate releaseDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAT;
@@ -41,7 +41,7 @@ public class UpdateProductResponse {
             product.getThumbnail(),
             product.getContentImage(),
             product.isAvailableYn(),
-            product.isOptionYn(),
+            product.isCombinationYn(),
             product.getReleaseDate(),
             product.getCreatedAt(),
             product.getUpdatedAt(),

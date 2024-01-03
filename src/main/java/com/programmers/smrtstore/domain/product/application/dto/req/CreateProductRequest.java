@@ -21,7 +21,7 @@ public class CreateProductRequest {
     private Category category;
     private URL thumbnail;
     private URL contentImage;
-    private boolean optionYn;
+    private boolean combinationYn;
 
     public Product toEntity() {
         return Product.builder()
@@ -31,7 +31,7 @@ public class CreateProductRequest {
             .category(category)
             .thumbnail(thumbnail)
             .contentImage(contentImage)
-            .optionYn(optionYn)
+            .combinationYn(combinationYn)
             .build();
     }
 }

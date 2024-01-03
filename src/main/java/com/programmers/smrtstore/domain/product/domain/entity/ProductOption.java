@@ -67,7 +67,12 @@ public class ProductOption {
         this.optionType = optionType;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.product = product;
-        this.product.addOption(this);
+        if (optionType.equals(OptionType.SUPPLEMENTED)) {
+            this.product.addOption(this);
+        } else {
+            this.product.addAdditionalOption(this);
+        }
+
     }
 
     public void addStockQuantity(Integer quantity) {
@@ -76,6 +81,10 @@ public class ProductOption {
 
     public void removeStockQuantity(Integer quantity) {
         this.productQuantity.removeStockQuantity(quantity);
+    }
+
+    protected void updateStockQuantity(Integer quantity) {
+        this.productQuantity.updateStockQuantity(quantity);
     }
 
     public Integer getStockQuantity() {
