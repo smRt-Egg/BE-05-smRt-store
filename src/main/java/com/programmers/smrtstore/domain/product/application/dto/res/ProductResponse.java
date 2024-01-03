@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.product.application.dto.res;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,12 +27,12 @@ public class ProductResponse {
     private LocalDate releaseDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean availableYn;
+    private ProductStatusType productStatusType;
     private boolean combinationYn;
     private boolean discountYn;
 
-    private List<ProductOptionResponse> productOptions;
-
+    private List<ProductDetailOptionResponse> detailOptionResponses;
+    private List<ProductAdditionalOptionResponse> additionalOptionResponses;
 
     public static ProductResponse from(Product product) {
         return new ProductResponse(
@@ -47,12 +48,12 @@ public class ProductResponse {
             product.getReleaseDate(),
             product.getCreatedAt(),
             product.getUpdatedAt(),
-            product.isAvailableYn(),
+            product.getProductStatusType(),
             product.isCombinationYn(),
             product.isDiscountYn(),
-            product.getProductOptions() == null ? null
-                : product.getProductOptions().stream().map(ProductOptionResponse::from).toList()
-
+            product.getProductDetailOptions() == null ? null
+                : product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from).toList(),
+            null
         );
     }
 }
