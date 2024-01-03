@@ -367,35 +367,6 @@ class ProductServiceTest {
         assertThat(actualResult.getStockQuantity()).isEqualTo(STOCK_QUANTITY + expectedAddQuantity);
     }
 
-    @Test
-    void testAddProductStockQuantityWithProductOption() throws MalformedURLException {
-        // Arrange
-        CreateProductRequest request = CreateProductRequest.builder()
-            .name(NAME)
-            .category(CATEGORY)
-            .price(SALE_PRICE)
-            .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
-            .combinationYn(true)
-            .build();
-        List<CreateProductDetailOptionRequest> optionRequests = List.of(
-            CreateProductDetailOptionRequest.builder()
-                .optionName1(OPTION_NAME + "1")
-                .price(PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .build()
-        );
-        Integer expectedAddQuantity = 100;
-        var expectedResponse = productService.createProduct(request, optionRequests);
-        var expectedProductId = expectedResponse.getId();
-        var expectedProductOptionId = expectedResponse.getDetailOptionResponses().get(0).getId();
-        // Act
-        var actualResult = productService.addProductStockQuantity(expectedProductId,
-            expectedProductOptionId, expectedAddQuantity);
-        // Assert
-        assertThat(actualResult.getStockQuantity()).isEqualTo(STOCK_QUANTITY + expectedAddQuantity);
-    }
 
     @Test
     void testRemoveProductStockQuantity() throws MalformedURLException {

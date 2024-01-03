@@ -64,7 +64,6 @@ class CartServiceTest {
         expectedProduct = productJPARepository.save(Product.builder()
             .name("test")
             .price(PRODUCT_PRICE)
-            .stockQuantity(100)
             .combinationYn(false)
             .category(Category.TEMP)
             .thumbnail(new URL("http://localhost:8080"))
