@@ -2,7 +2,7 @@ package com.programmers.smrtstore.domain.qna.application;
 
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductAnswer;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductQuestion;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductAnswerRepository;
@@ -46,7 +46,7 @@ class ProductQnAServiceTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    ProductJPARepository productRepository;
+    ProductJpaRepository productRepository;
 
     static Long userId;
     static Long product1Id;
@@ -200,7 +200,7 @@ class ProductQnAServiceTest {
         questionRepository.save(question1);
         questionRepository.save(question2);
         //When
-        List<QuestionResponse> questionResponseList = productQnAService.findByProductId(userId, product1Id);
+        List<QuestionResponse> questionResponseList = productQnAService.findByProductId(product1Id);
         questionResponseList.sort(Comparator.comparing(QuestionResponse::getId));
         //Then
         assertThat(questionResponseList).hasSize(2);

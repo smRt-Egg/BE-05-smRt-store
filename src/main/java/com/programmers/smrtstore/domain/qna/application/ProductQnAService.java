@@ -61,8 +61,7 @@ public class ProductQnAService {
     }
 
     @Transactional(readOnly = true)
-    public List<QuestionResponse> findByProductId(Long userId, Long productId) {
-        checkUserExist(userId);
+    public List<QuestionResponse> findByProductId(Long productId) {
         return questionRepository.findByProductId(productId);
     }
 

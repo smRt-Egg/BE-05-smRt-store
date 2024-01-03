@@ -48,9 +48,8 @@ public class ProductQnAController {
     }
 
     @GetMapping("/products/{productId}/qna")
-    public ResponseEntity<List<QuestionResponse>> getQuestionByProductId(@UserId Long userId,
-                                                                         @PathVariable("productId") Long productId) {
-        List<QuestionResponse> response = qnAService.findByProductId(userId, productId);
+    public ResponseEntity<List<QuestionResponse>> getQuestionByProductId(@PathVariable("productId") Long productId) {
+        List<QuestionResponse> response = qnAService.findByProductId(productId);
         return ResponseEntity.ok(response);
     }
 
