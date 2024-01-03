@@ -91,7 +91,7 @@ public class Coupon {
     // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
     public Long discountProduct(Integer price) {
         validateMinPrice(price);
-        if (couponType == CouponType.DELIVERY) {
+        if (couponType.equals(CouponType.DELIVERY)) {
             return couponValue.getBenefitValue();
         }
         Long discountPrice = 0L;
