@@ -2,11 +2,13 @@ package com.programmers.smrtstore.domain.product.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,6 +39,7 @@ import org.hibernate.type.SqlTypes;
 public class Product {
 
     private static final Integer SINGLE_OPTION_PRICE = 0;
+    private static final String SINGLE_OPTION_TYPE = "Default";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,28 +76,31 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "available_yn", nullable = false)
-    @JdbcTypeCode(SqlTypes.TINYINT)
-    private boolean availableYn;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "product_status_type", nullable = false)
+    private ProductStatusType productStatusType;
 
     @Column(name = "discount_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean discountYn;
 
-    @Column(name = "combination_yn", nullable = false)
-    @JdbcTypeCode(SqlTypes.TINYINT)
-    private boolean combinationYn;
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private final List<ProductOption> productOptions = new ArrayList<>();
+    private final List<ProductDetailOption> productDetailOptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<ProductOption> productAdditionalOptions = new ArrayList<>();
+    private final List<ProductAdditionalOption> productAdditionalOptions = new ArrayList<>();
 
+    @Column(name = "combination_yn", nullable = false)
+    @JdbcTypeCode(SqlTypes.TINYINT)
+    private boolean combinationYn = false;
+
+    @Embedded
+    private OptionNameTypes optionNameTypes;
 
     @Builder
     private Product(String name, Integer price, Category category, boolean combinationYn,
-        Integer stockQuantity, URL thumbnail, URL contentImage) {
+        Integer stockQuantity, URL thumbnail, URL contentImage, String optionNameType1,
+        String optionNameType2, String optionNameType3) {
         this.name = name;
         this.price = price;
         this.discountRatio = 0f;
@@ -103,14 +109,17 @@ public class Product {
         this.thumbnail = thumbnail;
         this.contentImage = contentImage;
         this.discountYn = false;
+        this.productStatusType = ProductStatusType.NOT_SALE;
         if (!combinationYn) {
-            ProductOption.builder()
-                .optionType(OptionType.SUPPLEMENTED)
-                .optionName(name)
-                .optionTag(OptionTag.SINGLE)
-                .stockQuantity(stockQuantity)
-                .price(SINGLE_OPTION_PRICE)
-                .product(this)
+            this.optionNameTypes = OptionNameTypes.builder()
+                .optionType(OptionType.SINGLE)
+                .build();
+        } else {
+            this.optionNameTypes = OptionNameTypes.builder()
+                .optionType(OptionType.COMBINATION)
+                .optionNameType1(optionNameType1)
+                .optionNameType2(optionNameType2)
+                .optionNameType3(optionNameType3)
                 .build();
         }
     }
@@ -124,7 +133,7 @@ public class Product {
 
     public Integer getSalePrice(Long productOptionId) {
         if (discountYn) {
-            var productOption = this.productOptions.stream()
+            var productOption = this.productDetailOptions.stream()
                 .filter(option -> option.getId().equals(productOptionId))
                 .findAny()
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
@@ -133,31 +142,36 @@ public class Product {
         return price;
     }
 
-    public void addOption(ProductOption productOption) {
-        if (!this.combinationYn && productOptions.size() == 1) {
+    public void addOption(ProductDetailOption detailOption) {
+        if (!this.combinationYn && productDetailOptions.size() == 1) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_USE_OPTION);
         }
-        productOptions.add(productOption);
+        productDetailOptions.add(detailOption);
     }
 
-    public void addAdditionalOption(ProductOption productOption) {
-        if (productOption.getOptionType().equals(OptionType.SUPPLEMENTED)) {
-            throw new ProductException(ErrorCode.PRODUCT_OPTION_TYPE_INVALID);
-        }
-        productAdditionalOptions.add(productOption);
+    public void addAdditionalOption(ProductAdditionalOption additionalOption) {
+        productAdditionalOptions.add(additionalOption);
     }
 
     public void addStockQuantity(Integer quantity) {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
-        var option = productOptions.stream().findFirst()
+        var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         option.addStockQuantity(quantity);
+        productStatusType = ProductStatusType.SALE;
     }
 
     public void addStockQuantity(Integer quantity, Long productOptionId) {
-        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
+        productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
+            .findFirst()
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
+            .addStockQuantity(quantity);
+    }
+
+    public void addAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+        productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
@@ -167,59 +181,79 @@ public class Product {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
-        var option = productOptions.stream().findFirst()
+        var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         option.removeStockQuantity(quantity);
+        if (option.getStockQuantity() == 0) {
+            productStatusType = ProductStatusType.OUT_OF_STOCK;
+        }
     }
 
     public void removeStockQuantity(Integer quantity, Long productOptionId) {
-        productOptions.stream().filter(option -> option.getId().equals(productOptionId))
+        productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .removeStockQuantity(quantity);
     }
 
-    public void removeOption(ProductOption productOption) {
+    public void removeAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+        productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
+            .findFirst()
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
+            .removeStockQuantity(quantity);
+    }
+
+    public void removeOption(Long productOptionId) {
         if (!this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_SINGLE_OPTION);
         }
-        productOptions.remove(productOption);
+        var productOption = productDetailOptions.stream()
+            .filter(option -> option.getId().equals(productOptionId)).findAny()
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        productDetailOptions.remove(productOption);
+    }
+
+    public void removeAdditionalOption(Long productOptionId) {
+        var additionalOption = productAdditionalOptions.stream()
+            .filter(option -> option.getId().equals(productOptionId)).findAny()
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        productAdditionalOptions.remove(additionalOption);
     }
 
     public Integer getStockQuantity() {
         if (combinationYn) {
-            return productOptions.stream()
+            return productDetailOptions.stream()
                 .map(ProductOption::getStockQuantity)
                 .reduce(0, Integer::sum);
         }
-        return productOptions.stream().findAny()
+        return productDetailOptions.stream().findAny()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .getStockQuantity();
     }
 
     public void releaseProduct() {
-        if (availableYn || releaseDate != null) {
+        if (!productStatusType.equals(ProductStatusType.NOT_SALE) || releaseDate != null) {
             throw new ProductException(ErrorCode.PRODUCT_ALREADY_RELEASED);
         }
-        this.availableYn = true;
+        this.productStatusType = ProductStatusType.SALE;
         this.releaseDate = LocalDate.now();
     }
 
     public void makeNotAvailable() {
-        if (!availableYn) {
+        if (productStatusType.equals(ProductStatusType.NOT_SALE)) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_AVAILABLE);
         }
-        this.availableYn = false;
+        this.productStatusType = ProductStatusType.NOT_SALE;
     }
 
     public void makeAvailable() {
-        if (availableYn) {
+        if (!productStatusType.equals(ProductStatusType.NOT_SALE)) {
             throw new ProductException(ErrorCode.PRODUCT_ALREADY_AVAILABLE);
         }
         if (releaseDate == null) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_RELEASED);
         }
-        this.availableYn = true;
+        this.productStatusType = ProductStatusType.SALE;
     }
 
     private void updateName(String name) {
@@ -231,9 +265,9 @@ public class Product {
     }
 
     private void updateStockQuantity(Integer stockQuantity) {
-        this.productOptions.stream().findAny()
+        this.productDetailOptions.stream().findAny()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
-            .updateStockQuantity(stockQuantity);
+            .setStockQuantity(stockQuantity);
     }
 
     private void updateCategory(Category category) {

@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.product.application.dto.res;
 
 import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Getter;
 public class ProductOptionResponse {
 
     private Long id;
-    private OptionTag optionTag;
+    private OptionType optionType;
     private String optionName;
     private Integer price;
     private Integer stockQuantity;
@@ -21,7 +21,7 @@ public class ProductOptionResponse {
     public static ProductOptionResponse from(ProductOption productOption) {
         return new ProductOptionResponse(
             productOption.getId(),
-            productOption.getOptionTag(),
+            productOption.getOptionType(),
             productOption.getOptionName(),
             productOption.getPrice(),
             productOption.getStockQuantity(),

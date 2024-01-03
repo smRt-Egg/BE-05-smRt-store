@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.product.domain.entity.enums;
 
 public enum OptionType {
-    SUPPLEMENTED,       // 상품 옵션
-    PRICING_OPTIONAL    // 추가 선택 옵션
+    SINGLE,         // 단일 옵션 <- 옵션 없는 상품의 경우
+    COMBINATION     // 조합 옵션
 }
+
