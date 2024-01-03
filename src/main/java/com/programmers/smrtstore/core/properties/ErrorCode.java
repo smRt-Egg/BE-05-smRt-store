@@ -2,9 +2,11 @@ package com.programmers.smrtstore.core.properties;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,6 +37,14 @@ public enum ErrorCode {
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     COUPON_NUMBER_INVALID(BAD_REQUEST,"쿠폰 수량은 0개 이상이어야 합니다."),
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
+    CART_QUANTITY_NOT_ENOUGH(BAD_REQUEST, "장바구니의 상품 갯수는 0이하일 수 없습니다."),
+    CART_ALREADY_EXIST(BAD_REQUEST, "이미 장바구니에 담긴 상품입니다."),
+    // 401
+    MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
+    SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
+    SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
+    // 403
+    SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
@@ -42,6 +52,7 @@ public enum ErrorCode {
     PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
     COUPON_NOT_FOUND(NOT_FOUND, "존재하지 않는 쿠폰번호입니다."),
     TOKEN_NOT_FOUND(NOT_FOUND, "토큰을 찾을 수 없습니다."),
+    CART_NOT_FOUND(NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     // 500
