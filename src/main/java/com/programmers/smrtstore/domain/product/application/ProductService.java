@@ -1,18 +1,18 @@
 package com.programmers.smrtstore.domain.product.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
-import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductOptionRequest;
-import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductRequest;
-import com.programmers.smrtstore.domain.product.application.dto.res.ProductOptionResponse;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.res.ProductDetailOptionResponse;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
-import com.programmers.smrtstore.domain.product.application.dto.res.UpdateProductResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,23 +23,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductService {
 
-    private final ProductJpaRepository productJPARepository;
-    private final ProductOptionJpaRepository productOptionJPARepository;
+    private final ProductJpaRepository productJpaRepository;
+    private final ProductDetailOptionJpaRepository productDetailOptionJpaRepository;
 
+    // 상품 추가 옵션 X
     public ProductResponse createProduct(CreateProductRequest request) {
-        Product product = productJPARepository.save(request.toEntity());
+        Product product = productJpaRepository.save(request.toEntity());
+        productDetailOptionJpaRepository.save(ProductDetailOption.builder()
+                .optionNames(OptionNames.builder()
+                    .optionName1(request.getName())
+                    .build())
+                .price(0)
+                .stockQuantity(request.getStockQuantity())
+                .product(product)
+            .build());
         return ProductResponse.from(product);
     }
 
+    // 상품 추가 다중 옵션
     public ProductResponse createProduct(CreateProductRequest request,
-        List<CreateProductOptionRequest> optionRequests) {
+        List<CreateProductDetailOptionRequest> optionRequests) {
         optionValidate(request.isCombinationYn());
         Product product = request.toEntity();
-        List<ProductOption> productOptions = optionRequests.stream()
+        List<ProductDetailOption> productOptions = optionRequests.stream()
             .map(optionRequest -> optionRequest.toEntity(product))
             .toList();
-        Product result = productJPARepository.save(product);
-        productOptionJPARepository.saveAll(productOptions);
+        Product result = productJpaRepository.save(product);
+        productDetailOptionJpaRepository.saveAll(productOptions);
         return ProductResponse.from(result);
     }
 
@@ -51,7 +61,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
-        return productJPARepository.findAll()
+        return productJpaRepository.findAll()
             .stream().map(ProductResponse::from)
             .toList();
     }
@@ -76,7 +86,7 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         Product product = getProduct(productId);
-        productJPARepository.delete(product);
+        productJpaRepository.delete(product);
     }
 
     public ProductResponse addProductStockQuantity(Long productId, Integer quantityValue) {
@@ -85,13 +95,14 @@ public class ProductService {
         return ProductResponse.from(product);
     }
 
-    public ProductResponse addProductStockQuantity(Long productId, Long productOptionId,
+    public ProductResponse addProductStockQuantity(Long productId, Long detailOptionId,
         Integer quantityValue) {
         Product product = getProduct(productId);
         optionValidate(product.isCombinationYn());
-        product.addStockQuantity(quantityValue, productOptionId);
+        product.addStockQuantity(quantityValue, detailOptionId);
         return ProductResponse.from(product);
     }
+
 
     public ProductResponse removeProductStockQuantity(Long productId, Integer quantityValue) {
         Product product = getProduct(productId);
@@ -107,31 +118,35 @@ public class ProductService {
         return ProductResponse.from(product);
     }
 
-    public ProductResponse removeProductOption(Long productId, Long productOptionId) {
+    public ProductDetailOptionResponse addProductDetailOption(Long productId,
+        CreateProductDetailOptionRequest request) {
         Product product = getProduct(productId);
-        optionValidate(product.isCombinationYn());
-        ProductOption productOption = productOptionJPARepository.findById(productOptionId)
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        product.removeOption(productOption);
-        productOptionJPARepository.delete(productOption);
-        return ProductResponse.from(product);
+        var detailOption = productDetailOptionJpaRepository.save(request.toEntity(product));
+        return ProductDetailOptionResponse.from(detailOption);
     }
 
-    public UpdateProductResponse updateProduct(UpdateProductRequest request) {
+    public Long removeProductOption(Long productId, Long productOptionId) {
+        Product product = getProduct(productId);
+        optionValidate(product.isCombinationYn());
+        product.removeOption(productOptionId);
+        return productOptionId;
+    }
+
+    public ProductResponse updateProduct(ProductRequest request) {
         Product product = getProduct(
             request.getId());
         product.updateValues(request.getName(), request.getSalePrice(), request.getStockQuantity(),
             request.getCategory(), request.getThumbnail(), request.getContentImage());
-        return UpdateProductResponse.from(product);
+        return ProductResponse.from(product);
     }
 
-    public ProductOptionResponse updateProductOption(UpdateProductOptionRequest request) {
-        ProductOption option = productOptionJPARepository.findById(request.getId())
+    public ProductDetailOptionResponse updateProductOption(
+        ProductDetailOptionRequest request) {
+        ProductDetailOption option = productDetailOptionJpaRepository.findById(request.getId())
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        option.updateValues(request.getOptionName(), request.getPrice(), request.getOptionTag());
-        return ProductOptionResponse.from(option);
+        option.updateValues(request.getQuantity(), request.getPrice(), request.getOptionNames());
+        return ProductDetailOptionResponse.from(option);
     }
 
     public ProductResponse updateProductDiscountRatio(Long productId, Float discountRatio) {
@@ -147,7 +162,7 @@ public class ProductService {
     }
 
     private Product getProduct(Long productId) {
-        return productJPARepository.findById(productId)
+        return productJpaRepository.findById(productId)
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
     }
