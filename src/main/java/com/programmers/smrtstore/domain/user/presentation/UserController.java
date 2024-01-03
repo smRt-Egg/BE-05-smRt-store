@@ -1,8 +1,11 @@
 package com.programmers.smrtstore.domain.user.presentation;
 
 import com.programmers.smrtstore.domain.user.application.UserService;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,5 +42,13 @@ public class UserController {
     public ResponseEntity<Void> withdraw(@RequestAttribute(value = "userId") Long userId) {
         userService.withdraw(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/shipping")
+    public ResponseEntity<CreateShippingResponse> createShippingAddress(
+        @RequestAttribute(value = "userId") Long userId,
+        @RequestBody @Valid CreateShippingRequest request) {
+        CreateShippingResponse response = userService.createShippingAddress(userId, request);
+        return ResponseEntity.ok(response);
     }
 }
