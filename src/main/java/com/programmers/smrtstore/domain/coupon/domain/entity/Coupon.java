@@ -7,7 +7,8 @@ import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CustomerManageBenefitType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.vo.CouponValue;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
-import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -71,6 +72,7 @@ public class Coupon {
 
     @Builder
     private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
+        validPercentValue(benefitUnitType,couponValue.getBenefitValue());
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
         this.duplicationYn = duplicationYn;
@@ -102,11 +104,13 @@ public class Coupon {
         return discountPrice;
     }
 
-    public void makeAvailableYes() { //admin 개발하면 그때 검증 로직 추가 예정
+    public void makeAvailableYes(User user) { //admin 개발하면 그때 검증 로직 추가 예정
+        validateAdmin(user);
         availableYn = true;
     }
 
-    public void makeAvailableNo() {
+    public void makeAvailableNo(User user) {
+        validateAdmin(user);
         availableYn = false;
     }
 
@@ -147,6 +151,18 @@ public class Coupon {
     private void validateMinPrice(Integer price) {
         if (price < couponValue.getMinOrderPrice()) {
             throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH);
+        }
+    }
+
+    private void validPercentValue(BenefitUnitType benefitUnitType, Long value) {
+        if (benefitUnitType == BenefitUnitType.PERCENT && value > 100) {
+            throw new CouponException(ErrorCode.COUPON_PERCENT_EXCEED);
+        }
+    }
+
+    private void validateAdmin(User user) {
+        if (user.getRole() != Role.ROLE_ADMIN) {
+            throw new CouponException(ErrorCode.SECURITY_ACCESS_DENIED);
         }
     }
 
