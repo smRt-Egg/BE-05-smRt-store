@@ -3,13 +3,12 @@ package com.programmers.smrtstore.domain.coupon.application;
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.presentation.res.DiscountCoupon;
-import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 @Slf4j
-public class Calculator {
+public class ProductDiscountCalculator {
     private List<DiscountCoupon> maximumDiscountList = new ArrayList<>();
     private PriorityQueue<DiscountCoupon> pq = new PriorityQueue<>();
     private PriorityQueue<DiscountCoupon> duplicationPq = new PriorityQueue<>();
