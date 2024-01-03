@@ -12,6 +12,7 @@ import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,8 @@ public class UserService {
         user.saveDeleteDate();
     }
 
-    public CreateShippingResponse createShippingAddress(Long userId, CreateShippingRequest request) {
+    public CreateShippingResponse createShippingAddress(Long userId,
+        CreateShippingRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
@@ -61,20 +63,48 @@ public class UserService {
     }
 
     private void checkShippingAddressesSize(List<ShippingAddress> shippingAddresses) {
-        if(shippingAddresses.size() >= MAXIMUM_SHIPPING_SIZE)
-            throw new UserException(EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS, String.valueOf(MAXIMUM_SHIPPING_SIZE));
+        if (shippingAddresses.size() >= MAXIMUM_SHIPPING_SIZE) {
+            throw new UserException(EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS,
+                String.valueOf(MAXIMUM_SHIPPING_SIZE));
+        }
     }
 
-    private void checkShippingDuplicate(ShippingAddress shippingAddress, List<ShippingAddress> shippingAddresses) {
+    private void checkShippingDuplicate(ShippingAddress shippingAddress,
+        List<ShippingAddress> shippingAddresses) {
         shippingAddresses.forEach(address -> {
-            if(address.getName().equals(shippingAddress.getName())
+            if (address.getName().equals(shippingAddress.getName())
                 && address.getRecipient().equals(shippingAddress.getRecipient())
                 && address.getAddress1Depth().equals(shippingAddress.getAddress1Depth())
                 && address.getAddress2Depth().equals(shippingAddress.getAddress2Depth())
                 && address.getZipCode().equals(shippingAddress.getZipCode())
                 && address.getPhoneNum1().equals(shippingAddress.getPhoneNum1())
-                && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2()))
-                throw new UserException(DUPLICATE_SHIPPING_ADDRESS, String.valueOf(shippingAddress.getId()));
+                && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2())) {
+                throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
+                    String.valueOf(shippingAddress.getId()));
+            }
         });
+    }
+
+    @Transactional(readOnly = true)
+    public DeliveryAddressBook getShippingAddressList(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
+        DefaultSeparateResult separated = separateDefaultShippingAddress(shippingAddresses);
+        return new DeliveryAddressBook(separated.getDefaultShippingAddress(),
+            separated.getNotDefaultShippingAddresses());
+    }
+
+    private DefaultSeparateResult separateDefaultShippingAddress(
+        List<ShippingAddress> shippingAddresses) {
+        ShippingAddress defaultShippingAddress = null;
+        for (ShippingAddress address : shippingAddresses) {
+            if (address.isDefaultYN()) {
+                defaultShippingAddress = address;
+                shippingAddresses.remove(address);
+            }
+        }
+
+        return new DefaultSeparateResult(defaultShippingAddress, shippingAddresses);
     }
 }

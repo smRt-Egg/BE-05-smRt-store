@@ -4,6 +4,7 @@ import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,13 @@ public class UserController {
         @RequestAttribute(value = "userId") Long userId,
         @RequestBody @Valid CreateShippingRequest request) {
         CreateShippingResponse response = userService.createShippingAddress(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/shipping")
+    public ResponseEntity<DeliveryAddressBook> shippingAddressList(
+        @RequestAttribute(value = "userId") Long userId) {
+        DeliveryAddressBook response = userService.getShippingAddressList(userId);
         return ResponseEntity.ok(response);
     }
 }
