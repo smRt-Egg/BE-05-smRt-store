@@ -132,6 +132,18 @@ public class User {
     }
 
     public void addShippingAddress(ShippingAddress shippingAddress) {
+        if (shippingAddress.isDefaultYN()) {
+            unlockOriginalDefault();
+        }
         shippingAddresses.add(shippingAddress);
+    }
+
+    private void unlockOriginalDefault() {
+        for (ShippingAddress shippingAddress : shippingAddresses) {
+            if (shippingAddress.isDefaultYN()) {
+                shippingAddress.unlockDefault();
+                break;
+            }
+        }
     }
 }

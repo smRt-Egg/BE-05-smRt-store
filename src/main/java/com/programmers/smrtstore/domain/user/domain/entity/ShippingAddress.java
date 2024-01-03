@@ -52,4 +52,8 @@ public class ShippingAddress {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void unlockDefault() {
+        defaultYN = false;
+    }
 }

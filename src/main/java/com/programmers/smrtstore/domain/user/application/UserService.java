@@ -91,8 +91,7 @@ public class UserService {
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
         DefaultSeparateResult separated = separateDefaultShippingAddress(shippingAddresses);
-        return new DeliveryAddressBook(separated.getDefaultShippingAddress(),
-            separated.getNotDefaultShippingAddresses());
+        return DeliveryAddressBook.from(separated);
     }
 
     private DefaultSeparateResult separateDefaultShippingAddress(
