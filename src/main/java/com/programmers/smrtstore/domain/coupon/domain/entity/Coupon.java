@@ -87,17 +87,17 @@ public class Coupon {
 
     //TODO: 오직 Product 단일 페이지에서 사용될 Product 할인 메서드
     // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
-    public Long discountProduct(Product product) {
-        validateMinPrice(product.getPrice());
-        if (couponType == CouponType.SHIPPING_PRICE) {
+    public Long discountProduct(Integer price) {
+        validateMinPrice(price);
+        if (couponType == CouponType.DELIVERY) {
             return couponValue.getBenefitValue();
         }
         Long discountPrice = 0L;
         switch (benefitUnitType) {
             case AMOUNT:
-                discountPrice = discountAmount(product.getPrice());
+                discountPrice = discountAmount(price);
             case PERCENT:
-                discountPrice = discountPercent(product.getPrice());
+                discountPrice = discountPercent(price);
         }
         return discountPrice;
     }

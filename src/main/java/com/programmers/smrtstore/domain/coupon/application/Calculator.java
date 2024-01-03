@@ -8,21 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
-/**
- * 알고리즘 구현 후보
- * 우선순위 큐, dfs , 스택?
- */
 @Slf4j
 public class Calculator {
     private List<DiscountCoupon> maximumDiscountList = new ArrayList<>();
     private PriorityQueue<DiscountCoupon> pq = new PriorityQueue<>();
     private PriorityQueue<DiscountCoupon> duplicationPq = new PriorityQueue<>();
 
-    public List<DiscountCoupon> discount(List<Coupon> coupons, Product product) {
+    public List<DiscountCoupon> discount(List<Coupon> coupons, Integer price) {
 
         for (Coupon coupon : coupons) {
             try {
-                Long discountValue = coupon.discountProduct(product);
+                Long discountValue = coupon.discountProduct(price);
                 isDuplication(coupon, discountValue);
             }catch (CouponException e){
                 log.info(e.getMessage());
