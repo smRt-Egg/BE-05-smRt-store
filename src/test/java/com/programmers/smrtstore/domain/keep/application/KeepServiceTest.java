@@ -117,7 +117,7 @@ class KeepServiceTest {
                 .productId(productId1)
                 .build();
         //When
-        CreateKeepResponse keep = keepService.createKeep(createKeepRequest);
+        CreateKeepResponse keep = keepService.createKeep(userId1, createKeepRequest);
         //Then
         assertThat(keep.getUserId()).isEqualTo(userId1);
         assertThat(keep.getProductId()).isEqualTo(productId1);
@@ -128,7 +128,7 @@ class KeepServiceTest {
     @Test
     void getByUserIdTest() {
         //Given //When
-        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId1);
+        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId1, userId2);
         //Then
         assertThat(keepsByUserId).isNotEmpty();
         assertThat(keepsByUserId.stream().map(KeepResponse::getUserId).collect(Collectors.toSet())).hasSize(1);
@@ -142,7 +142,7 @@ class KeepServiceTest {
         DeleteKeepRequest request = DeleteKeepRequest.builder()
                 .id(deleteId).build();
         //When
-        DeleteKeepResponse deleteKeepResponse = keepService.deleteKeep(request);
+        DeleteKeepResponse deleteKeepResponse = keepService.deleteKeep(userId1, request);
         //Then
         assertThat(deleteKeepResponse.getId()).isEqualTo(deleteId);
     }
@@ -155,7 +155,7 @@ class KeepServiceTest {
         DeleteKeepRequest request = DeleteKeepRequest.builder()
                 .id(deleteInvalidId).build();
         //When //Then
-        assertThatThrownBy(() -> keepService.deleteKeep(request)).isInstanceOf(KeepException.class);
+        assertThatThrownBy(() -> keepService.deleteKeep(userId1, request)).isInstanceOf(KeepException.class);
     }
 
     @DisplayName("찜 랭킹은 내림차순이다.")
@@ -164,7 +164,7 @@ class KeepServiceTest {
         //Given
         int requestTopSize = 5;
         //When
-        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(requestTopSize);
+        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(userId1, requestTopSize);
         //Then
         assertThat(keepRanking).hasSize(requestTopSize);
         assertThat(keepRanking.stream().map(KeepRankingResponse::getCount).toList()).isSortedAccordingTo(Comparator.reverseOrder());
@@ -179,7 +179,7 @@ class KeepServiceTest {
                 .category(Category.TEMP)
                 .build();
         //When
-        List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(request);
+        List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(userId1, request);
         //Then
         assertThat(keepByUserAndCategory).isNotEmpty();
     }
