@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
 import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +36,10 @@ public class ProductOption {
     @Column(name = "option_tag", nullable = false)
     private OptionTag optionTag;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "option_type", nullable = false)
+    private OptionType optionType;
+
     @Column(name = "option_name", nullable = false, length = 50)
     private String optionName;
 
@@ -54,11 +59,12 @@ public class ProductOption {
     private Product product;
 
     @Builder
-    public ProductOption(OptionTag optionTag, String optionName, Integer price,
-        Integer stockQuantity, Product product) {
-        this.optionTag = optionTag;
+    public ProductOption(String optionName, Integer price, OptionTag optionTag,
+        OptionType optionType, Integer stockQuantity, Product product) {
         this.optionName = optionName;
         this.price = price == null ? 0 : price;
+        this.optionTag = optionTag;
+        this.optionType = optionType;
         this.productQuantity = ProductQuantity.from(stockQuantity == null ? 0 : stockQuantity);
         this.product = product;
         this.product.addOption(this);
