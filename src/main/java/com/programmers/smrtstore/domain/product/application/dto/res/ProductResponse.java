@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.product.application.dto.res;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class ProductResponse {
     private ProductStatusType productStatusType;
     private boolean combinationYn;
     private boolean discountYn;
+    private OptionNameTypes optionNameTypes;
 
     private List<ProductDetailOptionResponse> detailOptionResponses;
     private List<ProductAdditionalOptionResponse> additionalOptionResponses;
@@ -51,9 +53,11 @@ public class ProductResponse {
             product.getProductStatusType(),
             product.isCombinationYn(),
             product.isDiscountYn(),
-            product.getProductDetailOptions() == null ? null
-                : product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from).toList(),
-            null
+            product.getOptionNameTypes(),
+            product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from)
+                .toList(),
+            product.getProductAdditionalOptions().stream()
+                .map(ProductAdditionalOptionResponse::from).toList()
         );
     }
 }
