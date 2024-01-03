@@ -12,5 +12,4 @@ public class PointException extends CustomException {
     public PointException(ErrorCode errorCode, String runtimeValue) {
         super(errorCode, runtimeValue);
     }
-
 }

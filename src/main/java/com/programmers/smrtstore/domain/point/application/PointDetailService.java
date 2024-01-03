@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.point.application;
 
-
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
@@ -32,7 +31,16 @@ public class PointDetailService {
     }
 
     public Long saveAccumulationHistory(PointDetailRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long pointId = request.getPointId();
+
+        Point point = pointRepository.findById(pointId)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND, String.valueOf(pointId)));
+        PointDetail pointDetail = request.toEntity(point);
+        pointDetailRepository.save(pointDetail);
+        return pointDetail.getId();
     }
 
     private User validateUserExists(Long userId) {
