@@ -46,19 +46,24 @@ public class PointService {
 
         User user = validateUserExists(userId);
 
-        int acmPoint = calculateDefaultPoint(orderId);
-
-        if (user.isMembershipYN()) {
-            List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
-            acmPoint = calculateExpectedAcmPoint(acmPoint, orderedProducts, userId);
-        }
-
+        int acmPoint = calculatePoint(orderId, user);
         Point point = request.toEntity(PointStatus.ACCUMULATED, acmPoint, user.isMembershipYN());
         pointRepository.save(point);
         return PointResponse.from(point);
     }
 
-    private int calculateDefaultPoint(Long orderId) {
+    public int calculatePoint(Long orderId, User user) {
+
+        int defaultPoint = calculateDefaultPoint(orderId); // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
+
+        if (user.isMembershipYN()) {
+            List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
+            return calculateExpectedAcmPoint(defaultPoint, orderedProducts, user.getId()); // 멤버십 적용된 최종 적립 (=구매적립)
+        }
+        return defaultPoint;
+    }
+
+    public int calculateDefaultPoint(Long orderId) {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
@@ -72,7 +77,7 @@ public class PointService {
         return defaultPoint + calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
-    private int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
+    public int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
 
         int point = 0;
         for (OrderedProductResponse productResponse : orderedProducts) {
