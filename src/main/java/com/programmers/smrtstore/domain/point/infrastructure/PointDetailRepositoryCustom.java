@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface PointDetailRepositoryCustom {
 
-    List<PointDetailResponse> getUsedDetailsByOrderId(Long orderId);
+    List<PointDetailResponse> findUsedDetailsByOrderId(Long orderId);
 }

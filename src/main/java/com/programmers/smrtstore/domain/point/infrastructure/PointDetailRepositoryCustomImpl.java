@@ -18,7 +18,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PointDetailResponse> getUsedDetailsByOrderId(Long orderId) {
+    public List<PointDetailResponse> findUsedDetailsByOrderId(Long orderId) {
         return jpaQueryFactory.selectFrom(pointDetail)
             .where(pointDetail.pointId.in(
                 JPAExpressions
