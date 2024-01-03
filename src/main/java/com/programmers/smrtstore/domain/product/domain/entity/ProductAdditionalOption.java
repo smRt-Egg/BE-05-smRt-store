@@ -37,6 +37,7 @@ public class ProductAdditionalOption extends ProductOption {
         this.groupName = groupName;
         this.name = name;
         this.productStatusType = ProductStatusType.SALE;
+        this.getProduct().addAdditionalOption(this);
     }
 
     public void updateValues(Integer quantity, Integer price, String groupName, String name) {

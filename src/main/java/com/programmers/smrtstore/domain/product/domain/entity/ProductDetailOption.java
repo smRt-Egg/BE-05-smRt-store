@@ -31,6 +31,7 @@ public class ProductDetailOption extends ProductOption {
         @NotNull OptionNames optionNames) {
         super(stockQuantity, price, product);
         this.optionNames = optionNames;
+        this.getProduct().addOption(this);
     }
 
     public void updateValues(Integer quantity, Integer price, OptionNames optionNames) {

@@ -38,9 +38,6 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
-    private static final Integer SINGLE_OPTION_PRICE = 0;
-    private static final String SINGLE_OPTION_TYPE = "Default";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -99,8 +96,8 @@ public class Product {
 
     @Builder
     private Product(String name, Integer price, Category category, boolean combinationYn,
-        Integer stockQuantity, URL thumbnail, URL contentImage, String optionNameType1,
-        String optionNameType2, String optionNameType3) {
+        URL thumbnail, URL contentImage, String optionNameType1, String optionNameType2,
+        String optionNameType3) {
         this.name = name;
         this.price = price;
         this.discountRatio = 0f;
