@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.core.base;
+package com.programmers.smrtstore.common.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
