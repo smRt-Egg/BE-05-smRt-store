@@ -14,9 +14,9 @@ import java.util.*;
  */
 @Slf4j
 public class Calculator {
-    private static List<DiscountCoupon> maximumDiscountList = new ArrayList<>();
-    private static PriorityQueue<DiscountCoupon> pq = new PriorityQueue<>();
-    private static PriorityQueue<DiscountCoupon> duplicationPq = new PriorityQueue<>();
+    private List<DiscountCoupon> maximumDiscountList = new ArrayList<>();
+    private PriorityQueue<DiscountCoupon> pq = new PriorityQueue<>();
+    private PriorityQueue<DiscountCoupon> duplicationPq = new PriorityQueue<>();
 
     public List<DiscountCoupon> discount(List<Coupon> coupons, Product product) {
 
