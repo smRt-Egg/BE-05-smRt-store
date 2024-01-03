@@ -46,19 +46,23 @@ public class PointService {
 
         User user = validateUserExists(userId);
 
-        int acmPoint = calculatePoint(orderId, user);
+        int acmPoint = calculateAcmPoint(orderId, user);
         Point point = request.toEntity(PointStatus.ACCUMULATED, acmPoint, user.isMembershipYN());
         pointRepository.save(point);
         return PointResponse.from(point);
     }
 
-    public int calculatePoint(Long orderId, User user) {
+    public int calculateAcmPoint(Long orderId, User user) {
 
-        int defaultPoint = calculateDefaultPoint(orderId); // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
+        // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
+        int defaultPoint = calculateDefaultPoint(orderId);
 
         if (user.isMembershipYN()) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
-            return calculateExpectedAcmPoint(defaultPoint, orderedProducts, user.getId()); // 멤버십 적용된 최종 적립 (=구매적립)
+            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
+            int additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
+            // 멤버십 적용된 최종 적립 (=구매적립)
+            return defaultPoint + additionalPoint;
         }
         return defaultPoint;
     }
@@ -67,14 +71,14 @@ public class PointService {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
-    public int calculateExpectedAcmPoint(int defaultPoint, List<OrderedProductResponse> orderedProducts, Long userId) {
+    public int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
 
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
 
         int userMonthlyTotalSpending = orderService.calculateUserMonthlyTotalSpending(userId, month, year);
-        return defaultPoint + calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
+        return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
     public int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
