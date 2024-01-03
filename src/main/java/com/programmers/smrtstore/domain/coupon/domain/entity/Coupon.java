@@ -72,7 +72,7 @@ public class Coupon {
 
     @Builder
     private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
-        validPercentValue(benefitUnitType,couponValue.getBenefitValue());
+        validatePercentValue(benefitUnitType,couponValue.getBenefitValue());
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
         this.duplicationYn = duplicationYn;
@@ -154,7 +154,7 @@ public class Coupon {
         }
     }
 
-    private void validPercentValue(BenefitUnitType benefitUnitType, Long value) {
+    private void validatePercentValue(BenefitUnitType benefitUnitType, Long value) {
         if (benefitUnitType == BenefitUnitType.PERCENT && value > 100) {
             throw new CouponException(ErrorCode.COUPON_PERCENT_EXCEED);
         }
