@@ -18,7 +18,7 @@ public class ProductDiscountCalculator {
         for (Coupon coupon : coupons) {
             try {
                 Long discountValue = coupon.discountProduct(price);
-                isDuplication(coupon, discountValue);
+                checkDuplication(coupon, discountValue);
             }catch (CouponException e){
                 log.info(e.getMessage());
             }
@@ -35,7 +35,7 @@ public class ProductDiscountCalculator {
         return maximumDiscountList;
     }
 
-    private void isDuplication(Coupon coupon, Long discount) {
+    private void checkDuplication(Coupon coupon, Long discount) {
         if (coupon.isDuplicationYn()) {
             duplicationPq.add(new DiscountCoupon(coupon, discount));
         } else
