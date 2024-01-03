@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,6 +72,9 @@ public class User {
     @Column(nullable = false)
     private boolean repurchaseYN;
 
+    @OneToMany(mappedBy = "user")
+    List<ShippingAddress> shippingAddresses;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -125,5 +129,9 @@ public class User {
 
     public void saveDeleteDate() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void addShippingAddress(ShippingAddress shippingAddress) {
+        shippingAddresses.add(shippingAddress);
     }
 }
