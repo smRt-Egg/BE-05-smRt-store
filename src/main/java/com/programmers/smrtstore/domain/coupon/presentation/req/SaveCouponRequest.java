@@ -1,11 +1,12 @@
 package com.programmers.smrtstore.domain.coupon.presentation.req;
 
-import lombok.AccessLevel;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class SaveCouponRequest {
-    private final Long couponId;
+    @NotNull
+    private Long couponId;
 }

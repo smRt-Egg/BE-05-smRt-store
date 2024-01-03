@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponPublica
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CustomerManageBenefitType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.vo.CouponValue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,12 +24,15 @@ public class CreateCouponRequest {
     @NotBlank
     private final String content;
     @NotNull
+    @Min(value = 1,message = "쿠폰 할인의 최소값은 1 이상입니다.")
     private final Long benefitValue;
     @NotNull
+    @Min(value = 1,message = "쿠폰의 최대할인값은 1 이상입니다.")
     private final Long maxDiscountValue;
     @NotNull
     private final Long minOrderPrice;
     @NotNull
+    @Min(value = 0,message = "인당 쿠폰 발급 횟수는 0회 이상입니다.")
     private final Integer idPerIssuableCount;
     @NotNull
     private final Boolean membershipCouponYn;
