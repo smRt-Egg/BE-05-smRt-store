@@ -35,7 +35,7 @@ public class CouponService {
     private final CouponJpaRepository couponJpaRepository;
     private final CouponQuantityFacade couponQuantityFacade;
 
-    public Long save(SaveCouponRequest request, Long userId) {
+    public Long download(SaveCouponRequest request, Long userId) {
         Long couponId = request.getCouponId();
         User user = getUser(userId);
 
