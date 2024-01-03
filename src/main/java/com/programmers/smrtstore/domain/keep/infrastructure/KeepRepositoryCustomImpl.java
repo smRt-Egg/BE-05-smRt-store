@@ -32,12 +32,12 @@ public class KeepRepositoryCustomImpl implements KeepRepositoryCustom {
         List<Keep> keepList = jpaQueryFactory.selectFrom(keep)
                 .leftJoin(product).on(keep.product.id.eq(product.id))
                 .fetchJoin()
-                .where(keep.userId.eq(userId),
+                .where(keep.user.id.eq(userId),
                         product.category.eq(category))
                 .fetch();
         return keepList.stream().map(k -> new KeepResponse(
                 k.getId(),
-                k.getUserId(),
+                k.getUser().getId(),
                 k.getProduct().getName(),
                 k.getProduct().getSalePrice(),
                 k.getProduct().getContentImage()
@@ -49,11 +49,11 @@ public class KeepRepositoryCustomImpl implements KeepRepositoryCustom {
         List<Keep> keepList = jpaQueryFactory.selectFrom(keep)
                 .leftJoin(product).on(keep.product.id.eq(product.id))
                 .fetchJoin()
-                .where(keep.userId.eq(userId))
+                .where(keep.user.id.eq(userId))
                 .fetch();
         return keepList.stream().map(k -> new KeepResponse(
                 k.getId(),
-                k.getUserId(),
+                k.getUser().getId(),
                 k.getProduct().getName(),
                 k.getProduct().getSalePrice(),
                 k.getProduct().getContentImage()

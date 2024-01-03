@@ -23,7 +23,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.user.domain.entity.Gender;
+import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,38 +43,65 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class KeepServiceTest {
-
+    @Autowired
+    private EntityManager em;
     @Autowired
     private KeepService keepService;
     @Autowired
     private KeepJpaRepository keepRepository;
     @Autowired
-    private ProductJPARepository productRepository;
+    private ProductJpaRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    private Long userId = 1L;
+    private Long userId1;
+    private Long userId2;
     private Long productId1;
     private Long productId2;
+
+    private void persistContextClear() {
+        em.flush();
+        em.clear();
+    }
+
     @BeforeEach
-    void init() throws Exception{
+    void init() throws Exception {
         List<Product> productList = new ArrayList<>();
-        for(int i = 0; i < 20; i++) {
+        List<User> userList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
             Product product = Product.builder()
                     .name("productName" + i)
                     .price(i * 1000)
-                    .stockQuantity(i+1)
+                    .stockQuantity(i + 1)
                     .category(Category.TEMP)
                     .contentImage(new URL("https://www.naver.com"))
                     .thumbnail(new URL("https://www.naver.com"))
                     .build();
             productList.add(product);
+            User user = User.builder()
+                    .nickName("nickname" + i)
+                    .email(i + "email.com")
+                    .phone("010-0000-000" + i)
+                    .birth("1999-01-01")
+                    .gender(Gender.MALE)
+                    .role(Role.ROLE_USER)
+                    .point(0)
+                    .marketingAgree(false)
+                    .membershipYN(false)
+                    .repurchaseYN(false)
+                    .build();
+            userList.add(user);
         }
         productRepository.saveAll(productList);
+        userRepository.saveAll(userList);
         productId1 = productList.get(0).getId();
         productId2 = productList.get(1).getId();
+        userId1 = userList.get(0).getId();
+        userId2 = userList.get(1).getId();
 
-        for(int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {
             Keep keep = Keep.builder()
-                    .userId(Integer.toUnsignedLong(i))
+                    .user(userList.get(i))
                     .product(productList.get(i))
                     .build();
             keepRepository.save(keep);
@@ -81,13 +113,13 @@ class KeepServiceTest {
     void createKeepTest() {
         //Given
         CreateKeepRequest createKeepRequest = CreateKeepRequest.builder()
-                .userId(userId)
+                .userId(userId1)
                 .productId(productId1)
                 .build();
         //When
         CreateKeepResponse keep = keepService.createKeep(createKeepRequest);
         //Then
-        assertThat(keep.getUserId()).isEqualTo(userId);
+        assertThat(keep.getUserId()).isEqualTo(userId1);
         assertThat(keep.getProductId()).isEqualTo(productId1);
         assertThat(keep.getCreatedAt().getDayOfMonth()).isEqualTo(LocalDateTime.now().getDayOfMonth());
     }
@@ -96,7 +128,7 @@ class KeepServiceTest {
     @Test
     void getByUserIdTest() {
         //Given //When
-        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId);
+        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId1);
         //Then
         assertThat(keepsByUserId).isNotEmpty();
         assertThat(keepsByUserId.stream().map(KeepResponse::getUserId).collect(Collectors.toSet())).hasSize(1);
@@ -140,16 +172,52 @@ class KeepServiceTest {
 
     @DisplayName("유저의 상품 카테고리를 활용해 찜을 조회할 수 있다.")
     @Test
-    void getKeepFromUserIdAndCategory(){
+    void getKeepFromUserIdAndCategory() {
         //Given
         FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
-                .userId(1L)
+                .userId(userId1)
                 .category(Category.TEMP)
                 .build();
         //When
         List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(request);
         //Then
         assertThat(keepByUserAndCategory).isNotEmpty();
-     }
+    }
+
+    @DisplayName("user가 삭제되면 keep도 삭제된다.")
+    @Test
+    void deleteKeepWhenDeleteUser() {
+        //Given
+        userRepository.deleteAll();
+        persistContextClear();
+        //When
+        List<Keep> allKeeps = keepRepository.findAll();
+        //Then
+        assertThat(allKeeps).isEmpty();
+    }
+
+    @DisplayName("user 하나가 삭제되면 해당 keep도 삭제된다.")
+    @Test
+    void deleteOneKeepWithDeleteUser() {
+        //Given
+        userRepository.deleteById(userId1);
+        persistContextClear();
+        //When
+        List<KeepResponse> keepList = keepRepository.findAllByUserId(userId1);
+        //Then
+        assertThat(keepList).isEmpty();
+    }
+
+    @DisplayName("product가 삭제되면 keep도 삭제된다.")
+    @Test
+    void deleteKeepWithDeleteProduct() {
+        //Given
+        productRepository.deleteAll();
+        persistContextClear();
+        //When
+        List<Keep> allKeeps = keepRepository.findAll();
+        //Then
+        assertThat(allKeeps).isEmpty();
+    }
 
 }

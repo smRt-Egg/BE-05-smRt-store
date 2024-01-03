@@ -15,7 +15,9 @@ import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import java.util.List;
 
 import com.programmers.smrtstore.domain.product.exception.ProductException;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJPARepository;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.user.exception.UserException;
+import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +25,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KeepService {
     private final KeepJpaRepository keepRepository;
-    private final ProductJPARepository productRepository;
+    private final ProductJpaRepository productRepository;
+    private final UserRepository userRepository;
 
     public CreateKeepResponse createKeep(CreateKeepRequest request) {
         Keep keep = Keep.builder()
-                .userId(request.getUserId())
+                .user(userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null)))
                 .product(productRepository.findById(request.getProductId()).orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND)))
                 .build();
         Keep saveKeepEntity = keepRepository.save(keep);

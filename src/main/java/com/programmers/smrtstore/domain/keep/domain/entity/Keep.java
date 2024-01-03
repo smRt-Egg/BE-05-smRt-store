@@ -1,12 +1,15 @@
 package com.programmers.smrtstore.domain.keep.domain.entity;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -21,11 +24,14 @@ public class Keep {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Product product;
 
     @CreationTimestamp
@@ -33,8 +39,8 @@ public class Keep {
     private LocalDateTime createdAt;
 
     @Builder
-    public Keep(Long userId, Product product) {
-        this.userId = userId;
+    public Keep(User user, Product product) {
+        this.user = user;
         this.product = product;
         this.createdAt = LocalDateTime.now();
     }
