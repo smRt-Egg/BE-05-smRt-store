@@ -44,7 +44,7 @@ public class CouponQuantity {
 
     public void update(int num) {
         if (num < 0) {
-            throw new CouponException(ErrorCode.COUPON_NUMBER_INVALID, String.valueOf(num));
+            throw new CouponException(ErrorCode.COUPON_STOCK_INVALID, String.valueOf(num));
         }
         value = num;
     }
