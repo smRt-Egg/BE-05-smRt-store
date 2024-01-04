@@ -8,13 +8,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class DefaultSeparateResult {
+public class AggUserShippingInfo {
 
     private ShippingAddress defaultShippingAddress;
     private List<ShippingAddress> notDefaultShippingAddresses;
 
-    public static DefaultSeparateResult of(ShippingAddress shippingAddress,
+    public static AggUserShippingInfo of(ShippingAddress shippingAddress,
         List<ShippingAddress> shippingAddresses) {
-        return new DefaultSeparateResult(shippingAddress, shippingAddresses);
+        return new AggUserShippingInfo(shippingAddress, shippingAddresses);
     }
 }

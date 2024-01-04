@@ -4,7 +4,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIP
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
-import com.programmers.smrtstore.domain.user.application.vo.DefaultSeparateResult;
+import com.programmers.smrtstore.domain.user.application.vo.AggUserShippingInfo;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -90,11 +90,11 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
-        DefaultSeparateResult separated = separateDefaultShippingAddress(shippingAddresses);
+        AggUserShippingInfo separated = separateDefaultShippingAddress(shippingAddresses);
         return DeliveryAddressBook.from(separated);
     }
 
-    private DefaultSeparateResult separateDefaultShippingAddress(
+    private AggUserShippingInfo separateDefaultShippingAddress(
         List<ShippingAddress> shippingAddresses) {
         ShippingAddress defaultShippingAddress = null;
         for (ShippingAddress address : shippingAddresses) {
@@ -105,6 +105,6 @@ public class UserService {
             }
         }
 
-        return DefaultSeparateResult.of(defaultShippingAddress, shippingAddresses);
+        return AggUserShippingInfo.of(defaultShippingAddress, shippingAddresses);
     }
 }
