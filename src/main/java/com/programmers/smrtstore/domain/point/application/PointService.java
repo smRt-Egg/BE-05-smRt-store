@@ -81,7 +81,7 @@ public class PointService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // 상품 원가에 대한 기본 1% 저립 (=기본적립)
+        // 상품 원가에 대한 기본 1% 적립 (=기본적립)
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = 0;
         if (user.isMembershipYN()) {
