@@ -104,6 +104,6 @@ public class UserService {
             }
         }
 
-        return new DefaultSeparateResult(defaultShippingAddress, shippingAddresses);
+        return DefaultSeparateResult.of(defaultShippingAddress, shippingAddresses);
     }
 }
