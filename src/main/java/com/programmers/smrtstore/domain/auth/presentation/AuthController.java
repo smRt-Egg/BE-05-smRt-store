@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.auth.presentation;
 
+import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.application.dto.res.LoginResponse;
@@ -68,7 +69,7 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestAttribute(value = "userId") Long userId,
+    public ResponseEntity<Void> updatePassword(@UserId Long userId,
         @RequestBody @Valid UpdatePasswordRequest request) {
         authService.updatePassword(userId, request);
         return ResponseEntity.noContent().build();

@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,8 +9,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
@@ -27,7 +30,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
     @Id
@@ -66,10 +69,14 @@ public class User {
     private boolean marketingAgree;
 
     @Column(nullable = false)
-    private boolean membershipYN;
+    private boolean membershipYn;
 
     @Column(nullable = false)
-    private boolean repurchaseYN;
+    private boolean repurchaseYn;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<ShippingAddress> shippingAddresses = new ArrayList<>();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -79,20 +86,6 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
-
-    public User(Integer age, String birth, String email, Gender gender, Role role,
-        String phone, boolean marketingAgree, String nickName, String thumbnail) {
-        this.age = age;
-        this.birth = birth;
-        this.email = email;
-        this.gender = gender;
-        this.role = role;
-        this.phone = phone;
-        this.marketingAgree = marketingAgree;
-        this.nickName = nickName;
-        this.thumbnail = thumbnail;
-        this.point = 0;
-    }
 
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
@@ -112,18 +105,34 @@ public class User {
     }
 
     public void repurchase() {
-        this.repurchaseYN = true;
+        this.repurchaseYn = true;
     }
 
     public void joinMembership() {
-        this.membershipYN = true;
+        this.membershipYn = true;
     }
 
     public void withdrawMembership() {
-        this.membershipYN = false;
+        this.membershipYn = false;
     }
 
     public void saveDeleteDate() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void addShippingAddress(ShippingAddress shippingAddress) {
+        if (shippingAddress.isDefaultYn()) {
+            unlockOriginalDefault();
+        }
+        shippingAddresses.add(shippingAddress);
+    }
+
+    private void unlockOriginalDefault() {
+        for (ShippingAddress shippingAddress : shippingAddresses) {
+            if (shippingAddress.isDefaultYn()) {
+                shippingAddress.disableDefault();
+                break;
+            }
+        }
     }
 }

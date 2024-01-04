@@ -24,8 +24,8 @@ public class SignUpRequest {
     Role role;
     String thumbnail;
     boolean marketingAgree;
-    boolean membershipYN;
-    boolean repurchaseYN;
+    boolean membershipYn;
+    boolean repurchaseYn;
 
     public Auth toAuthEntity(User user, PasswordEncoder passwordEncoder) {
         return Auth.builder()
@@ -63,8 +63,8 @@ public class SignUpRequest {
             .role(request.getRole())
             .thumbnail(request.getThumbnail())
             .marketingAgree(request.isMarketingAgree())
-            .membershipYN(request.isMembershipYN())
-            .repurchaseYN(request.isRepurchaseYN())
+            .membershipYn(request.isMembershipYN())
+            .repurchaseYn(request.isRepurchaseYN())
             .build();
     }
 }
