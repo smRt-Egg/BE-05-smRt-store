@@ -28,7 +28,7 @@ public class ShippingAddress {
     @Column(length = 10)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String recipient;
 
     @Column(nullable = false, length = 50)
