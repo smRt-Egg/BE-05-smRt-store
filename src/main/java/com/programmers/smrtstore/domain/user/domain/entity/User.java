@@ -30,7 +30,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
 
     @Id
@@ -86,20 +86,6 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
-
-    public User(Integer age, String birth, String email, Gender gender, Role role,
-        String phone, boolean marketingAgree, String nickName, String thumbnail) {
-        this.age = age;
-        this.birth = birth;
-        this.email = email;
-        this.gender = gender;
-        this.role = role;
-        this.phone = phone;
-        this.marketingAgree = marketingAgree;
-        this.nickName = nickName;
-        this.thumbnail = thumbnail;
-        this.point = 0;
-    }
 
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
