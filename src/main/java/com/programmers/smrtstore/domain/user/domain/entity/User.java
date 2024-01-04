@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
@@ -72,8 +73,9 @@ public class User {
     @Column(nullable = false)
     private boolean repurchaseYN;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
-    List<ShippingAddress> shippingAddresses;
+    private List<ShippingAddress> shippingAddresses = new ArrayList<>();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;

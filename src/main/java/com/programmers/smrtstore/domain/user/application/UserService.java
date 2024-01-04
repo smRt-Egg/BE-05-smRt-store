@@ -16,6 +16,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddres
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,6 +102,7 @@ public class UserService {
             if (address.isDefaultYN()) {
                 defaultShippingAddress = address;
                 shippingAddresses.remove(address);
+                break;
             }
         }
 
