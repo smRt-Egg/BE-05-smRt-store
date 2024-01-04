@@ -1,10 +1,10 @@
 package com.programmers.smrtstore.domain.product.infrastructure;
 
-import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductOptionJpaRepository extends JpaRepository<ProductOption, Long> {
+public interface ProductDetailOptionJpaRepository extends JpaRepository<ProductDetailOption, Long> {
 
 }

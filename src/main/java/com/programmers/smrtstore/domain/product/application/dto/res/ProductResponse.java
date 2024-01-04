@@ -2,6 +2,8 @@ package com.programmers.smrtstore.domain.product.application.dto.res;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,12 +28,13 @@ public class ProductResponse {
     private LocalDate releaseDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean availableYn;
-    private boolean optionYn;
+    private ProductStatusType productStatusType;
+    private boolean combinationYn;
     private boolean discountYn;
+    private OptionNameTypes optionNameTypes;
 
-    private List<ProductOptionResponse> productOptions;
-
+    private List<ProductDetailOptionResponse> detailOptionResponses;
+    private List<ProductAdditionalOptionResponse> additionalOptionResponses;
 
     public static ProductResponse from(Product product) {
         return new ProductResponse(
@@ -47,12 +50,14 @@ public class ProductResponse {
             product.getReleaseDate(),
             product.getCreatedAt(),
             product.getUpdatedAt(),
-            product.isAvailableYn(),
-            product.isOptionYn(),
+            product.getProductStatusType(),
+            product.isCombinationYn(),
             product.isDiscountYn(),
-            product.getProductOptions() == null ? null
-                : product.getProductOptions().stream().map(ProductOptionResponse::from).toList()
-
+            product.getOptionNameTypes(),
+            product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from)
+                .toList(),
+            product.getProductAdditionalOptions().stream()
+                .map(ProductAdditionalOptionResponse::from).toList()
         );
     }
 }
