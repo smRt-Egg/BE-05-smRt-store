@@ -48,6 +48,7 @@ public enum ErrorCode {
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     QUESTION_NOT_FOUND(NOT_FOUND, "문의를 찾을 수 없습니다"),
+    ANSWER_NOT_FOUND(NOT_FOUND, "답변을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(NOT_FOUND, "상품을 찾을 수 없습니다."),
     PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -31,12 +32,21 @@ public class ProductAnswer {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     public void setProductQuestion(ProductQuestion productQuestion) {
         this.productQuestion = productQuestion;
     }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
     @Builder
     public ProductAnswer(ProductQuestion productQuestion, String content) {
+        productQuestion.getProductAnswerList().add(this);
         this.productQuestion = productQuestion;
         this.content = content;
     }

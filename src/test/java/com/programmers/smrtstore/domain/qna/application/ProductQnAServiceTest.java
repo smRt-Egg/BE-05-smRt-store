@@ -7,10 +7,7 @@ import com.programmers.smrtstore.domain.qna.domain.entity.ProductAnswer;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductQuestion;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductAnswerRepository;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductQuestionRepository;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateAnswerRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.UpdateQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.*;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
@@ -254,8 +251,6 @@ class ProductQnAServiceTest {
                 .productQuestion(question)
                 .content(answerContent2)
                 .build();
-        question.addProductAnswer(answer1);
-        question.addProductAnswer(answer2);
         answerRepository.save(answer1);
         answerRepository.save(answer2);
         //When
@@ -266,5 +261,35 @@ class ProductQnAServiceTest {
         assertThat(answerResponseList.get(1).getContent()).isEqualTo(answerContent2);
         assertThat(answerResponseList.get(0).getQuestionId()).isEqualTo(question.getId());
     }
+
+    @DisplayName("답변을 수정할 수 있다.")
+    @Test
+    void updateAnswerTest(){
+        //Given
+        String questionContent = "questionContent";
+        ProductQuestion question = ProductQuestion.builder()
+                .userId(userId)
+                .productId(product1Id)
+                .content(questionContent)
+                .build();
+        questionRepository.save(question);
+        String answerContent = "answerContent";
+        ProductAnswer answer = ProductAnswer.builder()
+                .productQuestion(question)
+                .content(answerContent)
+                .build();
+        answerRepository.save(answer);
+
+        String updateAnswerContent = "updateContent";
+        UpdateAnswerRequest request = UpdateAnswerRequest.builder()
+                .id(answer.getId())
+                .content(updateAnswerContent)
+                .build();
+        //When
+        UpdateAnswerResponse updateAnswerResponse = productQnAService.updateAnswer(userId, request);
+        //Then
+        assertThat(answer.getContent()).isNotEqualTo(answerContent);
+        assertThat(answer.getContent()).isEqualTo(updateAnswerContent);
+     }
 
 }

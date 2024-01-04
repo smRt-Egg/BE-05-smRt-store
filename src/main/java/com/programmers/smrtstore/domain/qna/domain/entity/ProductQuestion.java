@@ -53,14 +53,4 @@ public class ProductQuestion {
     public void updateContent(String updateContent) {
         this.content = updateContent;
     }
-
-    public void addProductAnswer(ProductAnswer productAnswer) {
-        productAnswerList.add(productAnswer);
-        productAnswer.setProductQuestion(this);
-    }
-
-    public void removeProductAnswer(ProductAnswer productAnswer) {
-        productAnswerList.remove(productAnswer);
-    }
-
 }

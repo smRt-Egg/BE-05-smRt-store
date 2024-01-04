@@ -2,10 +2,7 @@ package com.programmers.smrtstore.domain.qna.presentation.controller;
 
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.qna.application.ProductQnAService;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateAnswerRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.UpdateQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.*;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +54,13 @@ public class ProductQnAController {
     public ResponseEntity<AnswerResponse> addAnswerToQuestion(@UserId Long userId,
                                                               @RequestBody CreateAnswerRequest request) {
         AnswerResponse response = qnAService.addAnswer(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/qna/reply")
+    public ResponseEntity<UpdateAnswerResponse> updateAnswer(@UserId Long userId,
+                                                             @RequestBody UpdateAnswerRequest request) {
+        UpdateAnswerResponse response = qnAService.updateAnswer(userId, request);
         return ResponseEntity.ok(response);
     }
 

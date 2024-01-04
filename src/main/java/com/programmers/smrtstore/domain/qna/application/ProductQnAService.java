@@ -4,11 +4,9 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductAnswer;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductQuestion;
 import com.programmers.smrtstore.domain.qna.exception.QnAException;
+import com.programmers.smrtstore.domain.qna.infrastructure.ProductAnswerRepository;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductQuestionRepository;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateAnswerRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.UpdateQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.*;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +21,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ProductQnAService {
+    private final ProductAnswerRepository productAnswerRepository;
 
     private final ProductQuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -71,9 +70,9 @@ public class ProductQnAService {
         String content = request.getContent();
         ProductQuestion productQuestion = questionRepository.findById(questionId).orElseThrow(() -> new QnAException(ErrorCode.QUESTION_NOT_FOUND));
         ProductAnswer productAnswer = ProductAnswer.builder()
+                .productQuestion(productQuestion)
                 .content(content)
                 .build();
-        productQuestion.addProductAnswer(productAnswer);
         return AnswerResponse.of(productAnswer);
     }
 
@@ -84,6 +83,13 @@ public class ProductQnAService {
                 .stream()
                 .map(AnswerResponse::of)
                 .toList();
+    }
+
+    public UpdateAnswerResponse updateAnswer(Long userId, UpdateAnswerRequest request) {
+        checkUserExist(userId);
+        ProductAnswer productAnswer = productAnswerRepository.findById(request.getId()).orElseThrow(() -> new QnAException(ErrorCode.ANSWER_NOT_FOUND));
+        productAnswer.updateContent(request.getContent());
+        return UpdateAnswerResponse.of(productAnswer);
     }
 
     void checkUserValid(Long tokenUserId, Long requestUserId) {
