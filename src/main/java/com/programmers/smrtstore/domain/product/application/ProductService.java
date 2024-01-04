@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetai
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductDetailOptionResponse;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
+import com.programmers.smrtstore.domain.product.application.dto.res.ProductThumbnailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
@@ -60,9 +61,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> getAllProducts() {
+    public List<ProductThumbnailResponse> getAllProducts() {
         return productJpaRepository.findAll()
-            .stream().map(ProductResponse::from)
+            .stream().map(ProductThumbnailResponse::from)
             .toList();
     }
 
