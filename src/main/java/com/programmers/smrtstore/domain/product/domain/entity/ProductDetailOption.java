@@ -1,10 +1,12 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,8 +30,11 @@ public class ProductDetailOption extends ProductOption {
 
     @Builder
     private ProductDetailOption(Integer stockQuantity, Integer price, Product product,
-        @NotNull OptionNames optionNames) {
-        super(stockQuantity, price, product);
+        OptionType optionType, OptionNames optionNames) {
+        super(stockQuantity, price, optionType, product);
+        if (optionType.equals(OptionType.ADDITIONAL)) {
+            throw new ProductException(ErrorCode.PRODUCT_OPTION_TYPE_INVALID);
+        }
         this.optionNames = optionNames;
         this.getProduct().addOption(this);
     }

@@ -1,8 +1,11 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,9 +45,17 @@ public class ProductOption {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    protected ProductOption(Integer stockQuantity, Integer price, Product product) {
+    @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "option_type", nullable = false)
+    private OptionType optionType;
+
+
+    protected ProductOption(Integer stockQuantity, Integer price, OptionType optionType,
+        Product product) {
         this.productQuantity = ProductQuantity.from(stockQuantity);
         this.price = price;
+        this.optionType = optionType;
         this.product = product;
     }
 

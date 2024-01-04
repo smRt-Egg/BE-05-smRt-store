@@ -1,12 +1,11 @@
 package com.programmers.smrtstore.domain.product.domain.entity;
 
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,9 +30,9 @@ public class ProductAdditionalOption extends ProductOption {
     private ProductStatusType productStatusType;
 
     @Builder
-    private ProductAdditionalOption(@Valid @NotBlank String groupName, @Valid @NotBlank String name,
-        Product product, Integer stockQuantity, Integer price) {
-        super(stockQuantity, price, product);
+    private ProductAdditionalOption(String groupName, String name, Product product,
+        Integer stockQuantity, Integer price) {
+        super(stockQuantity, price, OptionType.ADDITIONAL, product);
         this.groupName = groupName;
         this.name = name;
         this.productStatusType = ProductStatusType.SALE;

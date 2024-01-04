@@ -2,7 +2,6 @@ package com.programmers.smrtstore.domain.product.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -107,13 +106,8 @@ public class Product {
         this.contentImage = contentImage;
         this.discountYn = false;
         this.productStatusType = ProductStatusType.NOT_SALE;
-        if (!combinationYn) {
+        if (combinationYn) {
             this.optionNameTypes = OptionNameTypes.builder()
-                .optionType(OptionType.SINGLE)
-                .build();
-        } else {
-            this.optionNameTypes = OptionNameTypes.builder()
-                .optionType(OptionType.COMBINATION)
                 .optionNameType1(optionNameType1)
                 .optionNameType2(optionNameType2)
                 .optionNameType3(optionNameType3)

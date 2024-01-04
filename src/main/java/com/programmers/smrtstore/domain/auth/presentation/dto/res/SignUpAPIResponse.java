@@ -36,8 +36,8 @@ public class SignUpAPIResponse {
             response.getGender().name(),
             response.getThumbnail(),
             response.isMarketingAgree(),
-            response.isMembershipYN(),
-            response.isRepurchaseYN(),
+            response.isMembershipYn(),
+            response.isRepurchaseYn(),
             response.getPoint(),
             response.getCreatedTime().toString());
     }

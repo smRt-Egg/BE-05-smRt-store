@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OptionNames {
 
-    @Column(name = "option_name1", length = 50)
+    @Column(name = "option_name_1", length = 50)
     private String optionName1;
 
-    @Column(name = "option_name2", length = 50)
+    @Column(name = "option_name_2", length = 50)
     private String optionName2;
 
-    @Column(name = "option_name3", length = 50)
+    @Column(name = "option_name_3", length = 50)
     private String optionName3;
 
     @Builder

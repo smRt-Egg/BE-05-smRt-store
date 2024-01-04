@@ -58,8 +58,8 @@ class CartServiceTest {
             .role(Role.ROLE_USER)
             .point(0)
             .marketingAgree(true)
-            .membershipYN(true)
-            .repurchaseYN(true)
+            .membershipYn(true)
+            .repurchaseYn(true)
             .build());
         expectedProduct = productJPARepository.save(Product.builder()
             .name("test")

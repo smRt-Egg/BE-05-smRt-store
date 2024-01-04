@@ -10,7 +10,7 @@ import com.programmers.smrtstore.domain.product.application.dto.res.ProductRespo
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductThumbnailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
-import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -31,12 +31,10 @@ public class ProductService {
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = productJpaRepository.save(request.toEntity());
         productDetailOptionJpaRepository.save(ProductDetailOption.builder()
-                .optionNames(OptionNames.builder()
-                    .optionName1(request.getName())
-                    .build())
-                .price(0)
-                .stockQuantity(request.getStockQuantity())
-                .product(product)
+            .optionType(OptionType.SINGLE)
+            .price(0)
+            .stockQuantity(request.getStockQuantity())
+            .product(product)
             .build());
         return ProductResponse.from(product);
     }
