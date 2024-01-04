@@ -4,13 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
+import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +29,12 @@ class UserServiceTest {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    AuthJpaRepository authJpaRepository;
 
     SignUpRequest kazuha = SignUpRequest.builder()
         .username("kazuha")
@@ -41,9 +51,17 @@ class UserServiceTest {
         .repurchaseYN(false)
         .build();
 
+    Long kazuhaId;
+
     @BeforeEach
     public void beforeEach() {
-        authService.signUp(kazuha);
+        kazuhaId = authService.signUp(kazuha).getId();
+    }
+
+    @AfterEach
+    public void afterEach() {
+        authJpaRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -51,9 +69,9 @@ class UserServiceTest {
     void createShippingAddress() {
         CreateShippingRequest request = new CreateShippingRequest(
             "집", "카즈하", "서울", "광진구", "12345",
-            "01000000000", null, false
+            "01000000000", null, true
         );
-        CreateShippingResponse response = userService.createShippingAddress(1L, request);
+        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request);
 
         assertThat(request.getName()).isEqualTo(response.getName());
         assertThat(request.getRecipient()).isEqualTo(response.getRecipient());
@@ -81,10 +99,10 @@ class UserServiceTest {
             "01000000000", "01012345678", false
         );
 
-        userService.createShippingAddress(1L, request1);
-        userService.createShippingAddress(1L, request2);
-        userService.createShippingAddress(1L, request3);
-        DeliveryAddressBook response = userService.getShippingAddressList(1L);
+        userService.createShippingAddress(kazuhaId, request1);
+        userService.createShippingAddress(kazuhaId, request2);
+        userService.createShippingAddress(kazuhaId, request3);
+        DeliveryAddressBook response = userService.getShippingAddressList(kazuhaId);
 
         assertThat(response.getDefaultDeliveryAddress().getName()).isEqualTo("집");
         assertThat(response.getDeliveryAddresses().size()).isEqualTo(2);
