@@ -4,13 +4,14 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIP
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
+import com.programmers.smrtstore.domain.user.application.vo.DefaultSeparateResult;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;

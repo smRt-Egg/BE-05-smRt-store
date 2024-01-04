@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
-import com.programmers.smrtstore.domain.user.application.DefaultSeparateResult;
+import com.programmers.smrtstore.domain.user.application.vo.DefaultSeparateResult;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import java.util.List;
 import lombok.AllArgsConstructor;
