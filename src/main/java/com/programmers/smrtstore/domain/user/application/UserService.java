@@ -2,12 +2,14 @@ package com.programmers.smrtstore.domain.user.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
+import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.user.application.vo.AggUserShippingInfo;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
+import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -15,6 +17,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ShippingAddressJpaRepository shippingAddressRepository;
     private static final int MAXIMUM_SHIPPING_SIZE = 15;
 
 
@@ -106,5 +110,12 @@ public class UserService {
         }
 
         return AggUserShippingInfo.of(defaultShippingAddress, shippingAddresses);
+    }
+
+    public CreateShippingResponse findByShippingId(Long shippingId) {
+        ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
+            .orElseThrow(
+                () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
+        return CreateShippingResponse.from(shippingAddress);
     }
 }

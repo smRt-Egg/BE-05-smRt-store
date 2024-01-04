@@ -65,6 +65,7 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_LIKE_NOT_FOUND(NOT_FOUND, "리뷰 좋아요를 찾을 수 없습니다."),
     CART_NOT_FOUND(NOT_FOUND, "장바구니를 찾을 수 없습니다."),
+    SHIPPING_ADDRESS_NOT_FOUND(NOT_FOUND, "배송지를 찾을수 없습니다."),
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     DUPLICATE_SHIPPING_ADDRESS(CONFLICT, "동일한 배송지가 존재합니다. 수정 후 다시 시도해주세요."),
