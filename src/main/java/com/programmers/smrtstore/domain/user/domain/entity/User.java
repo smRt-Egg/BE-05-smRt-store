@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -74,7 +75,7 @@ public class User {
     private boolean repurchaseYN;
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<ShippingAddress> shippingAddresses = new ArrayList<>();
 
     @UpdateTimestamp
