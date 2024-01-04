@@ -54,7 +54,7 @@ public class ShippingAddress {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void unlockDefault() {
+    public void makeNotDefault() {
         defaultYn = false;
     }
 }

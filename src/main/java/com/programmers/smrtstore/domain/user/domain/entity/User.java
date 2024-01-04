@@ -144,7 +144,7 @@ public class User {
     private void unlockOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
             if (shippingAddress.isDefaultYn()) {
-                shippingAddress.unlockDefault();
+                shippingAddress.makeNotDefault();
                 break;
             }
         }
