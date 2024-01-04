@@ -97,7 +97,7 @@ public class UserService {
         List<ShippingAddress> shippingAddresses) {
         ShippingAddress defaultShippingAddress = null;
         for (ShippingAddress address : shippingAddresses) {
-            if (address.isDefaultYN()) {
+            if (address.isDefaultYn()) {
                 defaultShippingAddress = address;
                 shippingAddresses.remove(address);
                 break;

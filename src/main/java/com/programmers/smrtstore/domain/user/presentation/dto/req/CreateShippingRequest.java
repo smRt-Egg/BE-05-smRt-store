@@ -39,11 +39,11 @@ public class CreateShippingRequest {
     private String phoneNum2;
 
     @NotNull
-    private boolean defaultYN;
+    private boolean defaultYn;
 
     public ShippingAddress toShippingAddressEntity(User user) {
         return ShippingAddress.builder()
-            .defaultYN(defaultYN)
+            .defaultYn(defaultYn)
             .phoneNum2(phoneNum2)
             .phoneNum1(phoneNum1)
             .zipCode(zipCode)

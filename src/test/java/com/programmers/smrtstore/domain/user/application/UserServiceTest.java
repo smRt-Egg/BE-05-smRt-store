@@ -14,7 +14,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddres
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,8 +46,8 @@ class UserServiceTest {
         .gender(Gender.MALE)
         .role(Role.ROLE_USER)
         .marketingAgree(true)
-        .membershipYN(false)
-        .repurchaseYN(false)
+        .membershipYn(false)
+        .repurchaseYn(false)
         .build();
 
     Long kazuhaId;
@@ -80,7 +79,7 @@ class UserServiceTest {
         assertThat(request.getZipCode()).isEqualTo(response.getZipCode());
         assertThat(request.getPhoneNum1()).isEqualTo(response.getPhoneNum1());
         assertThat(request.getPhoneNum2()).isEqualTo(response.getPhoneNum2());
-        assertThat(request.isDefaultYN()).isEqualTo(response.isDefaultYN());
+        assertThat(request.isDefaultYn()).isEqualTo(response.isDefaultYn());
     }
 
     @Test

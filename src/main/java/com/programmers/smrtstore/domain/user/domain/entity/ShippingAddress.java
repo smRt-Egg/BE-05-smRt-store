@@ -48,13 +48,13 @@ public class ShippingAddress {
     private String phoneNum2;
 
     @Column(nullable = false)
-    private boolean defaultYN;
+    private boolean defaultYn;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     public void unlockDefault() {
-        defaultYN = false;
+        defaultYn = false;
     }
 }

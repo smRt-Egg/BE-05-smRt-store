@@ -69,10 +69,10 @@ public class User {
     private boolean marketingAgree;
 
     @Column(nullable = false)
-    private boolean membershipYN;
+    private boolean membershipYn;
 
     @Column(nullable = false)
-    private boolean repurchaseYN;
+    private boolean repurchaseYn;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -119,15 +119,15 @@ public class User {
     }
 
     public void repurchase() {
-        this.repurchaseYN = true;
+        this.repurchaseYn = true;
     }
 
     public void joinMembership() {
-        this.membershipYN = true;
+        this.membershipYn = true;
     }
 
     public void withdrawMembership() {
-        this.membershipYN = false;
+        this.membershipYn = false;
     }
 
     public void saveDeleteDate() {
@@ -135,7 +135,7 @@ public class User {
     }
 
     public void addShippingAddress(ShippingAddress shippingAddress) {
-        if (shippingAddress.isDefaultYN()) {
+        if (shippingAddress.isDefaultYn()) {
             unlockOriginalDefault();
         }
         shippingAddresses.add(shippingAddress);
@@ -143,7 +143,7 @@ public class User {
 
     private void unlockOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
-            if (shippingAddress.isDefaultYN()) {
+            if (shippingAddress.isDefaultYn()) {
                 shippingAddress.unlockDefault();
                 break;
             }
