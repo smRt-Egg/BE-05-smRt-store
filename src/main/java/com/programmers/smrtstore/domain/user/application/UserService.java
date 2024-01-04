@@ -3,7 +3,6 @@ package com.programmers.smrtstore.domain.user.application;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
-import static com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse.from;
 
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -16,7 +15,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddres
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,14 +31,14 @@ public class UserService {
     public ProfileUserResponse getUserInfo(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-        return from(user);
+        return ProfileUserResponse.from(user);
     }
 
     public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         user.updateUser(request);
-        return from(user);
+        return ProfileUserResponse.from(user);
     }
 
     public void withdraw(Long userId) {
