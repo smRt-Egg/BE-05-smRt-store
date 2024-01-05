@@ -139,6 +139,7 @@ public class UserService {
         return DetailShippingResponse.from(shippingAddress);
     }
 
+    @Transactional(readOnly = true)
     public DetailShippingResponse findByShippingId(Long shippingId) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
