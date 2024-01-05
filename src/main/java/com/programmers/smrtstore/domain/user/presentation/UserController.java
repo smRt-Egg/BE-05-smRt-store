@@ -2,9 +2,9 @@ package com.programmers.smrtstore.domain.user.presentation;
 
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.user.application.UserService;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import jakarta.validation.Valid;
@@ -47,10 +47,10 @@ public class UserController {
     }
 
     @PostMapping("/shipping")
-    public ResponseEntity<CreateShippingResponse> createShippingAddress(
+    public ResponseEntity<DetailShippingResponse> createShippingAddress(
         @UserId Long userId,
-        @RequestBody @Valid CreateShippingRequest request) {
-        CreateShippingResponse response = userService.createShippingAddress(userId, request);
+        @RequestBody @Valid DetailShippingRequest request) {
+        DetailShippingResponse response = userService.createShippingAddress(userId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -62,8 +62,8 @@ public class UserController {
     }
 
     @GetMapping("/shipping/{shippingId}")
-    public ResponseEntity<CreateShippingResponse> findByShippingId(@PathVariable Long shippingId) {
-        CreateShippingResponse response = userService.findByShippingId(shippingId);
+    public ResponseEntity<DetailShippingResponse> findByShippingId(@PathVariable Long shippingId) {
+        DetailShippingResponse response = userService.findByShippingId(shippingId);
         return ResponseEntity.ok(response);
     }
 

@@ -12,9 +12,9 @@ import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ public class UserService {
         user.saveDeleteDate();
     }
 
-    public CreateShippingResponse createShippingAddress(Long userId,
-        CreateShippingRequest request) {
+    public DetailShippingResponse createShippingAddress(Long userId,
+        DetailShippingRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
@@ -65,7 +65,7 @@ public class UserService {
         user.addShippingAddress(shippingAddress);
         shippingAddressRepository.save(shippingAddress);
 
-        return CreateShippingResponse.from(shippingAddress);
+        return DetailShippingResponse.from(shippingAddress);
     }
 
     private void checkShippingAddressesSize(List<ShippingAddress> shippingAddresses) {
@@ -119,11 +119,11 @@ public class UserService {
         return AggUserShippingInfo.of(defaultShippingAddress, notDefaultShippingAddresses);
     }
 
-    public CreateShippingResponse findByShippingId(Long shippingId) {
+    public DetailShippingResponse findByShippingId(Long shippingId) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
-        return CreateShippingResponse.from(shippingAddress);
+        return DetailShippingResponse.from(shippingAddress);
     }
 
     public void deleteShippingAddress(Long shippingId) {

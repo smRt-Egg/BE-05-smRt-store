@@ -8,8 +8,8 @@ import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,23 +52,23 @@ class UserServiceTest {
 
     Long kazuhaId;
 
-    CreateShippingRequest request1 = new CreateShippingRequest(
+    DetailShippingRequest request1 = new DetailShippingRequest(
         "집", "카즈하", "서울", "광진구", "12345",
         "01000000000", null, false
     );
-    CreateShippingRequest request2 = new CreateShippingRequest(
+    DetailShippingRequest request2 = new DetailShippingRequest(
         "학교", "카즈하", "서울", "광진구", "12345",
         "01000000000", "01012345678", false
     );
-    CreateShippingRequest request3 = new CreateShippingRequest(
+    DetailShippingRequest request3 = new DetailShippingRequest(
         "회사", "카즈하", "경기도", "분당시", "12345",
         "01000000000", "01012345678", false
     );
-    CreateShippingRequest request4 = new CreateShippingRequest(
+    DetailShippingRequest request4 = new DetailShippingRequest(
         "동방", "라이덴", "경기도", "분당시", "12345",
         "01000000000", "01012345678", true
     );
-    CreateShippingRequest request5 = new CreateShippingRequest(
+    DetailShippingRequest request5 = new DetailShippingRequest(
         "동방", "푸리나", "경기도", "분당시", "12345",
         "01000000000", "01012345678", true
     );
@@ -87,7 +87,7 @@ class UserServiceTest {
     @Test
     @DisplayName("배송지를 추가할 수 있다.")
     void createShippingAddress() {
-        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
+        DetailShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
 
         assertThat(response.getName()).isEqualTo(request1.getName());
         assertThat(response.getRecipient()).isEqualTo(request1.getRecipient());
@@ -117,9 +117,9 @@ class UserServiceTest {
     @Test
     @DisplayName("수정 시 배송지 정보를 배송지 id로 조회할 수 있다.")
     void findByShippingId() {
-        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
+        DetailShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
 
-        CreateShippingResponse byShippingId = userService.findByShippingId(response.getId());
+        DetailShippingResponse byShippingId = userService.findByShippingId(response.getId());
 
         assertThat(byShippingId.getName()).isEqualTo(request1.getName());
         assertThat(byShippingId.getRecipient()).isEqualTo(request1.getRecipient());
