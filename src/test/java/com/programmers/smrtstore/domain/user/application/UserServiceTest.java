@@ -1,12 +1,15 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.exception.UserException;
+import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
@@ -57,11 +60,11 @@ class UserServiceTest {
         "01000000000", null, false
     );
     DetailShippingRequest request2 = new DetailShippingRequest(
-        "학교", "카즈하", "서울", "광진구", "12345",
+        "학교", "나히다", "서울", "광진구", "12345",
         "01000000000", "01012345678", false
     );
     DetailShippingRequest request3 = new DetailShippingRequest(
-        "회사", "카즈하", "경기도", "분당시", "12345",
+        "회사", "야에 미코", "경기도", "분당시", "12345",
         "01000000000", "01012345678", false
     );
     DetailShippingRequest request4 = new DetailShippingRequest(
@@ -129,5 +132,31 @@ class UserServiceTest {
         assertThat(byShippingId.getPhoneNum1()).isEqualTo(request1.getPhoneNum1());
         assertThat(byShippingId.getPhoneNum2()).isEqualTo(request1.getPhoneNum2());
         assertThat(byShippingId.isDefaultYn()).isEqualTo(request1.isDefaultYn());
+    }
+
+    @Test
+    @DisplayName("기본 배송지가 아닌 배송지를 삭제할 수 있다.")
+    void deleteNotDefaultShippingAddress() {
+        DetailShippingResponse response1 = userService.createShippingAddress(kazuhaId, request1);
+        userService.createShippingAddress(kazuhaId, request2);
+        userService.createShippingAddress(kazuhaId, request3);
+        userService.createShippingAddress(kazuhaId, request4);
+
+        userService.deleteShippingAddress(kazuhaId, response1.getId());
+
+        assertThat(userRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("기본 배송지인 배송지를 삭제할 수 없다.")
+    void deleteDefaultShippingAddress() {
+        userService.createShippingAddress(kazuhaId, request1);
+        userService.createShippingAddress(kazuhaId, request2);
+        userService.createShippingAddress(kazuhaId, request3);
+        DetailShippingResponse response4 = userService.createShippingAddress(kazuhaId,
+            request4);
+
+        assertThatThrownBy(() -> userService.deleteShippingAddress(kazuhaId, response4.getId()))
+            .isInstanceOf(UserException.class);
     }
 }
