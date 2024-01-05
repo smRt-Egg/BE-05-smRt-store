@@ -16,9 +16,10 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +63,7 @@ public class UserService {
         ShippingAddress shippingAddress = request.toShippingAddressEntity(user);
         checkShippingDuplicate(shippingAddress, shippingAddresses);
         user.addShippingAddress(shippingAddress);
+        shippingAddressRepository.save(shippingAddress);
 
         return CreateShippingResponse.from(shippingAddress);
     }
@@ -100,16 +102,18 @@ public class UserService {
 
     private AggUserShippingInfo separateDefaultShippingAddress(
         List<ShippingAddress> shippingAddresses) {
+        List<ShippingAddress> notDefaultShippingAddresses = new ArrayList<>();
         ShippingAddress defaultShippingAddress = null;
+
         for (ShippingAddress address : shippingAddresses) {
-            if (address.isDefaultYn()) {
+            if (!address.isDefaultYn()) {
+                notDefaultShippingAddresses.add(address);
+            } else {
                 defaultShippingAddress = address;
-                shippingAddresses.remove(address);
-                break;
             }
         }
 
-        return AggUserShippingInfo.of(defaultShippingAddress, shippingAddresses);
+        return AggUserShippingInfo.of(defaultShippingAddress, notDefaultShippingAddresses);
     }
 
     public CreateShippingResponse findByShippingId(Long shippingId) {
