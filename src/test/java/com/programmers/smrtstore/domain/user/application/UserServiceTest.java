@@ -38,6 +38,9 @@ class UserServiceTest {
     @Autowired
     AuthJpaRepository authJpaRepository;
 
+    @Autowired
+    ShippingAddressJpaRepository shippingAddressJpaRepository;
+
     SignUpRequest kazuha = SignUpRequest.builder()
         .username("kazuha")
         .password("1234")
@@ -92,6 +95,7 @@ class UserServiceTest {
     void createShippingAddress() {
         DetailShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
 
+        assertThat(shippingAddressJpaRepository.findById(response.getId())).isNotNull();
         assertThat(response.getName()).isEqualTo(request1.getName());
         assertThat(response.getRecipient()).isEqualTo(request1.getRecipient());
         assertThat(response.getAddress1Depth()).isEqualTo(request1.getAddress1Depth());
@@ -100,6 +104,18 @@ class UserServiceTest {
         assertThat(response.getPhoneNum1()).isEqualTo(request1.getPhoneNum1());
         assertThat(response.getPhoneNum2()).isEqualTo(request1.getPhoneNum2());
         assertThat(response.isDefaultYn()).isEqualTo(request1.isDefaultYn());
+    }
+
+    @Test
+    @DisplayName("기본 배송지 등록 시 갱신")
+    void createDefaultShippingAddress() {
+        DetailShippingResponse response4 = userService.createShippingAddress(kazuhaId, request4);
+
+        DetailShippingResponse response5 = userService.createShippingAddress(kazuhaId,
+            request5);
+
+        assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().isDefaultYn()).isFalse();
+        assertThat(shippingAddressJpaRepository.findById(response5.getId()).get().isDefaultYn()).isTrue();
     }
 
     @Test
