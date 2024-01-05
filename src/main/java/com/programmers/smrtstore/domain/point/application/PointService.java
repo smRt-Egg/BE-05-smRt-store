@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PointService {
 
+    private final PointFacade pointFacade;
     private final OrderService orderService;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
@@ -71,11 +72,11 @@ public class PointService {
         );
     }
 
-    public int calculateDefaultPoint(Long orderId) {
+    private int calculateDefaultPoint(Long orderId) {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
-    public int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
+    private int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
 
         LocalDate now = LocalDate.now();
         int year = now.getYear();
@@ -85,7 +86,7 @@ public class PointService {
         return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
-    public int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
+    private int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
 
         int point = 0;
         for (OrderedProductResponse productResponse : orderedProducts) {
@@ -136,10 +137,6 @@ public class PointService {
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
-        return null;
-    }
-
-    public PointResponse expirePoint(Long userId) {
         return null;
     }
 
