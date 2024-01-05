@@ -49,25 +49,25 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
 
         return Optional.ofNullable(
                 queryFactory
-                .select(coupon)
-                .from(couponAvailableUser)
-                .join(coupon)
-                .on(couponAvailableUser.coupon.id.eq(coupon.id))
-                .where(couponAvailableUser.user.id.eq(userId))
-                .where(couponAvailableUser.coupon.id.eq(couponId))
-                .fetchOne());
+                        .select(coupon)
+                        .from(couponAvailableUser)
+                        .join(coupon)
+                        .on(couponAvailableUser.coupon.id.eq(coupon.id))
+                        .where(couponAvailableUser.user.id.eq(userId))
+                        .where(couponAvailableUser.coupon.id.eq(couponId))
+                        .fetchOne());
     }
 
     @Override
     public Long findUserCouponCount(Long userId) {
 
         return queryFactory
-                .select(coupon)
+                .select(coupon.id.count())
                 .from(couponAvailableUser)
                 .join(coupon)
                 .on(couponAvailableUser.coupon.id.eq(coupon.id))
                 .where(couponAvailableUser.user.id.eq(userId))
-                .fetchCount();
+                .fetchOne();
     }
 
     @Override
