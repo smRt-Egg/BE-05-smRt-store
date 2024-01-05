@@ -128,7 +128,7 @@ class UserServiceTest {
 
         DeliveryAddressBook response = userService.getShippingAddressList(kazuhaId);
 
-        assertThat(userRepository.findById(1L).get().getShippingAddresses().size()).isEqualTo(4);
+        assertThat(userRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(4);
         assertThat(response.getDefaultDeliveryAddress().getRecipient()).isEqualTo("라이덴");
         assertThat(response.getDeliveryAddresses().size()).isEqualTo(3);
     }
@@ -174,5 +174,41 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.deleteShippingAddress(kazuhaId, response4.getId()))
             .isInstanceOf(UserException.class);
+    }
+
+    @Test
+    @DisplayName("기본 배송지를 수정할 수 있다.")
+    void updateDefaultShippingAddress() {
+        DetailShippingResponse response4 = userService.createShippingAddress(kazuhaId,
+            request4);
+
+        userService.updateShippingAddress(kazuhaId, response4.getId(), request5);
+
+        assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getRecipient()).isEqualTo("푸리나");
+        assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().isDefaultYn()).isTrue();
+    }
+
+    @Test
+    @DisplayName("기본 배송지가 아닌 배송지를 기본 배송지로 수정할 수 있다.")
+    void updateNotDefaultToDefaultShippingAddress() {
+        DetailShippingResponse response1 = userService.createShippingAddress(kazuhaId,
+            request1);
+
+        userService.updateShippingAddress(kazuhaId, response1.getId(), request5);
+
+        assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("푸리나");
+        assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().isDefaultYn()).isTrue();
+    }
+
+    @Test
+    @DisplayName("기본 배송지가 아닌 배송지를 기본배송지가 아닌 배송지로 수정할 수 있다.")
+    void updateNotDefaultToNotDefaultShippingAddress() {
+        DetailShippingResponse response1 = userService.createShippingAddress(kazuhaId,
+            request1);
+
+        userService.updateShippingAddress(kazuhaId, response1.getId(), request2);
+
+        assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
+        assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().isDefaultYn()).isFalse();
     }
 }
