@@ -68,8 +68,8 @@ public class UserController {
     }
 
     @DeleteMapping("/shipping/{shippingId}")
-    public ResponseEntity<Void> deleteShippingAddress(@PathVariable Long shippingId) {
-        userService.deleteShippingAddress(shippingId);
+    public ResponseEntity<Void> deleteShippingAddress(@UserId Long userId, @PathVariable Long shippingId) {
+        userService.deleteShippingAddress(userId, shippingId);
         return ResponseEntity.noContent().build();
     }
 }

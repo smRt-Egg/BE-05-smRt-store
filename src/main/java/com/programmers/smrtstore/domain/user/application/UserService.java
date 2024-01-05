@@ -126,11 +126,15 @@ public class UserService {
         return DetailShippingResponse.from(shippingAddress);
     }
 
-    public void deleteShippingAddress(Long shippingId) {
+    public void deleteShippingAddress(Long userId, Long shippingId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
         checkIsDefault(shippingId, shippingAddress);
+
+        user.deleteShippingAddress(shippingId);
         shippingAddressRepository.delete(shippingAddress);
     }
 

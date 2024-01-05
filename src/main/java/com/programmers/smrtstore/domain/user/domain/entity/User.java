@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -131,6 +132,15 @@ public class User {
         for (ShippingAddress shippingAddress : shippingAddresses) {
             if (shippingAddress.isDefaultYn()) {
                 shippingAddress.disableDefault();
+                break;
+            }
+        }
+    }
+
+    public void deleteShippingAddress(Long shippingId) {
+        for(ShippingAddress address : shippingAddresses) {
+            if(address.getId().equals(shippingId)) {
+                shippingAddresses.remove(address);
                 break;
             }
         }
