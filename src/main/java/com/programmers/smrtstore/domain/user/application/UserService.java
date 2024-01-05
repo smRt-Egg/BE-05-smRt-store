@@ -14,8 +14,8 @@ import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRe
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,9 @@ public class UserService {
         checkShippingAddressesSize(shippingAddresses);
         ShippingAddress shippingAddress = request.toShippingAddressEntity(user);
         checkShippingDuplicate(shippingAddress, shippingAddresses);
+        if (shippingAddress.isDefaultYn()) {
+            user.disableOriginalDefault();
+        }
         user.addShippingAddress(shippingAddress);
         shippingAddressRepository.save(shippingAddress);
 
@@ -119,6 +122,23 @@ public class UserService {
         return AggUserShippingInfo.of(defaultShippingAddress, notDefaultShippingAddresses);
     }
 
+    public DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
+        DetailShippingRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
+            .orElseThrow(
+                () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
+
+        if (!shippingAddress.isDefaultYn() && request.isDefaultYn()) //기본 배송지 갱신할 경우
+        {
+            user.disableOriginalDefault();
+        }
+        shippingAddress.updateShippingAddress(request);
+
+        return DetailShippingResponse.from(shippingAddress);
+    }
+
     public DetailShippingResponse findByShippingId(Long shippingId) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
@@ -139,7 +159,8 @@ public class UserService {
     }
 
     private void checkIsDefault(Long shippingId, ShippingAddress shippingAddress) {
-        if(shippingAddress.isDefaultYn())
+        if (shippingAddress.isDefaultYn()) {
             throw new UserException(DELETE_DEFAULT_SHIPPING, String.valueOf(shippingId));
+        }
     }
 }

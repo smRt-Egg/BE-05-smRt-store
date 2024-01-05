@@ -4,8 +4,8 @@ import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +61,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("shipping/{shippingId}")
+    public ResponseEntity<DetailShippingResponse> updateDefaultShippingAddress(@UserId Long userId,
+        @PathVariable Long shippingId, @RequestBody @Valid DetailShippingRequest request) {
+        DetailShippingResponse response = userService.updateShippingAddress(userId, shippingId,
+            request);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/shipping/{shippingId}")
     public ResponseEntity<DetailShippingResponse> findByShippingId(@PathVariable Long shippingId) {
         DetailShippingResponse response = userService.findByShippingId(shippingId);
@@ -68,7 +76,8 @@ public class UserController {
     }
 
     @DeleteMapping("/shipping/{shippingId}")
-    public ResponseEntity<Void> deleteShippingAddress(@UserId Long userId, @PathVariable Long shippingId) {
+    public ResponseEntity<Void> deleteShippingAddress(@UserId Long userId,
+        @PathVariable Long shippingId) {
         userService.deleteShippingAddress(userId, shippingId);
         return ResponseEntity.noContent().build();
     }

@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -122,13 +121,10 @@ public class User {
     }
 
     public void addShippingAddress(ShippingAddress shippingAddress) {
-        if(shippingAddress.isDefaultYn()) {
-            disableOriginalDefault();
-        }
         shippingAddresses.add(shippingAddress);
     }
 
-    private void disableOriginalDefault() {
+    public void disableOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
             if (shippingAddress.isDefaultYn()) {
                 shippingAddress.disableDefault();
@@ -138,8 +134,8 @@ public class User {
     }
 
     public void deleteShippingAddress(Long shippingId) {
-        for(ShippingAddress address : shippingAddresses) {
-            if(address.getId().equals(shippingId)) {
+        for (ShippingAddress address : shippingAddresses) {
+            if (address.getId().equals(shippingId)) {
                 shippingAddresses.remove(address);
                 break;
             }
