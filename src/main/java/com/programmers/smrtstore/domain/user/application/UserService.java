@@ -19,7 +19,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserRes
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,8 +77,9 @@ public class UserService {
     private void checkShippingDuplicate(ShippingAddress shippingAddress,
         List<ShippingAddress> shippingAddresses) {
         shippingAddresses.forEach(address -> {
-            if((address.getPhoneNum2() == null && shippingAddress.getPhoneNum2() == null)
-            || (address.getPhoneNum2() != null && shippingAddress.getPhoneNum2() != null && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2()))) {
+            if ((address.getPhoneNum2() == null && shippingAddress.getPhoneNum2() == null)
+                || (address.getPhoneNum2() != null && shippingAddress.getPhoneNum2() != null
+                && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2()))) {
                 if (address.getName().equals(shippingAddress.getName())
                     && address.getRecipient().equals(shippingAddress.getRecipient())
                     && address.getAddress1Depth().equals(shippingAddress.getAddress1Depth())
