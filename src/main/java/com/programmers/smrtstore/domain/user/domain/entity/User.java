@@ -121,13 +121,13 @@ public class User {
     }
 
     public void addShippingAddress(ShippingAddress shippingAddress) {
-        if (shippingAddress.isDefaultYn()) {
-            unlockOriginalDefault();
+        if(shippingAddress.isDefaultYn()) {
+            disableOriginalDefault();
         }
         shippingAddresses.add(shippingAddress);
     }
 
-    private void unlockOriginalDefault() {
+    private void disableOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
             if (shippingAddress.isDefaultYn()) {
                 shippingAddress.disableDefault();
