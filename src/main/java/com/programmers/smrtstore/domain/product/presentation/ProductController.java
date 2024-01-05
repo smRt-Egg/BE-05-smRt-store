@@ -6,7 +6,6 @@ import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductThumbnailAPIResponse;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,15 +32,12 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductThumbnailAPIResponse>> findAllProducts() {
-        var productThumbnailResponses = productService.getAllProducts();
-        var reviewSampleResponse = productThumbnailResponses
-            .stream()
-            .map(response -> reviewService.getReviewsSizeAndAvgScoreByProductId(response.getId()))
+        var result = productService.getAllProducts().stream()
+            .map(productData -> {
+                var reviewData = reviewService.getReviewsSizeAndAvgScoreByProductId(productData.getId());
+                return ProductThumbnailAPIResponse.of(productData, reviewData);
+            })
             .toList();
-        List<ProductThumbnailAPIResponse> result = IntStream.range(0,
-            productThumbnailResponses.size()).mapToObj(
-            i -> ProductThumbnailAPIResponse.of(productThumbnailResponses.get(i),
-                reviewSampleResponse.get(i))).toList();
         return ResponseEntity.ok(result);
     }
 }
