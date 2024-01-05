@@ -78,15 +78,17 @@ public class UserService {
     private void checkShippingDuplicate(ShippingAddress shippingAddress,
         List<ShippingAddress> shippingAddresses) {
         shippingAddresses.forEach(address -> {
-            if (address.getName().equals(shippingAddress.getName())
-                && address.getRecipient().equals(shippingAddress.getRecipient())
-                && address.getAddress1Depth().equals(shippingAddress.getAddress1Depth())
-                && address.getAddress2Depth().equals(shippingAddress.getAddress2Depth())
-                && address.getZipCode().equals(shippingAddress.getZipCode())
-                && address.getPhoneNum1().equals(shippingAddress.getPhoneNum1())
-                && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2())) {
-                throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
-                    String.valueOf(shippingAddress.getId()));
+            if((address.getPhoneNum2() == null && shippingAddress.getPhoneNum2() == null)
+            || (address.getPhoneNum2() != null && shippingAddress.getPhoneNum2() != null && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2()))) {
+                if (address.getName().equals(shippingAddress.getName())
+                    && address.getRecipient().equals(shippingAddress.getRecipient())
+                    && address.getAddress1Depth().equals(shippingAddress.getAddress1Depth())
+                    && address.getAddress2Depth().equals(shippingAddress.getAddress2Depth())
+                    && address.getZipCode().equals(shippingAddress.getZipCode())
+                    && address.getPhoneNum1().equals(shippingAddress.getPhoneNum1())) {
+                    throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
+                        String.valueOf(shippingAddress.getId()));
+                }
             }
         });
     }
