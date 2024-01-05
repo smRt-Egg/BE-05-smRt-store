@@ -5,7 +5,9 @@ import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepos
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class PointFacadeImpl implements PointFacade {
 
