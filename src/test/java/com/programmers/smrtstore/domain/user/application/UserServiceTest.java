@@ -52,6 +52,27 @@ class UserServiceTest {
 
     Long kazuhaId;
 
+    CreateShippingRequest request1 = new CreateShippingRequest(
+        "집", "카즈하", "서울", "광진구", "12345",
+        "01000000000", null, false
+    );
+    CreateShippingRequest request2 = new CreateShippingRequest(
+        "학교", "카즈하", "서울", "광진구", "12345",
+        "01000000000", "01012345678", false
+    );
+    CreateShippingRequest request3 = new CreateShippingRequest(
+        "회사", "카즈하", "경기도", "분당시", "12345",
+        "01000000000", "01012345678", false
+    );
+    CreateShippingRequest request4 = new CreateShippingRequest(
+        "동방", "라이덴", "경기도", "분당시", "12345",
+        "01000000000", "01012345678", true
+    );
+    CreateShippingRequest request5 = new CreateShippingRequest(
+        "동방", "푸리나", "경기도", "분당시", "12345",
+        "01000000000", "01012345678", true
+    );
+
     @BeforeEach
     public void beforeEach() {
         kazuhaId = authService.signUp(kazuha).getId();
@@ -66,45 +87,47 @@ class UserServiceTest {
     @Test
     @DisplayName("배송지를 추가할 수 있다.")
     void createShippingAddress() {
-        CreateShippingRequest request = new CreateShippingRequest(
-            "집", "카즈하", "서울", "광진구", "12345",
-            "01000000000", null, true
-        );
-        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request);
+        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
 
-        assertThat(request.getName()).isEqualTo(response.getName());
-        assertThat(request.getRecipient()).isEqualTo(response.getRecipient());
-        assertThat(request.getAddress1Depth()).isEqualTo(response.getAddress1Depth());
-        assertThat(request.getAddress2Depth()).isEqualTo(response.getAddress2Depth());
-        assertThat(request.getZipCode()).isEqualTo(response.getZipCode());
-        assertThat(request.getPhoneNum1()).isEqualTo(response.getPhoneNum1());
-        assertThat(request.getPhoneNum2()).isEqualTo(response.getPhoneNum2());
-        assertThat(request.isDefaultYn()).isEqualTo(response.isDefaultYn());
+        assertThat(response.getName()).isEqualTo(request1.getName());
+        assertThat(response.getRecipient()).isEqualTo(request1.getRecipient());
+        assertThat(response.getAddress1Depth()).isEqualTo(request1.getAddress1Depth());
+        assertThat(response.getAddress2Depth()).isEqualTo(request1.getAddress2Depth());
+        assertThat(response.getZipCode()).isEqualTo(request1.getZipCode());
+        assertThat(response.getPhoneNum1()).isEqualTo(request1.getPhoneNum1());
+        assertThat(response.getPhoneNum2()).isEqualTo(request1.getPhoneNum2());
+        assertThat(response.isDefaultYn()).isEqualTo(request1.isDefaultYn());
     }
 
     @Test
     @DisplayName("user가 가지고 있는 배송지 목록을 조회할 수 있다.")
     void getShippingAddressList() {
-        CreateShippingRequest request1 = new CreateShippingRequest(
-            "집", "카즈하", "서울", "광진구", "12345",
-            "01000000000", null, true
-        );
-        CreateShippingRequest request2 = new CreateShippingRequest(
-            "학교", "카즈하", "서울", "광진구", "12345",
-            "01000000000", "01012345678", false
-        );
-        CreateShippingRequest request3 = new CreateShippingRequest(
-            "회사", "카즈하", "경기도", "분당시", "12345",
-            "01000000000", "01012345678", false
-        );
-
         userService.createShippingAddress(kazuhaId, request1);
         userService.createShippingAddress(kazuhaId, request2);
         userService.createShippingAddress(kazuhaId, request3);
+        userService.createShippingAddress(kazuhaId, request4);
+
         DeliveryAddressBook response = userService.getShippingAddressList(kazuhaId);
 
-        assertThat(response.getDefaultDeliveryAddress().getName()).isEqualTo("집");
-        assertThat(response.getDeliveryAddresses().size()).isEqualTo(2);
+        assertThat(userRepository.findById(1L).get().getShippingAddresses().size()).isEqualTo(4);
+        assertThat(response.getDefaultDeliveryAddress().getRecipient()).isEqualTo("라이덴");
+        assertThat(response.getDeliveryAddresses().size()).isEqualTo(3);
     }
 
+    @Test
+    @DisplayName("수정 시 배송지 정보를 배송지 id로 조회할 수 있다.")
+    void findByShippingId() {
+        CreateShippingResponse response = userService.createShippingAddress(kazuhaId, request1);
+
+        CreateShippingResponse byShippingId = userService.findByShippingId(response.getId());
+
+        assertThat(byShippingId.getName()).isEqualTo(request1.getName());
+        assertThat(byShippingId.getRecipient()).isEqualTo(request1.getRecipient());
+        assertThat(byShippingId.getAddress1Depth()).isEqualTo(request1.getAddress1Depth());
+        assertThat(byShippingId.getAddress2Depth()).isEqualTo(request1.getAddress2Depth());
+        assertThat(byShippingId.getZipCode()).isEqualTo(request1.getZipCode());
+        assertThat(byShippingId.getPhoneNum1()).isEqualTo(request1.getPhoneNum1());
+        assertThat(byShippingId.getPhoneNum2()).isEqualTo(request1.getPhoneNum2());
+        assertThat(byShippingId.isDefaultYn()).isEqualTo(request1.isDefaultYn());
+    }
 }
