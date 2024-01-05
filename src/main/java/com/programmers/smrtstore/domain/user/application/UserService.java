@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.application;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.DELETE_DEFAULT_SHIPPING;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
@@ -123,5 +124,18 @@ public class UserService {
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
         return CreateShippingResponse.from(shippingAddress);
+    }
+
+    public void deleteShippingAddress(Long shippingId) {
+        ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
+            .orElseThrow(
+                () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
+        checkIsDefault(shippingId, shippingAddress);
+        shippingAddressRepository.delete(shippingAddress);
+    }
+
+    private void checkIsDefault(Long shippingId, ShippingAddress shippingAddress) {
+        if(shippingAddress.isDefaultYn())
+            throw new UserException(DELETE_DEFAULT_SHIPPING, String.valueOf(shippingId));
     }
 }

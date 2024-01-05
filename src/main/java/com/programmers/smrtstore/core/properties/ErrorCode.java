@@ -48,6 +48,7 @@ public enum ErrorCode {
     CART_ALREADY_EXIST(BAD_REQUEST, "이미 장바구니에 담긴 상품입니다."),
     COUPON_PERCENT_EXCEED(BAD_REQUEST,"쿠폰의 퍼센트 할인값은 100% 를 초과할 수 없습니다."),
     EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS(BAD_REQUEST, "배송지 수가 이미 최대입니다."),
+    DELETE_DEFAULT_SHIPPING(BAD_REQUEST, "다른 배송지를 기본 배송지로 변경 후 삭제해주세요."),
     // 401
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),

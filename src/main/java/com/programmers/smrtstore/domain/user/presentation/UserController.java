@@ -66,4 +66,10 @@ public class UserController {
         CreateShippingResponse response = userService.findByShippingId(shippingId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/shipping/{shippingId}")
+    public ResponseEntity<Void> deleteShippingAddress(@PathVariable Long shippingId) {
+        userService.deleteShippingAddress(shippingId);
+        return ResponseEntity.noContent().build();
+    }
 }
