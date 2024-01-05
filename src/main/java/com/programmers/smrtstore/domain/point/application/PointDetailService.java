@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.exception.PointException;
@@ -10,6 +11,7 @@ import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailReq
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PointDetailService {
 
+    private final PointFacade pointFacade;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
     private final PointDetailJpaRepository pointDetailRepository;
@@ -53,7 +56,21 @@ public class PointDetailService {
         return null;
     }
 
-    public Long saveExpirationHistory(Long userId) {
-        return null;
+    public Long saveExpirationHistory() {
+
+        List<ExpiredPointDetailResponse> expireHistory = pointFacade.getExpiredSumGroupByOriginAcmId();
+
+        Long pointDetailId = null;
+        for (ExpiredPointDetailResponse expireDetail : expireHistory) {
+            PointDetail pointDetail = PointDetail.builder()
+                .pointId(null)
+                .userId(expireDetail.getUserId())
+                .pointAmount(expireDetail.getPointAmount() * -1)
+                .originAcmId(expireDetail.getOriginAcmId())
+                .build();
+            pointDetailRepository.save(pointDetail);
+            if (pointDetailId == null) pointDetailId = pointDetail.getId();
+        }
+        return pointDetailId;
     }
 }
