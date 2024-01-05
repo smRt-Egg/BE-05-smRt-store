@@ -1,0 +1,9 @@
+package com.programmers.smrtstore.domain.point.infrastructure;
+
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import java.util.List;
+
+public interface PointDetailRepositoryCustom {
+
+    List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId();
+}
