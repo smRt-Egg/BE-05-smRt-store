@@ -35,7 +35,7 @@ public class ReviewService {
     private final OrderJpaRepository orderJpaRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request) {
-        if (!orderJpaRepository.verifyOrderDelivered(request.getUserId(), request.getProductId())) {
+        if (!orderJpaRepository.existsOrderPurchaseConfirmed(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT);
         }
         if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
