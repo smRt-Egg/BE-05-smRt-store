@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.product.application.dto.req;
 
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class CreateProductDetailOptionRequest {
     public ProductDetailOption toEntity(Product product) {
         return ProductDetailOption.builder()
             .optionNames(getOptionNames())
+            .optionType(OptionType.COMBINATION)
             .price(price)
             .stockQuantity(stockQuantity)
             .product(product)
