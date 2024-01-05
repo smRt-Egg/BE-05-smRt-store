@@ -8,6 +8,8 @@ import lombok.Getter;
 @Builder
 public class CreateShippingResponse {
 
+    private Long id;
+
     private String name;
 
     private String recipient;
@@ -26,6 +28,7 @@ public class CreateShippingResponse {
 
     public static CreateShippingResponse from(ShippingAddress address) {
         return CreateShippingResponse.builder()
+            .id(address.getId())
             .name(address.getName())
             .recipient(address.getRecipient())
             .address1Depth(address.getAddress1Depth())
