@@ -1,0 +1,19 @@
+package com.programmers.smrtstore.domain.point.application;
+
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
+import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class PointFacadeImpl implements PointFacade {
+
+    private final PointJpaRepository pointRepository;
+    private final PointDetailJpaRepository pointDetailRepository;
+
+    @Override
+    public List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId() {
+        return pointDetailRepository.getExpiredSumGroupByOriginAcmId();
+    }
+}
