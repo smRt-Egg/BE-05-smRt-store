@@ -19,31 +19,6 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
 
     private JPAQueryFactory jpaQueryFactory;
 
-    /*
-     * SELECT
-     *     pd.origin_acm_id,
-     *     p.user_id,
-     *     p.order_id,
-     *     SUM(pd.pointValue) AS total,
-     * 		p.membershipApplyYn
-     * FROM
-     *     point_detail AS pd
-     *     INNER JOIN point AS p ON pd.point_id = p.id
-     * WHERE
-     *     pd.origin_acm_id IN (
-     *         SELECT id FROM point WHERE DATE_FORMAT(expired_at, "%Y-%m-%d") = '2033-12-27'
-     *     )
-     * GROUP BY
-     *     pd.origin_acm_id,
-     *     p.user_id,
-     *     p.order_id,
-     * 		p.membershipApplyYn
-     * HAVING
-     *     total > 0
-     * ORDER BY
-     *     pd.origin_acm_id ASC;
-     */
-
     @Override
     public List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId() {
 
