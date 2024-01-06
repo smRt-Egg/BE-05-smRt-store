@@ -10,6 +10,7 @@ import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -26,6 +27,7 @@ public class CartService {
 
     private final CartJPARepository cartJPARepository;
     private final ProductJpaRepository productJPARepository;
+    private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
     private final UserRepository userRepository;
 
     public CreateCartResponse createCart(CreateCartRequest request) {
@@ -35,6 +37,8 @@ public class CartService {
         Product product = productJPARepository.findById(request.getProductId())
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
+        var detailOption = detailOptionJpaRepository.findById(request.getDetailOptionId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         cartJPARepository.findByUserAndProduct(user, product).ifPresent(cart -> {
             throw new CartException(ErrorCode.CART_ALREADY_EXIST);
         });
@@ -42,6 +46,7 @@ public class CartService {
             Cart.builder()
                 .user(user)
                 .product(product)
+                .detailOption(detailOption)
                 .quantity(request.getQuantity())
                 .build()
         );
