@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProductCreateAPIResponse {
+public class ProductAPIResponse {
 
     private Long id;
     private String name;
@@ -35,8 +35,8 @@ public class ProductCreateAPIResponse {
     private List<ProductDetailOptionAPIResponse> detailOptionAPIResponses;
     private List<ProductAdditionalOptionAPIResponse> additionalOptionAPIResponses;
 
-    public static ProductCreateAPIResponse from(ProductResponse productResponse) {
-        return new ProductCreateAPIResponse(
+    public static ProductAPIResponse from(ProductResponse productResponse) {
+        return new ProductAPIResponse(
             productResponse.getId(),
             productResponse.getName(),
             productResponse.getPrice(),
