@@ -2,8 +2,6 @@ name: Java CI with Gradle in smRt store
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "develop" ]
   pull_request:
     branches: [ "main","develop" ]
 
