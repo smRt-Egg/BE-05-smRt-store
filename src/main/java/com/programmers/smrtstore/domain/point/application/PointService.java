@@ -1,8 +1,8 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.order.application.OrderService;
-import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
+import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
