@@ -2,7 +2,7 @@ package com.programmers.smrtstore.domain.cart.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.cart.application.dto.req.CreateCartRequest;
-import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartRequest;
+import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartQuantityRequest;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CartResponse;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CreateCartResponse;
 import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
@@ -71,7 +71,7 @@ public class CartService {
             .toList();
     }
 
-    public CartResponse updateCartQuantity(UpdateCartRequest request) {
+    public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
         Cart cart = getCart(request.getCartId());
         if (request.isAddYn()) {
             cart.addQuantity(request.getQuantity());
