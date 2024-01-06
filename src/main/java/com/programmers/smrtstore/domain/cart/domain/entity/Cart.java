@@ -65,9 +65,7 @@ public class Cart {
     private Cart(User user, Product product, ProductDetailOption detailOption, Integer quantity) {
         this.user = user;
         this.product = product;
-        if(!detailOption.getProduct().getId().equals(product.getId())) {
-            throw new CartException(ErrorCode.CART_PRODUCT_DETAIL_OPTION_NOT_MATCH);
-        }
+        validateDetailOption(product, detailOption);
         this.productDetailOptionId = detailOption.getId();
         this.quantity = quantity;
         this.price = calculatePrice(product, detailOption.getId(), quantity);
@@ -88,6 +86,18 @@ public class Cart {
         }
         this.quantity -= quantity;
         this.price = calculatePrice(product, productDetailOptionId, this.quantity);
+    }
+
+    private static void validateDetailOption(Product product, ProductDetailOption detailOption) {
+        if (!detailOption.getProduct().getId().equals(product.getId())) {
+            throw new CartException(ErrorCode.CART_PRODUCT_DETAIL_OPTION_NOT_MATCH);
+        }
+    }
+
+    public void updateDetailOption(ProductDetailOption detailOption) {
+        validateDetailOption(product, detailOption);
+        this.productDetailOptionId = detailOption.getId();
+        this.price = calculatePrice(product, detailOption.getId(), quantity);
     }
 
 }

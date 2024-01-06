@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.cart.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.cart.application.dto.req.CreateCartRequest;
+import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartOptionRequest;
 import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartQuantityRequest;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CartResponse;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CreateCartResponse;
@@ -78,6 +79,15 @@ public class CartService {
         } else {
             cart.removeQuantity(request.getQuantity());
         }
+        return CartResponse.from(cart);
+    }
+
+
+    public CartResponse updateCartProductOption(UpdateCartOptionRequest request) {
+        Cart cart = getCart(request.getCartId());
+        var detailOption = detailOptionJpaRepository.findById(request.getProductDetailOptionId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        cart.updateDetailOption(detailOption);
         return CartResponse.from(cart);
     }
 
