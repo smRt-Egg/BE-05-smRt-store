@@ -26,6 +26,4 @@ public class PointRequest {
             .membershipApplyYn(membershipApplyYn)
             .build();
     }
-
-
 }
