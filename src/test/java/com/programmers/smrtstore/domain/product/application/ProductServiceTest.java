@@ -3,18 +3,13 @@ package com.programmers.smrtstore.domain.product.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
-import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductOptionRequest;
-import com.programmers.smrtstore.domain.product.application.dto.req.UpdateProductRequest;
-import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionTag;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductOptionJpaRepository;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -41,14 +36,13 @@ class ProductServiceTest {
     private static final String THUMBNAIL_STR = "https://localhost";
     private static final String CONTENT_IMAGE_STR = "https://localhost:8080";
     private static final String OPTION_NAME = "option";
-    private static final OptionTag OPTION_TAG = OptionTag.CHOICE;
     private static final Integer PRICE = 0;
     @Autowired
     private ProductService productService;
     @Autowired
     private ProductJpaRepository productJPARepository;
     @Autowired
-    private ProductOptionJpaRepository productOptionJPARepository;
+    private ProductDetailOptionJpaRepository detailOptionJpaRepository;
 
     @Test
     void testCreateProductWithoutOptions() throws Exception {
@@ -60,7 +54,7 @@ class ProductServiceTest {
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
+            .combinationYn(false)
             .build();
         // Act
         var actualResult = productService.createProduct(request);
@@ -73,8 +67,9 @@ class ProductServiceTest {
         assertThat(actualResult.getThumbnail()).isEqualTo(request.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(request.getContentImage());
         assertThat(actualResult.getCreatedAt()).isNotNull();
-        assertThat(actualResult.isOptionYn()).isFalse();
-        assertThat(actualResult.isAvailableYn()).isFalse();
+        assertThat(actualResult.isCombinationYn()).isFalse();
+        assertThat(actualResult.getProductStatusType()).isEqualTo(ProductStatusType.NOT_SALE);
+        assertThat(detailOptionJpaRepository.findAll()).hasSize(1);
     }
 
     @Test
@@ -87,18 +82,16 @@ class ProductServiceTest {
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
+            .combinationYn(true)
             .build();
-        List<CreateProductOptionRequest> optionRequests = List.of(
-            CreateProductOptionRequest.builder()
-                .optionName(OPTION_NAME + "1")
-                .optionTag(OPTION_TAG)
+        List<CreateProductDetailOptionRequest> optionRequests = List.of(
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "1")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .build(),
-            CreateProductOptionRequest.builder()
-                .optionName(OPTION_NAME + 2)
-                .optionTag(OPTION_TAG)
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "2")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .build()
@@ -114,9 +107,9 @@ class ProductServiceTest {
         assertThat(actualResult.getThumbnail()).isEqualTo(request.getThumbnail());
         assertThat(actualResult.getContentImage()).isEqualTo(request.getContentImage());
         assertThat(actualResult.getCreatedAt()).isNotNull();
-        assertThat(actualResult.isOptionYn()).isTrue();
-        assertThat(actualResult.isAvailableYn()).isFalse();
-        assertThat(actualResult.getProductOptions()).hasSize(optionRequests.size());
+        assertThat(actualResult.isCombinationYn()).isTrue();
+        assertThat(actualResult.getProductStatusType()).isEqualTo(ProductStatusType.NOT_SALE);
+        assertThat(actualResult.getDetailOptionResponses()).hasSize(optionRequests.size());
     }
 
     @DisplayName("Test createProduct Fail when optionYn is false but optionRequests apply")
@@ -130,18 +123,16 @@ class ProductServiceTest {
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
+            .combinationYn(false)
             .build();
-        List<CreateProductOptionRequest> optionRequests = List.of(
-            CreateProductOptionRequest.builder()
-                .optionName(OPTION_NAME + "1")
-                .optionTag(OPTION_TAG)
+        List<CreateProductDetailOptionRequest> optionRequests = List.of(
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "1")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .build(),
-            CreateProductOptionRequest.builder()
-                .optionName(OPTION_NAME + "2")
-                .optionTag(OPTION_TAG)
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "2")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
                 .build()
@@ -154,18 +145,18 @@ class ProductServiceTest {
     @Test
     void testGetProductByIdSuccess() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        ProductResponse expectedResult = ProductResponse.from(expectedProduct);
+            .combinationYn(false)
+            .build();
+        var expectedResult = productService.createProduct(request);
         // Act
-        var actualResult = productService.getProductById(expectedProduct.getId());
+        var actualResult = productService.getProductById(expectedResult.getId());
         // Assert
         assertThat(actualResult.getId()).isEqualTo(expectedResult.getId());
         assertThat(actualResult.getName()).isEqualTo(expectedResult.getName());
@@ -185,65 +176,58 @@ class ProductServiceTest {
     @Test
     void testGetAllProductsSuccess() throws MalformedURLException {
         // Arrange
-        List<Product> products = List.of(
-            Product.builder()
-                .name(NAME)
-                .category(CATEGORY)
-                .price(SALE_PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .thumbnail(new URL(THUMBNAIL_STR))
-                .contentImage(new URL(CONTENT_IMAGE_STR))
-                .optionYn(false)
-                .build(),
-            Product.builder()
-                .name(NAME)
-                .category(CATEGORY)
-                .price(SALE_PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .thumbnail(new URL(THUMBNAIL_STR))
-                .contentImage(new URL(CONTENT_IMAGE_STR))
-                .optionYn(false)
-                .build()
-        );
-        productJPARepository.saveAll(products);
-        // Act
-        var actualResult = productService.getAllProducts();
-        // Assert
-        assertThat(actualResult).hasSize(products.size());
-    }
-
-    @Test
-    void testReleaseProductSuccess() throws MalformedURLException {
-        // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
+            .combinationYn(false)
+            .build();
+        productService.createProduct(request);
+        // Act
+        var actualResult = productService.getAllProducts();
+        // Assert
+        assertThat(actualResult).hasSize(1);
+    }
+
+    @Test
+    void testReleaseProductSuccess() throws MalformedURLException {
+        // Arrange
+        CreateProductRequest request = CreateProductRequest.builder()
+            .name(NAME)
+            .category(CATEGORY)
+            .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
+            .thumbnail(new URL(THUMBNAIL_STR))
+            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .combinationYn(false)
+            .build();
+        var expectedProductId = productService.createProduct(request).getId();
+        var expectedProduct = productJPARepository.findById(expectedProductId).get();
         // Act
         var actualResult = productService.releaseProduct(expectedProduct.getId());
         // Assert
         assertThat(actualResult).isEqualTo(expectedProduct.getId());
-        assertThat(expectedProduct.isAvailableYn()).isTrue();
+        assertThat(expectedProduct.getProductStatusType()).isEqualTo(ProductStatusType.SALE);
         assertThat(expectedProduct.getReleaseDate()).isNotNull();
     }
 
     @Test
     void testReleaseProductFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
+            .combinationYn(false)
+            .build();
+        var expectedProductId = productService.createProduct(request).getId();
+        var expectedProduct = productJPARepository.findById(expectedProductId).get();
         var expectedResult = productService.releaseProduct(expectedProduct.getId());
         // Act & Assert
         assertThrows(ProductException.class, () -> productService.releaseProduct(expectedResult));
@@ -252,36 +236,38 @@ class ProductServiceTest {
     @Test
     void testMakeProductNotAvailableSuccess() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedResult = productService.releaseProduct(expectedProduct.getId());
+            .combinationYn(false)
+            .build();
+        var expectedProductId = productService.createProduct(request).getId();
+        var expectedProduct = productJPARepository.findById(expectedProductId).get();
+        productService.releaseProduct(expectedProductId);
         // Act
-        var actualResult = productService.makeProductNotAvailable(expectedResult);
+        var actualResult = productService.makeProductNotAvailable(expectedProductId);
         // Assert
-        assertThat(actualResult).isEqualTo(expectedResult);
-        assertThat(expectedProduct.isAvailableYn()).isFalse();
+        assertThat(actualResult).isEqualTo(expectedProductId);
+        assertThat(expectedProduct.getProductStatusType()).isEqualTo(ProductStatusType.NOT_SALE);
     }
 
     @Test
     void testMakeProductNotAvailableFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         // Act & Assert
         assertThrows(ProductException.class,
             () -> productService.makeProductNotAvailable(expectedId));
@@ -290,37 +276,38 @@ class ProductServiceTest {
     @Test
     void testMakeProductAvailableSuccess() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        productService.releaseProduct(expectedProduct.getId());
-        var expectedResult = productService.makeProductNotAvailable(expectedProduct.getId());
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
+        productService.releaseProduct(expectedId);
+        var expectedResult = productService.makeProductNotAvailable(expectedId);
         // Act
         var actualResult = productService.makeProductAvailable(expectedResult);
         // Assert
         assertThat(actualResult).isEqualTo(expectedResult);
-        assertThat(expectedProduct.isAvailableYn()).isTrue();
     }
 
     @Test
     void testMakeProductAvailableFailWhenProductAlreadyAvailable() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = productService.releaseProduct(expectedProduct.getId());
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
+        productService.releaseProduct(expectedId);
         // Act & Assert
         assertThrows(ProductException.class, () -> productService.makeProductAvailable(expectedId));
     }
@@ -328,16 +315,16 @@ class ProductServiceTest {
     @Test
     void testMakeProductAvailableFailWhenProductNotReleased() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         // Act & Assert
         assertThrows(ProductException.class, () -> productService.makeProductAvailable(expectedId));
     }
@@ -345,16 +332,16 @@ class ProductServiceTest {
     @Test
     void testDeleteProduct() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         // Act & Assert
         productService.deleteProduct(expectedId);
         assertThat(productJPARepository.findById(expectedId)).isEmpty();
@@ -363,16 +350,16 @@ class ProductServiceTest {
     @Test
     void testAddProductStockQuantity() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         Integer expectedAddQuantity = 100;
         // Act
         var actualResult = productService.addProductStockQuantity(expectedId, expectedAddQuantity);
@@ -380,48 +367,20 @@ class ProductServiceTest {
         assertThat(actualResult.getStockQuantity()).isEqualTo(STOCK_QUANTITY + expectedAddQuantity);
     }
 
-    @Test
-    void testAddProductStockQuantityWithProductOption() throws MalformedURLException {
-        // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
-            .name(NAME)
-            .category(CATEGORY)
-            .price(SALE_PRICE)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        ProductOption expectedProductOption = productOptionJPARepository.save(
-            ProductOption.builder()
-                .optionName(OPTION_NAME)
-                .optionTag(OPTION_TAG)
-                .price(PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .product(expectedProduct)
-                .build());
-        Integer expectedAddQuantity = 100;
-        var expectedProductId = expectedProduct.getId();
-        var expectedProductOptionId = expectedProductOption.getId();
-        // Act
-        var actualResult = productService.addProductStockQuantity(expectedProductId,
-            expectedProductOptionId, expectedAddQuantity);
-        // Assert
-        assertThat(actualResult.getStockQuantity()).isEqualTo(STOCK_QUANTITY + expectedAddQuantity);
-    }
 
     @Test
     void testRemoveProductStockQuantity() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         Integer expectedRemoveQuantity = 50;
         // Act
         var actualResult = productService.removeProductStockQuantity(expectedId,
@@ -435,16 +394,16 @@ class ProductServiceTest {
     @Test
     void testRemoveProductStockQuantityFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         Integer expectedRemoveQuantity = 120;
         // Act & Assert
         assertThrows(ProductException.class,
@@ -454,25 +413,26 @@ class ProductServiceTest {
     @Test
     void testRemoveProductStockQuantityWithProductOption() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        ProductOption expectedProductOption = productOptionJPARepository.save(
-            ProductOption.builder()
-                .optionName(OPTION_NAME)
-                .optionTag(OPTION_TAG)
+            .combinationYn(true)
+            .build();
+        List<CreateProductDetailOptionRequest> optionRequests = List.of(
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "1")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
-                .product(expectedProduct)
-                .build());
+                .build()
+        );
+        var expectedResponse = productService.createProduct(request, optionRequests);
+        var expectedProductId = expectedResponse.getId();
+        var expectedProductOptionId = expectedResponse.getDetailOptionResponses().get(0).getId();
         Integer expectedRemoveQuantity = 50;
-        var expectedProductId = expectedProduct.getId();
-        var expectedProductOptionId = expectedProductOption.getId();
         // Act
         var actualResult = productService.removeProductStockQuantity(expectedProductId,
             expectedProductOptionId, expectedRemoveQuantity);
@@ -485,25 +445,26 @@ class ProductServiceTest {
     @Test
     void testRemoveProductStockQuantityWithProductOptionFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        ProductOption expectedProductOption = productOptionJPARepository.save(
-            ProductOption.builder()
-                .optionName(OPTION_NAME)
-                .optionTag(OPTION_TAG)
+            .combinationYn(true)
+            .build();
+        List<CreateProductDetailOptionRequest> optionRequests = List.of(
+            CreateProductDetailOptionRequest.builder()
+                .optionName1(OPTION_NAME + "1")
                 .price(PRICE)
                 .stockQuantity(STOCK_QUANTITY)
-                .product(expectedProduct)
-                .build());
+                .build()
+        );
+        var expectedResponse = productService.createProduct(request, optionRequests);
+        var expectedProductId = expectedResponse.getId();
+        var expectedProductOptionId = expectedResponse.getDetailOptionResponses().get(0).getId();
         Integer expectedRemoveQuantity = 200;
-        var expectedProductId = expectedProduct.getId();
-        var expectedProductOptionId = expectedProductOption.getId();
         // Act & Assert
         assertThrows(ProductException.class,
             () -> productService.removeProductStockQuantity(expectedProductId,
@@ -511,114 +472,18 @@ class ProductServiceTest {
     }
 
     @Test
-    void testRemoveProductOptionSuccess() throws MalformedURLException {
+    void testUpdateProductDiscountRatioSuccess() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
-            .name(NAME)
-            .category(CATEGORY)
-            .price(SALE_PRICE)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        ProductOption expectedProductOption = productOptionJPARepository.save(
-            ProductOption.builder()
-                .optionName(OPTION_NAME)
-                .optionTag(OPTION_TAG)
-                .price(PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .product(expectedProduct)
-                .build());
-        var expectedProductId = expectedProduct.getId();
-        var expectedProductOptionId = expectedProductOption.getId();
-        // Act
-        var actualResult = productService.removeProductOption(expectedProductId,
-            expectedProductOptionId);
-        // Assert
-        var actualProductOption = productOptionJPARepository.findById(expectedProductOptionId);
-        assertThat(actualResult.getProductOptions()).isEmpty();
-        assertThat(actualProductOption).isEmpty();
-    }
-
-    @Test
-    void testUpdateProduct() throws MalformedURLException {
-        // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(false)
-            .build());
-        var expectedId = expectedProduct.getId();
-        UpdateProductRequest expectedRequest = UpdateProductRequest.builder()
-            .id(expectedId)
-            .name(NAME + "1")
-            .category(CATEGORY)
-            .salePrice(SALE_PRICE + 100)
-            .stockQuantity(STOCK_QUANTITY + 10)
-            .thumbnail(new URL(CONTENT_IMAGE_STR))
-            .contentImage(new URL(THUMBNAIL_STR))
+            .combinationYn(false)
             .build();
-        // Act
-        var actualResult = productService.updateProduct(expectedRequest);
-        // Assert
-        assertThat(actualResult.getName()).isEqualTo(expectedRequest.getName());
-        assertThat(actualResult.getCategory()).isEqualTo(expectedRequest.getCategory());
-        assertThat(actualResult.getPrice()).isEqualTo(expectedRequest.getSalePrice());
-        assertThat(actualResult.getStockQuantity()).isEqualTo(expectedRequest.getStockQuantity());
-        assertThat(actualResult.getThumbnail()).isEqualTo(expectedRequest.getThumbnail());
-        assertThat(actualResult.getContentImage()).isEqualTo(expectedRequest.getContentImage());
-        assertThat(actualResult.getUpdatedAT()).isNotNull();
-    }
-
-    @Test
-    void testUpdateProductOption() throws MalformedURLException {
-        // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
-            .name(NAME)
-            .category(CATEGORY)
-            .price(SALE_PRICE)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        ProductOption expectedProductOption = productOptionJPARepository.save(
-            ProductOption.builder()
-                .optionName(OPTION_NAME)
-                .optionTag(OPTION_TAG)
-                .price(PRICE)
-                .stockQuantity(STOCK_QUANTITY)
-                .product(expectedProduct)
-                .build());
-        var expectedOptionId = expectedProductOption.getId();
-        UpdateProductOptionRequest expectedRequest = UpdateProductOptionRequest.builder()
-            .id(expectedOptionId)
-            .optionName(OPTION_NAME + "1")
-            .optionTag(OPTION_TAG)
-            .price(PRICE + 100)
-            .build();
-        var actualResult = productService.updateProductOption(expectedRequest);
-        // Assert
-        assertThat(actualResult.getOptionName()).isEqualTo(expectedRequest.getOptionName());
-        assertThat(actualResult.getOptionTag()).isEqualTo(expectedRequest.getOptionTag());
-        assertThat(actualResult.getPrice()).isEqualTo(expectedRequest.getPrice());
-    }
-
-    @Test
-    void testUpdateProductDiscountRatioSuccess() throws MalformedURLException {
-        // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
-            .name(NAME)
-            .category(CATEGORY)
-            .price(SALE_PRICE)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        var expectedId = expectedProduct.getId();
+        var expectedId = productService.createProduct(request).getId();
         var expectedDiscountRatio = 10.5f;
         // Act
         var actualResult = productService.updateProductDiscountRatio(expectedId,
@@ -631,15 +496,16 @@ class ProductServiceTest {
     @Test
     void testUpdateProductDiscountRatioFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         var expectedDiscountRatio = 0f;
         // Assert
         assertThrows(ProductException.class,
@@ -649,15 +515,16 @@ class ProductServiceTest {
     @Test
     void testDisableProductDiscountSuccess() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         var expectedDiscountRatio = 10.5f;
         productService.updateProductDiscountRatio(expectedId,
             expectedDiscountRatio);
@@ -671,15 +538,16 @@ class ProductServiceTest {
     @Test
     void testDisableProductDiscountFail() throws MalformedURLException {
         // Arrange
-        Product expectedProduct = productJPARepository.save(Product.builder()
+        CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
+            .stockQuantity(STOCK_QUANTITY)
             .thumbnail(new URL(THUMBNAIL_STR))
             .contentImage(new URL(CONTENT_IMAGE_STR))
-            .optionYn(true)
-            .build());
-        var expectedId = expectedProduct.getId();
+            .combinationYn(false)
+            .build();
+        var expectedId = productService.createProduct(request).getId();
         // Act & Assert
         assertThrows(ProductException.class,
             () -> productService.disableProductDiscount(expectedId));

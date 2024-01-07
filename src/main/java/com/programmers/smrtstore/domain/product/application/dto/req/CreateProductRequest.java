@@ -21,17 +21,22 @@ public class CreateProductRequest {
     private Category category;
     private URL thumbnail;
     private URL contentImage;
-    private boolean optionYn;
+    private boolean combinationYn;
+    private String optionNameType1;
+    private String optionNameType2;
+    private String optionNameType3;
 
     public Product toEntity() {
         return Product.builder()
             .name(name)
             .price(price)
-            .stockQuantity(stockQuantity)
             .category(category)
             .thumbnail(thumbnail)
             .contentImage(contentImage)
-            .optionYn(optionYn)
+            .combinationYn(combinationYn)
+            .optionNameType1(optionNameType1)
+            .optionNameType2(optionNameType2)
+            .optionNameType3(optionNameType3)
             .build();
     }
 }

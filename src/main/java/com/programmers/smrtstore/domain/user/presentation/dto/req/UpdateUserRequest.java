@@ -41,5 +41,5 @@ public class UpdateUserRequest {
     boolean marketingAgree;
 
     @NotNull
-    boolean membershipYN;
+    boolean membershipYn;
 }
