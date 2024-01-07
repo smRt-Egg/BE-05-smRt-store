@@ -33,7 +33,7 @@ public class UsePointRequest {
         }
 
         if (Math.abs(pointValue) > PointService.MAX_AVAILALBE_USE_POINT) {
-            throw new PointException(ErrorCode.POINT_AVAILALBE_RANGE_EXCEED, String.valueOf(pointValue));
+            throw new PointException(ErrorCode.POINT_AVAILABLE_RANGE_EXCEED, String.valueOf(pointValue));
         }
     }
 }

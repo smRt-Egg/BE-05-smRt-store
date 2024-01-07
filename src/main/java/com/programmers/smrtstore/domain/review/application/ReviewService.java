@@ -9,6 +9,7 @@ import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewR
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.res.CreateReviewResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.ReviewDetailResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
@@ -66,6 +67,13 @@ public class ReviewService {
             .stream()
             .map(ReviewResponse::from)
             .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public ReviewDetailResponse getReviewsSizeAndAvgScoreByProductId(Long productId) {
+        Product product = getProduct(productId);
+        return ReviewDetailResponse.from(reviewJPARepository.findByProduct(product));
     }
 
     @Transactional(readOnly = true)
