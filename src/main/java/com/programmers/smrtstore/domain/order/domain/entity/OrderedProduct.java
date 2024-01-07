@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.order.domain.entity;
 
+import com.programmers.smrtstore.domain.order.orderSheet.domain.entity.OrderSheet;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

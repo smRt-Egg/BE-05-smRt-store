@@ -7,10 +7,8 @@ import com.programmers.smrtstore.domain.order.domain.entity.Order;
 import com.programmers.smrtstore.domain.order.exception.OrderException;
 import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderRequest;
-import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderSheetRequest;
 import com.programmers.smrtstore.domain.order.presentation.dto.req.UpdateOrderRequest;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderResponse;
-import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderSheetResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -20,19 +18,17 @@ import com.programmers.smrtstore.util.DateTimeUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
 
     private final UserRepository userRepository;
     private final OrderJpaRepository orderJpaRepository;
 
-    @Override
-    public CreateOrderSheetResponse createOrderSheet(CreateOrderSheetRequest request) {
-        return null;
-    }
-
+    @Transactional
     @Override
     public CreateOrderResponse createOrder(CreateOrderRequest request) {
         return null;
@@ -45,11 +41,13 @@ public class OrderServiceImpl implements OrderService {
         return OrderResponse.from(order);
     }
 
+    @Transactional
     @Override
     public Long cancelOrder(Long orderId) {
         return null;
     }
 
+    @Transactional
     @Override
     public Long updateOrder(Long orderId, UpdateOrderRequest request) {
         return null;
