@@ -16,7 +16,7 @@ public class ProductThumbnailAPIResponse {
     private Integer price;
     private boolean discountYn;
     private Integer salePrice;
-    private Float discountRatio;
+    private Integer discountRatio;
     private URL thumbnail;
     private Integer reviewCount;
     private Float reviewAvgScore;

@@ -13,7 +13,7 @@ public class ProductDiscountAPIResponse {
     private Long id;
     private Integer price;
     private Integer salePrice;
-    private Float discountRatio;
+    private Integer discountRatio;
     private boolean discountYn;
 
     private List<ProductDetailOptionPriceResponse> detailOptionPriceAPIResponses;

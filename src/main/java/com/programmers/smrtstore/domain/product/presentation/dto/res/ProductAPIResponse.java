@@ -16,7 +16,7 @@ public class ProductAPIResponse {
     private String name;
     private Integer price;
     private Integer salePrice;
-    private Float discountRatio;
+    private Integer discountRatio;
     private Integer categoryId;
     private Integer stockQuantity;
     private String thumbnailUrl;

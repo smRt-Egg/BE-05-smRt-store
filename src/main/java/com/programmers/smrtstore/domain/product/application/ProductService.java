@@ -148,7 +148,7 @@ public class ProductService {
         return ProductDetailOptionResponse.from(option);
     }
 
-    public ProductResponse updateProductDiscountRatio(Long productId, Float discountRatio) {
+    public ProductResponse updateProductDiscountRatio(Long productId, Integer discountRatio) {
         Product product = getProduct(productId);
         product.updateDiscountRatio(discountRatio);
         return ProductResponse.from(product);

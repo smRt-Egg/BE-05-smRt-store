@@ -11,5 +11,5 @@ public class ProductDiscountRatioAPIRequest {
     @NotNull
     @Min(value = 0, message = "할인률은 0 이상이어야 합니다.")
     @Max(value = 100, message = "할인률은 100 이하여야 합니다.")
-    Float discountRatio;
+    Integer discountRatio;
 }

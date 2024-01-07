@@ -28,7 +28,7 @@ public class ProductController {
     private final ProductService productService;
     private final ReviewService reviewService;
 
-    private static final Float DEFAULT_DISCOUNT_RATIO = 0F;
+    private static final Integer DEFAULT_DISCOUNT_RATIO = 0;
 
     @PostMapping
     public ResponseEntity<ProductAPIResponse> createProduct(
