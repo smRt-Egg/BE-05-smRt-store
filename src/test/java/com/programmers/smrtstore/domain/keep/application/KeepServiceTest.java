@@ -72,7 +72,6 @@ class KeepServiceTest {
             Product product = Product.builder()
                     .name("productName" + i)
                     .price(i * 1000)
-                    .stockQuantity(i + 1)
                     .category(Category.TEMP)
                     .contentImage(new URL("https://www.naver.com"))
                     .thumbnail(new URL("https://www.naver.com"))
@@ -87,8 +86,8 @@ class KeepServiceTest {
                     .role(Role.ROLE_USER)
                     .point(0)
                     .marketingAgree(false)
-                    .membershipYN(false)
-                    .repurchaseYN(false)
+                    .membershipYn(false)
+                    .repurchaseYn(false)
                     .build();
             userList.add(user);
         }
