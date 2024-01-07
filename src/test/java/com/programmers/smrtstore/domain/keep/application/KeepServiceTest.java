@@ -13,12 +13,22 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResp
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.user.domain.entity.Gender;
+import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,28 +43,69 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class KeepServiceTest {
-
+    @Autowired
+    private EntityManager em;
     @Autowired
     private KeepService keepService;
-
     @Autowired
     private KeepJpaRepository keepRepository;
+    @Autowired
+    private ProductJpaRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    private Long userId1;
+    private Long userId2;
+    private Long productId1;
+    private Long productId2;
+
+    private void persistContextClear() {
+        em.flush();
+        em.clear();
+    }
 
     @BeforeEach
-    void init() {
-        List<Keep> keeps = new ArrayList<>();
-        for (long i = 0; i < 100; i++) {
-            Keep keep = Keep.builder().userId(i).productId(i % 10).build();
-            keeps.add(keep);
+    void init() throws Exception {
+        List<Product> productList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            Product product = Product.builder()
+                    .name("productName" + i)
+                    .price(i * 1000)
+                    .stockQuantity(i + 1)
+                    .category(Category.TEMP)
+                    .contentImage(new URL("https://www.naver.com"))
+                    .thumbnail(new URL("https://www.naver.com"))
+                    .build();
+            productList.add(product);
+            User user = User.builder()
+                    .nickName("nickname" + i)
+                    .email(i + "email.com")
+                    .phone("010-0000-000" + i)
+                    .birth("1999-01-01")
+                    .gender(Gender.MALE)
+                    .role(Role.ROLE_USER)
+                    .point(0)
+                    .marketingAgree(false)
+                    .membershipYN(false)
+                    .repurchaseYN(false)
+                    .build();
+            userList.add(user);
         }
+        productRepository.saveAll(productList);
+        userRepository.saveAll(userList);
+        productId1 = productList.get(0).getId();
+        productId2 = productList.get(1).getId();
+        userId1 = userList.get(0).getId();
+        userId2 = userList.get(1).getId();
 
-        for (long i = 0; i < 10; i++) {
-            for (long j = 0; j <= i; j++) {
-                Keep keep = Keep.builder().userId(j).productId(i).build();
-                keeps.add(keep);
-            }
+        for (int i = 0; i < 20; i++) {
+            Keep keep = Keep.builder()
+                    .user(userList.get(i))
+                    .product(productList.get(i))
+                    .build();
+            keepRepository.save(keep);
         }
-        keepRepository.saveAll(keeps);
     }
 
     @DisplayName("keep을 생성할 수 있다.")
@@ -62,24 +113,22 @@ class KeepServiceTest {
     void createKeepTest() {
         //Given
         CreateKeepRequest createKeepRequest = CreateKeepRequest.builder()
-                .userId(1L)
-                .productId(2L)
+                .userId(userId1)
+                .productId(productId1)
                 .build();
         //When
-        CreateKeepResponse keep = keepService.createKeep(createKeepRequest);
+        CreateKeepResponse keep = keepService.createKeep(userId1, createKeepRequest);
         //Then
-        assertThat(keep.getUserId()).isEqualTo(1L);
-        assertThat(keep.getProductId()).isEqualTo(2L);
+        assertThat(keep.getUserId()).isEqualTo(userId1);
+        assertThat(keep.getProductId()).isEqualTo(productId1);
         assertThat(keep.getCreatedAt().getDayOfMonth()).isEqualTo(LocalDateTime.now().getDayOfMonth());
     }
 
     @DisplayName("userId를 활용해 조회할 수 있다.")
     @Test
     void getByUserIdTest() {
-        //Given
-        Long userId = 1L;
-        //When
-        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId);
+        //Given //When
+        List<KeepResponse> keepsByUserId = keepService.getAllKeepsByUserId(userId1, userId2);
         //Then
         assertThat(keepsByUserId).isNotEmpty();
         assertThat(keepsByUserId.stream().map(KeepResponse::getUserId).collect(Collectors.toSet())).hasSize(1);
@@ -93,7 +142,7 @@ class KeepServiceTest {
         DeleteKeepRequest request = DeleteKeepRequest.builder()
                 .id(deleteId).build();
         //When
-        DeleteKeepResponse deleteKeepResponse = keepService.deleteKeep(request);
+        DeleteKeepResponse deleteKeepResponse = keepService.deleteKeep(userId1, request);
         //Then
         assertThat(deleteKeepResponse.getId()).isEqualTo(deleteId);
     }
@@ -106,7 +155,7 @@ class KeepServiceTest {
         DeleteKeepRequest request = DeleteKeepRequest.builder()
                 .id(deleteInvalidId).build();
         //When //Then
-        assertThatThrownBy(() -> keepService.deleteKeep(request)).isInstanceOf(KeepException.class);
+        assertThatThrownBy(() -> keepService.deleteKeep(userId1, request)).isInstanceOf(KeepException.class);
     }
 
     @DisplayName("찜 랭킹은 내림차순이다.")
@@ -115,7 +164,7 @@ class KeepServiceTest {
         //Given
         int requestTopSize = 5;
         //When
-        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(requestTopSize);
+        List<KeepRankingResponse> keepRanking = keepService.getKeepRanking(userId1, requestTopSize);
         //Then
         assertThat(keepRanking).hasSize(requestTopSize);
         assertThat(keepRanking.stream().map(KeepRankingResponse::getCount).toList()).isSortedAccordingTo(Comparator.reverseOrder());
@@ -123,16 +172,52 @@ class KeepServiceTest {
 
     @DisplayName("유저의 상품 카테고리를 활용해 찜을 조회할 수 있다.")
     @Test
-    void getKeepFromUserIdAndCategory(){
+    void getKeepFromUserIdAndCategory() {
         //Given
         FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
-                .userId(1L)
+                .userId(userId1)
                 .category(Category.TEMP)
                 .build();
         //When
-        List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(request);
+        List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(userId1, request);
         //Then
-        assertThat(keepByUserAndCategory).isEmpty();
-     }
+        assertThat(keepByUserAndCategory).isNotEmpty();
+    }
+
+    @DisplayName("user가 삭제되면 keep도 삭제된다.")
+    @Test
+    void deleteKeepWhenDeleteUser() {
+        //Given
+        userRepository.deleteAll();
+        persistContextClear();
+        //When
+        List<Keep> allKeeps = keepRepository.findAll();
+        //Then
+        assertThat(allKeeps).isEmpty();
+    }
+
+    @DisplayName("user 하나가 삭제되면 해당 keep도 삭제된다.")
+    @Test
+    void deleteOneKeepWithDeleteUser() {
+        //Given
+        userRepository.deleteById(userId1);
+        persistContextClear();
+        //When
+        List<KeepResponse> keepList = keepRepository.findAllByUserId(userId1);
+        //Then
+        assertThat(keepList).isEmpty();
+    }
+
+    @DisplayName("product가 삭제되면 keep도 삭제된다.")
+    @Test
+    void deleteKeepWithDeleteProduct() {
+        //Given
+        productRepository.deleteAll();
+        persistContextClear();
+        //When
+        List<Keep> allKeeps = keepRepository.findAll();
+        //Then
+        assertThat(allKeeps).isEmpty();
+    }
 
 }

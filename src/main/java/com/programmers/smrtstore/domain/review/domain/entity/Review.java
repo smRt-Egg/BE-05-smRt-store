@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.review.domain.entity;
 
-import com.programmers.smrtstore.common.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
@@ -16,20 +15,23 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
 @Table(name = "review_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review extends TimestampBaseEntity {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +61,14 @@ public class Review extends TimestampBaseEntity {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ReviewLike> reviewLikes = new LinkedList<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @Builder
     private Review(User user, Product product, String title, String content,
