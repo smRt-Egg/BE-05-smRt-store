@@ -1,7 +1,10 @@
 package com.programmers.smrtstore.domain.point.infrastructure;
 
-import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
+
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
+import com.querydsl.core.types.dsl.Expressions;
+import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCustom {
 
-    private final JPAQueryFactory jpaQueryFactory;
+    private JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<PointDetailResponse> findUsedDetailsByOrderId(Long orderId) {
@@ -30,6 +33,34 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
             ))
             .stream()
             .map(PointDetailResponse::from)
+            .toList();
+    }
+
+    @Override
+    public List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId) {
+        return jpaQueryFactory
+            .select(
+                pointDetail.originAcmId,
+                Expressions.numberTemplate(
+                    Integer.class,
+                    "SUM({0})", pointDetail.pointAmount
+                ).as("pointAmount")
+            )
+            .from(pointDetail)
+            .where(pointDetail.userId.eq(userId))
+            .groupBy(pointDetail.originAcmId)
+            .having(Expressions.numberTemplate(
+                Integer.class,
+                "SUM({0})", pointDetail.pointAmount)
+                .gt(0))
+            .orderBy(pointDetail.originAcmId.asc())
+            .fetch()
+            .stream()
+            .map(tuple ->
+                PointDetailCustomResponse.of(
+                    tuple.get(pointDetail.originAcmId),
+                    tuple.get(pointDetail.pointAmount))
+            )
             .toList();
     }
 }

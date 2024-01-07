@@ -4,6 +4,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
@@ -11,7 +12,6 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -88,7 +88,7 @@ public class PointService {
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = 0;
         if (user.isMembershipYn()) {
-            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액정
+            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
             additionalPoint = calculateAdditionalAcmPoint(product, user.getId());
         }
         return ProductEstimatedPointDto.of(
@@ -160,12 +160,34 @@ public class PointService {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
+    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
+    }
+
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long orderId = request.getOrderId();
+        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
+
+        Point point = request.toEntity(
+            PointStatus.ACCUMULATE_CANCELED,
+            pointResponse.getPointValue() * -1,
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse usePoint(UsePointRequest request) {
-        return null;
+
+        User user = validateUserExists(request.getUserId());
+
+        Point point = request.toEntity(user.isMembershipYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
@@ -207,11 +229,6 @@ public class PointService {
         }
         return expiredPoint;
     }
-
-    /**
-     * 1. 주문 취소로 인한 포인트 재적립 과정에서 만료 처리 -> 즉시 만료 처리
-     * 2. 00시 00분 00초에 일괄적으로 자동 만료 처리
-     */
 
     public PointResponse expirePoint(Long userId) {
         return null;

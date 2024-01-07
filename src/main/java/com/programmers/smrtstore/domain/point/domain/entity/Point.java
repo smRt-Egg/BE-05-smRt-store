@@ -1,6 +1,9 @@
 package com.programmers.smrtstore.domain.point.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.exception.PointException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,6 +57,7 @@ public class Point {
 
     @Builder
     private Point(Long userId, Long orderId, PointStatus pointStatus, Integer pointValue, Boolean membershipApplyYn) {
+        validatePointValue(pointStatus, pointValue);
         this.userId = userId;
         this.orderId = orderId;
         this.pointStatus = pointStatus;
@@ -68,5 +72,21 @@ public class Point {
             .withHour(0)
             .withMinute(0)
             .withSecond(0);
+    }
+
+    private static void validatePointValue(PointStatus pointStatus, Integer pointValue) {
+
+        if (pointStatus.equals(PointStatus.ACCUMULATED) || pointStatus.equals(PointStatus.USE_CANCELED)) {
+            if (pointValue < 0) {
+                throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+        } else {
+            if (pointValue > 0) {
+                throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+            if (Math.abs(pointValue) > PointService.MAX_AVAILALBE_USE_POINT) {
+                throw new PointException(ErrorCode.POINT_AVAILALBE_RANGE_EXCEED, String.valueOf(pointValue));
+            }
+        }
     }
 }

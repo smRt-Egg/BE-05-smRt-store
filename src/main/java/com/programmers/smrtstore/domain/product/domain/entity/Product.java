@@ -49,7 +49,7 @@ public class Product {
     private Integer price;
 
     @Column(name = "discount_ratio", nullable = false)
-    private Float discountRatio;
+    private Integer discountRatio;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
@@ -99,7 +99,7 @@ public class Product {
         String optionNameType3) {
         this.name = name;
         this.price = price;
-        this.discountRatio = 0f;
+        this.discountRatio = 0;
         this.combinationYn = combinationYn;
         this.category = category;
         this.thumbnail = thumbnail;
@@ -117,7 +117,7 @@ public class Product {
 
     public Integer getSalePrice() {
         if (discountYn) {
-            return price - (int) (price * discountRatio / 100);
+            return price - (price * discountRatio / 100);
         }
         return price;
     }
@@ -128,7 +128,7 @@ public class Product {
                 .filter(option -> option.getId().equals(productOptionId))
                 .findAny()
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-            return price - (int) ((price + productOption.getPrice()) * discountRatio / 100);
+            return price - ((price + productOption.getPrice()) * discountRatio / 100);
         }
         return price;
     }
@@ -295,8 +295,8 @@ public class Product {
         }
     }
 
-    public void updateDiscountRatio(Float discountRatio) {
-        if (discountRatio == 0) {
+    public void updateDiscountRatio(Integer discountRatio) {
+        if (discountRatio <= 0f || discountRatio >= 100f) {
             throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
         }
         this.discountRatio = discountRatio;
@@ -307,7 +307,7 @@ public class Product {
         if (discountRatio == 0 && !discountYn) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_DISCOUNTED);
         }
-        this.discountRatio = 0f;
+        this.discountRatio = 0;
         this.discountYn = false;
     }
 }
