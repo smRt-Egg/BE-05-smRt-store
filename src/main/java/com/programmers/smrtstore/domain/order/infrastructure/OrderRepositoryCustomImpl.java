@@ -1,9 +1,9 @@
 package com.programmers.smrtstore.domain.order.infrastructure;
 
 import static com.programmers.smrtstore.domain.order.domain.entity.QOrder.order;
-import static com.programmers.smrtstore.domain.order.domain.entity.QOrderSheet.orderSheet;
 import static com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus.DELIVERED;
 import static com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus.PAYMENT_COMPLETED;
+import static com.programmers.smrtstore.domain.order.orderSheet.domain.entity.QOrderSheet.orderSheet;
 
 import com.programmers.smrtstore.util.DateTimeUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;

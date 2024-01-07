@@ -1,17 +1,13 @@
 package com.programmers.smrtstore.domain.order.application;
 
 import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderRequest;
-import com.programmers.smrtstore.domain.order.presentation.dto.req.CreateOrderSheetRequest;
 import com.programmers.smrtstore.domain.order.presentation.dto.req.UpdateOrderRequest;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderResponse;
-import com.programmers.smrtstore.domain.order.presentation.dto.res.CreateOrderSheetResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderResponse;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import java.util.List;
 
 public interface OrderService {
-
-    CreateOrderSheetResponse createOrderSheet(CreateOrderSheetRequest request);
 
     CreateOrderResponse createOrder(CreateOrderRequest request);
 
