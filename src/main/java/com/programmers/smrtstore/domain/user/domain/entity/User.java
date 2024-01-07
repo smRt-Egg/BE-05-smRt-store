@@ -134,11 +134,6 @@ public class User {
     }
 
     public void deleteShippingAddress(Long shippingId) {
-        for (ShippingAddress address : shippingAddresses) {
-            if (address.getId().equals(shippingId)) {
-                shippingAddresses.remove(address);
-                break;
-            }
-        }
+        shippingAddresses.removeIf(address -> address.getId().equals(shippingId));
     }
 }
