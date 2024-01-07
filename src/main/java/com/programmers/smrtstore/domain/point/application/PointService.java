@@ -12,9 +12,7 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -166,8 +164,9 @@ public class PointService {
     }
 
     private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
