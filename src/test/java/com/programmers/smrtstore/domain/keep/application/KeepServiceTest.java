@@ -86,6 +86,7 @@ class KeepServiceTest {
                     .role(Role.ROLE_USER)
                     .point(0)
                     .marketingAgree(false)
+                    .membershipYn(false)
                     .repurchaseYn(false)
                     .build();
             userList.add(user);

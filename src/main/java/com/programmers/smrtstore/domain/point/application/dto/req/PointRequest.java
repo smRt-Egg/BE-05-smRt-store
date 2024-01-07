@@ -19,7 +19,7 @@ public class PointRequest {
     private Long userId;
     private Long orderId;
 
-    public Point toEntity(PointStatus pointStatus, int pointValue, boolean membershipApplyYn) {
+    public Point toEntity(PointStatus pointStatus, Integer pointValue, boolean membershipApplyYn) {
         validatePointValue(pointStatus, pointValue);
         return Point.builder()
             .userId(userId)
@@ -30,7 +30,7 @@ public class PointRequest {
             .build();
     }
 
-    private static void validatePointValue(PointStatus pointStatus, int pointValue) {
+    private static void validatePointValue(PointStatus pointStatus, Integer pointValue) {
         if (pointStatus.equals(PointStatus.ACCUMULATED) || pointStatus.equals(PointStatus.USE_CANCELED)) {
             if (pointValue < 0) {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));

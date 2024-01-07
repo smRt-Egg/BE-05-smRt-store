@@ -121,18 +121,19 @@ public class User {
     }
 
     public void addShippingAddress(ShippingAddress shippingAddress) {
-        if (shippingAddress.isDefaultYn()) {
-            unlockOriginalDefault();
-        }
         shippingAddresses.add(shippingAddress);
     }
 
-    private void unlockOriginalDefault() {
+    public void disableOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
             if (shippingAddress.isDefaultYn()) {
                 shippingAddress.disableDefault();
                 break;
             }
         }
+    }
+
+    public void deleteShippingAddress(Long shippingId) {
+        shippingAddresses.removeIf(address -> address.getId().equals(shippingId));
     }
 }

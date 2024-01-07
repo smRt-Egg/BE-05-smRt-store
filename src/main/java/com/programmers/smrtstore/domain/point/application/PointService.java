@@ -10,7 +10,7 @@ import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
-import com.programmers.smrtstore.domain.point.presentation.dto.req.UsePointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -33,7 +33,8 @@ public class PointService {
     private final ProductJpaRepository productRepository;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
-
+  
+    public static final int MAX_AVAILALBE_USE_POINT = 2000000;
     private static final int MAX_AVAILABLE_POINT = 20000;
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
     private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
@@ -162,8 +163,24 @@ public class PointService {
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 
+    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+    }
+
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long orderId = request.getOrderId();
+        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
+
+        Point point = request.toEntity(
+            PointStatus.ACCUMULATE_CANCELED,
+            pointResponse.getPointValue() * -1,
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse usePoint(UsePointRequest request) {

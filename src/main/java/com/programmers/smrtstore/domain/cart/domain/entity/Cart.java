@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.cart.domain.entity;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,9 @@ public class Cart {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(name = "product_detail_option_id", nullable = false)
+    private Long productDetailOptionId;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -58,28 +62,38 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @Builder
-    private Cart(User user, Product product, Integer quantity) {
+    private Cart(User user, Product product, ProductDetailOption detailOption, Integer quantity) {
         this.user = user;
         this.product = product;
+        validateDetailOption(product, detailOption);
+        this.productDetailOptionId = detailOption.getId();
         this.quantity = quantity;
-        this.price = calculatePrice(product, quantity);
+        this.price = calculatePrice(product, detailOption.getId(), quantity);
     }
 
-    private static Integer calculatePrice(Product product, Integer quantity) {
-        return product.getSalePrice() * quantity;
+    private static Integer calculatePrice(Product product, Long detailOptionId, Integer quantity) {
+        return product.getSalePrice(detailOptionId) * quantity;
     }
 
-    public void addQuantity(Integer quantity) {
-        this.quantity += quantity;
-        this.price = calculatePrice(product, this.quantity);
-    }
-
-    public void removeQuantity(Integer quantity) {
-        if (this.quantity - quantity <= 0) {
+    public void updateQuantity(Integer quantity) {
+        if(this.quantity + quantity < 0) {
             throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
         }
-        this.quantity -= quantity;
-        this.price = calculatePrice(product, this.quantity);
+        this.quantity += quantity;
+        this.price = calculatePrice(product, productDetailOptionId, this.quantity);
+    }
+
+
+    private static void validateDetailOption(Product product, ProductDetailOption detailOption) {
+        if (!detailOption.getProduct().getId().equals(product.getId())) {
+            throw new CartException(ErrorCode.CART_PRODUCT_DETAIL_OPTION_NOT_MATCH);
+        }
+    }
+
+    public void updateDetailOption(ProductDetailOption detailOption) {
+        validateDetailOption(product, detailOption);
+        this.productDetailOptionId = detailOption.getId();
+        this.price = calculatePrice(product, detailOption.getId(), quantity);
     }
 
 }
