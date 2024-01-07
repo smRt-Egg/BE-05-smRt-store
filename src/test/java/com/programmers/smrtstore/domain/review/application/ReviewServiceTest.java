@@ -61,17 +61,15 @@ class ReviewServiceTest {
                 .role(Role.ROLE_USER)
                 .point(0)
                 .marketingAgree(false)
-                .membershipYN(false)
-                .repurchaseYN(false)
+                .membershipYn(false)
+                .repurchaseYn(false)
                 .build());
         product = productJpaRepository.save(Product.builder()
                 .name("productName")
                 .price(1000)
-                .stockQuantity(10)
                 .category(Category.TEMP)
                 .thumbnail(new URL("https://www.naver.com"))
                 .contentImage(new URL("https://www.naver.com"))
-                .optionYn(false)
                 .build());
     }
 
