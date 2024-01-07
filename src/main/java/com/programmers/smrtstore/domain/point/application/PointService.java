@@ -12,6 +12,7 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PointService {
 
+    private final PointFacade pointFacade;
     private final OrderService orderService;
     private final ProductJpaRepository productRepository;
     private final UserRepository userRepository;
@@ -158,11 +160,6 @@ public class PointService {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
-    private User validateUserExists(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
-    }
-
     private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
         Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
@@ -178,7 +175,7 @@ public class PointService {
 
         Point point = request.toEntity(
             PointStatus.ACCUMULATE_CANCELED,
-            pointResponse.getPointValue() * -1,
+            pointFacade.makeNegativeNumber(pointResponse.getPointValue() * -1),
             pointResponse.getMembershipApplyYn());
         pointRepository.save(point);
         return PointResponse.from(point);
@@ -194,7 +191,43 @@ public class PointService {
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(
+            request.getOrderId(),
+            PointStatus.USED
+        );
+
+        Point point = request.toEntity(
+            PointStatus.USE_CANCELED,
+            pointResponse.getPointValue(),
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+
+        int expiredPoint = calculateExpiredPoint(pointResponse.getOrderId());
+        if (expiredPoint != 0) {
+            Point expiredpoint = request.toEntity(
+                PointStatus.EXPIRED,
+                expiredPoint,
+                pointResponse.getMembershipApplyYn());
+            pointRepository.save(expiredpoint);
+        }
+        return PointResponse.from(point);
+    }
+
+    private int calculateExpiredPoint(Long orderId) {
+
+        List<PointDetailResponse> usedDetailHistory = pointFacade.getUsedDetailByOrderId(orderId);
+
+        int expiredPoint = 0;
+        for (PointDetailResponse pointDetail : usedDetailHistory) {
+            PointResponse originAcmPoint = pointFacade.getPointById(pointDetail.getPointId());
+            if (pointFacade.validateExpiredAt(originAcmPoint)) {
+                expiredPoint += pointDetail.getPointValue();
+            }
+        }
+        return expiredPoint;
     }
 
     public PointResponse expirePoint(Long userId) {
@@ -203,5 +236,10 @@ public class PointService {
 
     public PointResponse getPointHistory(Long userId) {
         return null;
+    }
+
+    private User validateUserExists(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 }
