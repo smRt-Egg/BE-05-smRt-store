@@ -12,5 +12,5 @@ public interface PointFacade {
     List<PointDetailResponse> getUsedDetailByPointId(Long pointId);
     List<PointDetailResponse> getUsedDetailByOrderId(Long orderId);
     boolean validateExpiredAt(PointResponse pointResponse);
-
+    Integer makeNegativeNumber(Integer pointAmount);
 }

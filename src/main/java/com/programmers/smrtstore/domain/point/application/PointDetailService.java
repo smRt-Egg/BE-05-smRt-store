@@ -75,7 +75,10 @@ public class PointDetailService {
         for (PointDetailCustomResponse response : history) {
             while (usedPoint != 0) {
                 int pointAmount = calculateDeductedPoint(response.getPointAmount(), usedPoint);
-                PointDetail pointDetail = request.toEntity(makeNegativeNumber(pointAmount), response.getOriginAcmId());
+                PointDetail pointDetail = request.toEntity(
+                    pointFacade.makeNegativeNumber(pointAmount),
+                    response.getOriginAcmId()
+                );
                 pointDetailRepository.save(pointDetail);
                 usedPoint -= pointAmount;
                 if (pointDetailId == null) {
@@ -88,10 +91,6 @@ public class PointDetailService {
 
     private int calculateDeductedPoint(int pointAmount, int usedPoint) {
         return Math.min(usedPoint, pointAmount);
-    }
-
-    private int makeNegativeNumber(int pointAmount) {
-        return -1 * pointAmount;
     }
 
     public Long saveUseCancelHistory(PointDetailRequest request) {
@@ -111,7 +110,9 @@ public class PointDetailService {
                     Math.abs(pointDetail.getPointValue()),
                     pointDetail.getOriginAcmId());
                 pointDetailRepository.save(canceledDetail);
-                if (pointDetailId == null) pointDetailId = pointDetail.getId();
+                if (pointDetailId == null) {
+                    pointDetailId = pointDetail.getId();
+                }
 
                 PointResponse originAcmPoint = pointFacade.getPointById(request.getPointId());
                 if (pointFacade.validateExpiredAt(originAcmPoint)) {

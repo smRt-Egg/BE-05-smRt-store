@@ -175,7 +175,7 @@ public class PointService {
 
         Point point = request.toEntity(
             PointStatus.ACCUMULATE_CANCELED,
-            pointResponse.getPointValue() * -1,
+            pointFacade.makeNegativeNumber(pointResponse.getPointValue() * -1),
             pointResponse.getMembershipApplyYn());
         pointRepository.save(point);
         return PointResponse.from(point);

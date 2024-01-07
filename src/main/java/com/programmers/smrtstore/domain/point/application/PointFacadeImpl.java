@@ -59,4 +59,9 @@ public class PointFacadeImpl implements PointFacade {
         }
         return LocalDateTime.now().isAfter(pointResponse.getExpiredAt());
     }
+
+    @Override
+    public Integer makeNegativeNumber(Integer pointAmount) {
+        return -1 * pointAmount;
+    }
 }
