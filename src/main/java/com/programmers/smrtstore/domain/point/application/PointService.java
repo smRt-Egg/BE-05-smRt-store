@@ -86,7 +86,7 @@ public class PointService {
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = 0;
         if (user.isMembershipYn()) {
-            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액정
+            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
             additionalPoint = calculateAdditionalAcmPoint(product, user.getId());
         }
         return ProductEstimatedPointDto.of(
