@@ -4,6 +4,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
@@ -11,6 +12,9 @@ import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.presentation.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
+import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
@@ -26,12 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointService {
 
     private final OrderService orderService;
+    private final ProductJpaRepository productRepository;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
 
     private static final int MAX_AVAILABLE_POINT = 20000;
-    private static final int MAX_PRICE_FOR_FOUR = 200000;
-    private static final int MAX_PRICE_FOR_ONE = 3000000;
+    private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
+    private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
 
     @Transactional(readOnly = true)
     public PointResponse getPointById(Long pointId) {
@@ -71,18 +76,48 @@ public class PointService {
         );
     }
 
+    public ProductEstimatedPointDto calculateEstimatedAcmPoint(Long productId, User user) {
+
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        // 상품 원가에 대한 기본 1% 적립 (=기본적립)
+        int defaultPoint = product.getPrice() / 100;
+        int additionalPoint = 0;
+        if (user.isMembershipYN()) {
+            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
+            additionalPoint = calculateAdditionalAcmPoint(product, user.getId());
+        }
+        return ProductEstimatedPointDto.of(
+            defaultPoint,
+            additionalPoint,
+            defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
+        );
+    }
+
     public int calculateDefaultPoint(Long orderId) {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
     public int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
 
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpeding(userId);
+        return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
+    }
+
+    public int calculateAdditionalAcmPoint(Product product, Long userId) {
+
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpeding(userId);
+        return calculateAdditionalPointPerProduct(product.getPrice(), userMonthlyTotalSpending);
+    }
+
+    private int getUserMonthlyTotalSpeding(Long userId) {
+
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
 
-        int userMonthlyTotalSpending = orderService.calculateUserMonthlyTotalSpending(userId, month, year);
-        return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
+        return orderService.calculateUserMonthlyTotalSpending(userId, month, year);
     }
 
     public int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
