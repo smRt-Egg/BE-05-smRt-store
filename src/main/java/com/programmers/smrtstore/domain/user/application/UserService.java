@@ -19,6 +19,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,9 +82,8 @@ public class UserService {
     private void checkShippingDuplicate(DetailShippingRequest request,
         List<ShippingAddress> shippingAddresses) {
         shippingAddresses.forEach(address -> {
-            if ((address.getPhoneNum2() == null && request.getPhoneNum2() == null)
-                || (address.getPhoneNum2() != null && request.getPhoneNum2() != null
-                && address.getPhoneNum2().equals(request.getPhoneNum2()))) {
+
+            if (Objects.equals(request.getPhoneNum2(), address.getPhoneNum2())) {
                 if (address.getName().equals(request.getName())
                     && address.getRecipient().equals(request.getRecipient())
                     && address.getAddress1Depth().equals(request.getAddress1Depth())
