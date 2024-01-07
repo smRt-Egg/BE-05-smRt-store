@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.DELETE_DEFAULT_SHIPPING;
+import static com.programmers.smrtstore.core.properties.ErrorCode.DEFAULT_SHIPPING_NOT_DELETABLE;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
@@ -19,7 +19,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,7 +161,7 @@ public class UserService {
 
     private void checkIsDefault(Long shippingId, ShippingAddress shippingAddress) {
         if (shippingAddress.isDefaultYn()) {
-            throw new UserException(DELETE_DEFAULT_SHIPPING, String.valueOf(shippingId));
+            throw new UserException(DEFAULT_SHIPPING_NOT_DELETABLE, String.valueOf(shippingId));
         }
     }
 }
