@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CreateShippingRequest {
+public class DetailShippingRequest {
 
     @Size(max = 10, message = "배송지 이름은 10자 이하여야 합니다.")
     private String name;
