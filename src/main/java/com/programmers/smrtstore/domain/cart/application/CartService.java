@@ -31,26 +31,24 @@ public class CartService {
     private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
     private final UserRepository userRepository;
 
+    private static final Integer DEFAULT_QUANTITY = 0;
+
     public CreateCartResponse createCart(CreateCartRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(
-                ErrorCode.USER_NOT_FOUND, null));
+        var user = getUser(request.getUserId());
         Product product = productJPARepository.findById(request.getProductId())
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
         var detailOption = detailOptionJpaRepository.findById(request.getDetailOptionId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        cartJPARepository.findByUserAndProduct(user, product).ifPresent(cart -> {
-            throw new CartException(ErrorCode.CART_ALREADY_EXIST);
-        });
-        Cart cart = cartJPARepository.save(
-            Cart.builder()
-                .user(user)
-                .product(product)
-                .detailOption(detailOption)
-                .quantity(request.getQuantity())
-                .build()
-        );
+        Cart cart = cartJPARepository.findByUserAndProduct(user, product)
+            .orElseGet(() -> cartJPARepository.save(
+                Cart.builder()
+                    .user(user)
+                    .product(product)
+                    .detailOption(detailOption)
+                    .quantity(DEFAULT_QUANTITY)
+                    .build()));
+        cart.addQuantity(request.getQuantity());
         return CreateCartResponse.from(cart);
     }
 
@@ -62,10 +60,7 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public List<CartResponse> getAllCarts(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(
-                ErrorCode.USER_NOT_FOUND, null));
-
+        var user = getUser(userId);
         return cartJPARepository.findByUser(user)
             .stream()
             .map(CartResponse::from)
@@ -100,6 +95,12 @@ public class CartService {
         return cartJPARepository.findById(cartId)
             .orElseThrow(() -> new CartException(
                 ErrorCode.CART_NOT_FOUND));
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(
+                ErrorCode.USER_NOT_FOUND));
     }
 
 }
