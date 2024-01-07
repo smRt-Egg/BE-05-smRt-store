@@ -21,8 +21,8 @@ public class SignUpResponse {
     Gender gender;
     String thumbnail;
     boolean marketingAgree;
-    boolean membershipYN;
-    boolean repurchaseYN;
+    boolean membershipYn;
+    boolean repurchaseYn;
     Integer point;
     LocalDateTime createdTime;
 
@@ -38,8 +38,8 @@ public class SignUpResponse {
             auth.getUser().getGender(),
             auth.getUser().getThumbnail(),
             auth.getUser().isMarketingAgree(),
-            auth.getUser().isMembershipYN(),
-            auth.getUser().isRepurchaseYN(),
+            auth.getUser().isMembershipYn(),
+            auth.getUser().isRepurchaseYn(),
             auth.getUser().getPoint(),
             auth.getUser().getCreatedAt()
         );

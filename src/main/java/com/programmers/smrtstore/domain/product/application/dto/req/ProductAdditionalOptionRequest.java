@@ -1,7 +1,5 @@
 package com.programmers.smrtstore.domain.product.application.dto.req;
 
-import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UpdateProductRequest {
-
+public class ProductAdditionalOptionRequest {
     private Long id;
+    private Integer quantity;
+    private Integer price;
+    private String groupName;
     private String name;
-    private Integer salePrice;
-    private Integer stockQuantity;
-    private Category category;
-    private URL thumbnail;
-    private URL contentImage;
 }
