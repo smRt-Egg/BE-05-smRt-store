@@ -9,7 +9,6 @@ import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewR
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.res.CreateReviewResponse;
-import com.programmers.smrtstore.domain.review.application.dto.res.ReviewDetailResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
@@ -36,7 +35,7 @@ public class ReviewService {
     private final OrderJpaRepository orderJpaRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request) {
-        if (!orderJpaRepository.verifyOrderDelivered(request.getUserId(), request.getProductId())) {
+        if (!orderJpaRepository.existsOrderPurchaseConfirmed(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT);
         }
         if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
@@ -67,13 +66,6 @@ public class ReviewService {
             .stream()
             .map(ReviewResponse::from)
             .toList();
-    }
-
-
-    @Transactional(readOnly = true)
-    public ReviewDetailResponse getReviewsSizeAndAvgScoreByProductId(Long productId) {
-        Product product = getProduct(productId);
-        return ReviewDetailResponse.from(reviewJPARepository.findByProduct(product));
     }
 
     @Transactional(readOnly = true)
