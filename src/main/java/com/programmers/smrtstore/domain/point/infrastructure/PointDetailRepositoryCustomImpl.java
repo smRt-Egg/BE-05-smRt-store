@@ -1,13 +1,12 @@
 package com.programmers.smrtstore.domain.point.infrastructure;
 
+import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
 
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
-import com.querydsl.core.types.dsl.Expressions;
-import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
-
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
