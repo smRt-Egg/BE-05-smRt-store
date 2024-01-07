@@ -9,9 +9,11 @@ import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +51,9 @@ public class PointDetailService {
     }
 
     public PointResponse getByPointIdAndStatus(Long pointId, PointStatus pointStatus) {
-        return pointRepository.findByPointIdAndPointStatus(pointId, pointStatus)
+        Point point =  pointRepository.findByPointIdAndPointStatus(pointId, pointStatus)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
     }
 
     public Long saveAccumulationCancelHistory(PointDetailRequest request) {
@@ -66,7 +69,38 @@ public class PointDetailService {
     }
 
     public Long saveUseHistory(PointDetailRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long pointId = request.getPointId();
+        Long userId = request.getUserId();
+
+        List<PointDetailCustomResponse> history = pointDetailRepository.getSumGroupByOriginAcmId(userId);
+
+        Point point = getPointById(pointId);
+        int usedPoint = Math.abs(point.getPointValue());
+
+        Long pointDetailId = null;
+        for (PointDetailCustomResponse response : history) {
+            while (usedPoint != 0) {
+                int pointAmount = calculateDeductedPoint(response.getPointAmount(), usedPoint);
+                PointDetail pointDetail = request.toEntity(makeNegativeNumber(pointAmount), response.getOriginAcmId());
+                pointDetailRepository.save(pointDetail);
+                usedPoint -= pointAmount;
+                if (pointDetailId == null) {
+                    pointDetailId = pointDetail.getId();
+                }
+            }
+        }
+        return pointDetailId;
+    }
+
+    private int calculateDeductedPoint(int pointAmount, int usedPoint) {
+        return Math.min(usedPoint, pointAmount);
+    }
+
+    private int makeNegativeNumber(int pointAmount) {
+        return -1 * pointAmount;
     }
 
     public Long saveUseCancelHistory(PointDetailRequest request) {

@@ -4,6 +4,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
@@ -11,7 +12,6 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -33,7 +33,7 @@ public class PointService {
     private final ProductJpaRepository productRepository;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
-  
+
     public static final int MAX_AVAILALBE_USE_POINT = 2000000;
     private static final int MAX_AVAILABLE_POINT = 20000;
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
@@ -164,8 +164,9 @@ public class PointService {
     }
 
     private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
@@ -184,7 +185,12 @@ public class PointService {
     }
 
     public PointResponse usePoint(UsePointRequest request) {
-        return null;
+
+        User user = validateUserExists(request.getUserId());
+
+        Point point = request.toEntity(user.isMembershipYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
