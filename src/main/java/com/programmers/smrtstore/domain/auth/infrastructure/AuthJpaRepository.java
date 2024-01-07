@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuthJpaRepository extends JpaRepository<Auth, Long> {
 
-    @Query("select a from Auth a where a.username = ?1 and a.user.deletedAt is not null")
+    @Query("select a from Auth a where a.username = ?1 and a.user.deletedAt is null")
     Optional<Auth> findByUsername(String username);
 
     Optional<Auth> findByUserId(Long userId);
