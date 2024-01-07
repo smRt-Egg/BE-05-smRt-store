@@ -19,6 +19,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +62,7 @@ public class UserService {
 
         checkShippingAddressesSize(shippingAddresses);
         ShippingAddress shippingAddress = request.toShippingAddressEntity(user);
-        checkShippingDuplicate(shippingAddress, shippingAddresses);
+        checkShippingDuplicate(request, shippingAddresses);
         if (shippingAddress.isDefaultYn()) {
             user.disableOriginalDefault();
         }
@@ -78,20 +79,20 @@ public class UserService {
         }
     }
 
-    private void checkShippingDuplicate(ShippingAddress shippingAddress,
+    private void checkShippingDuplicate(DetailShippingRequest request,
         List<ShippingAddress> shippingAddresses) {
         shippingAddresses.forEach(address -> {
-            if ((address.getPhoneNum2() == null && shippingAddress.getPhoneNum2() == null)
-                || (address.getPhoneNum2() != null && shippingAddress.getPhoneNum2() != null
-                && address.getPhoneNum2().equals(shippingAddress.getPhoneNum2()))) {
-                if (address.getName().equals(shippingAddress.getName())
-                    && address.getRecipient().equals(shippingAddress.getRecipient())
-                    && address.getAddress1Depth().equals(shippingAddress.getAddress1Depth())
-                    && address.getAddress2Depth().equals(shippingAddress.getAddress2Depth())
-                    && address.getZipCode().equals(shippingAddress.getZipCode())
-                    && address.getPhoneNum1().equals(shippingAddress.getPhoneNum1())) {
+            if ((address.getPhoneNum2() == null && request.getPhoneNum2() == null)
+                || (address.getPhoneNum2() != null && request.getPhoneNum2() != null
+                && address.getPhoneNum2().equals(request.getPhoneNum2()))) {
+                if (address.getName().equals(request.getName())
+                    && address.getRecipient().equals(request.getRecipient())
+                    && address.getAddress1Depth().equals(request.getAddress1Depth())
+                    && address.getAddress2Depth().equals(request.getAddress2Depth())
+                    && address.getZipCode().equals(request.getZipCode())
+                    && address.getPhoneNum1().equals(request.getPhoneNum1())) {
                     throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
-                        String.valueOf(shippingAddress.getId()));
+                        String.valueOf(address.getId()));
                 }
             }
         });
@@ -130,12 +131,12 @@ public class UserService {
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
 
+        checkShippingDuplicate(request, user.getShippingAddresses());
         if (!shippingAddress.isDefaultYn() && request.isDefaultYn()) //기본 배송지 갱신할 경우
         {
             user.disableOriginalDefault();
         }
         shippingAddress.updateShippingAddress(request);
-
         return DetailShippingResponse.from(shippingAddress);
     }
 
