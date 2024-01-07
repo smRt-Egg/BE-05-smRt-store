@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateCartQuantityRequest {
     private Long cartId;
+    private Long userId;
     private Integer quantity;
 }
