@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.order.domain.entity;
 import com.programmers.smrtstore.common.base.TimestampBaseEntity;
 import com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.order.domain.entity.vo.PaymentInfo;
+import com.programmers.smrtstore.domain.order.orderSheet.domain.entity.OrderSheet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
