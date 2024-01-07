@@ -1,6 +1,8 @@
 package com.programmers.smrtstore.domain.point.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.exception.PointException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,6 +56,7 @@ public class Point {
 
     @Builder
     private Point(Long userId, Long orderId, PointStatus pointStatus, int pointValue, Boolean membershipApplyYn) {
+        validatePointValue(pointStatus, pointValue);
         this.userId = userId;
         this.orderId = orderId;
         this.pointStatus = pointStatus;
@@ -64,5 +67,17 @@ public class Point {
             .withMinute(0)
             .withSecond(0);
         this.membershipApplyYn = membershipApplyYn;
+    }
+
+    private static void validatePointValue(PointStatus pointStatus, int pointValue) {
+        if (pointStatus.equals(PointStatus.ACCUMULATED) || pointStatus.equals(PointStatus.USE_CANCELED)) {
+            if (pointValue < 0) {
+                throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+        } else {
+            if (pointValue > 0) {
+                throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+        }
     }
 }
