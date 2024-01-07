@@ -43,10 +43,10 @@ public class ProductController {
     @Secured("ROLE_ADMIN")
     @PutMapping("/discount/{productId}")
     public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
-        @PathVariable Long productId,
-        @Valid ProductDiscountRatioAPIRequest request) {
+        @PathVariable Long productId, @Valid ProductDiscountRatioAPIRequest request) {
         var result =
-            request.getDiscountRatio().equals(DEFAULT_DISCOUNT_RATIO) ? productService.disableProductDiscount(productId)
+            request.getDiscountRatio().equals(DEFAULT_DISCOUNT_RATIO)
+                ? productService.disableProductDiscount(productId)
                 : productService.updateProductDiscountRatio(productId, request.getDiscountRatio());
         return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
     }
