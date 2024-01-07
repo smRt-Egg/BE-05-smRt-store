@@ -75,18 +75,14 @@ public class Cart {
         return product.getSalePrice(detailOptionId) * quantity;
     }
 
-    public void addQuantity(Integer quantity) {
+    public void updateQuantity(Integer quantity) {
+        if(this.quantity + quantity < 0) {
+            throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
+        }
         this.quantity += quantity;
         this.price = calculatePrice(product, productDetailOptionId, this.quantity);
     }
 
-    public void removeQuantity(Integer quantity) {
-        if (this.quantity - quantity <= 0) {
-            throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
-        }
-        this.quantity -= quantity;
-        this.price = calculatePrice(product, productDetailOptionId, this.quantity);
-    }
 
     private static void validateDetailOption(Product product, ProductDetailOption detailOption) {
         if (!detailOption.getProduct().getId().equals(product.getId())) {

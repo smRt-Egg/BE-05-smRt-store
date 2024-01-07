@@ -13,5 +13,4 @@ import lombok.NoArgsConstructor;
 public class UpdateCartQuantityRequest {
     private Long cartId;
     private Integer quantity;
-    private boolean addYn;
 }

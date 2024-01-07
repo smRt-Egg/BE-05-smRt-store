@@ -48,7 +48,7 @@ public class CartService {
                     .detailOption(detailOption)
                     .quantity(DEFAULT_QUANTITY)
                     .build()));
-        cart.addQuantity(request.getQuantity());
+        cart.updateQuantity(request.getQuantity());
         return CreateCartResponse.from(cart);
     }
 
@@ -69,11 +69,7 @@ public class CartService {
 
     public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
         Cart cart = getCart(request.getCartId());
-        if (request.isAddYn()) {
-            cart.addQuantity(request.getQuantity());
-        } else {
-            cart.removeQuantity(request.getQuantity());
-        }
+        cart.updateQuantity(request.getQuantity());
         return CartResponse.from(cart);
     }
 
