@@ -37,7 +37,10 @@ public class PointFacadeImpl implements PointFacade {
 
     @Override
     public List<PointDetailResponse> getUsedDetailByPointId(Long pointId) {
-        return pointDetailRepository.findUsedDetailByPointId(pointId);
+        return pointDetailRepository.findUsedDetailByPointId(pointId)
+            .stream()
+            .map(PointDetailResponse::from)
+            .toList();
     }
 
     @Override
