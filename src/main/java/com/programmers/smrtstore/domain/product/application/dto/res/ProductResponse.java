@@ -20,7 +20,7 @@ public class ProductResponse {
     private String name;
     private Integer price;
     private Integer salePrice;
-    private Float discountRatio;
+    private Integer discountRatio;
     private Category category;
     private Integer stockQuantity;
     private URL thumbnail;

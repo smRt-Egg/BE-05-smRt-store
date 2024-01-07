@@ -1,8 +1,11 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
@@ -48,8 +51,21 @@ public class PointDetailService {
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 
+    public PointResponse getByPointIdAndStatus(Long pointId, PointStatus pointStatus) {
+        return pointRepository.findByPointIdAndPointStatus(pointId, pointStatus)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+    }
+
     public Long saveAccumulationCancelHistory(PointDetailRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long pointId = request.getPointId();
+        PointResponse pointResponse = getByPointIdAndStatus(pointId, PointStatus.ACCUMULATED);
+
+        PointDetail pointDetail = request.toEntity(pointResponse.getPointValue(), pointResponse.getId());
+        pointDetailRepository.save(pointDetail);
+        return pointDetail.getPointId();
     }
 
     public Long saveUseHistory(PointDetailRequest request) {

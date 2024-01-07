@@ -3,7 +3,6 @@ package com.programmers.smrtstore.domain.point.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
@@ -11,6 +10,9 @@ import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -163,8 +165,24 @@ public class PointService {
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 
+    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+    }
+
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long orderId = request.getOrderId();
+        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
+
+        Point point = request.toEntity(
+            PointStatus.ACCUMULATE_CANCELED,
+            pointResponse.getPointValue() * -1,
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse usePoint(UsePointRequest request) {
