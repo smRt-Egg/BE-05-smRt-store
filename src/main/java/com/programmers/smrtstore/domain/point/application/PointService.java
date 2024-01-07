@@ -3,9 +3,11 @@ package com.programmers.smrtstore.domain.point.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PointService {
 
+    private final PointFacade pointFacade;
     private final OrderService orderService;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
@@ -143,7 +146,12 @@ public class PointService {
         return null;
     }
 
-    public PointResponse getPointHistory(Long userId) {
-        return null;
+    public List<PointResponse> getPointHistory(PointHistoryRequest request) {
+
+        Long userId = request.getUserId();
+        PointStatus pointStatus = request.getPointStatus();
+        TradeDateRange tradeDateRange = request.getTradeDateRange();
+
+        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, pointStatus, tradeDateRange);
     }
 }
