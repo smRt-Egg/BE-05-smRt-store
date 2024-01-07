@@ -31,8 +31,9 @@ public class PointFacadeImpl implements PointFacade {
 
     @Override
     public PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
     }
 
     @Override
