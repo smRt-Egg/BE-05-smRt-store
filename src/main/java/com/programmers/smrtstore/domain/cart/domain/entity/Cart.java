@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -61,7 +60,6 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Builder
     private Cart(User user, Product product, ProductDetailOption detailOption, Integer quantity) {
         this.user = user;
         this.product = product;
@@ -71,18 +69,17 @@ public class Cart {
         this.price = calculatePrice(product, detailOption.getId(), quantity);
     }
 
+    private static final Integer DEFAULT_QUANTITY = 0;
+
+    public static Cart of(User user, Product product, ProductDetailOption productDetailOption) {
+        return new Cart(
+            user, product, productDetailOption, DEFAULT_QUANTITY
+        );
+    }
+
     private static Integer calculatePrice(Product product, Long detailOptionId, Integer quantity) {
         return product.getSalePrice(detailOptionId) * quantity;
     }
-
-    public void updateQuantity(Integer quantity) {
-        if(this.quantity + quantity < 0) {
-            throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
-        }
-        this.quantity += quantity;
-        this.price = calculatePrice(product, productDetailOptionId, this.quantity);
-    }
-
 
     private static void validateDetailOption(Product product, ProductDetailOption detailOption) {
         if (!detailOption.getProduct().getId().equals(product.getId())) {
@@ -90,8 +87,24 @@ public class Cart {
         }
     }
 
-    public void updateDetailOption(ProductDetailOption detailOption) {
+    private void validateUser(Long userId) {
+        if(!userId.equals(user.getId())) {
+            throw new CartException(ErrorCode.CART_REQUEST_USER_MISMATCH);
+        }
+    }
+
+    public void updateQuantity(Integer quantity, Long userId) {
+        validateUser(userId);
+        if (this.quantity + quantity < 0) {
+            throw new CartException(ErrorCode.CART_QUANTITY_NOT_ENOUGH);
+        }
+        this.quantity += quantity;
+        this.price = calculatePrice(product, productDetailOptionId, this.quantity);
+    }
+
+    public void updateDetailOption(ProductDetailOption detailOption, Long userId) {
         validateDetailOption(product, detailOption);
+        validateUser(userId);
         this.productDetailOptionId = detailOption.getId();
         this.price = calculatePrice(product, detailOption.getId(), quantity);
     }

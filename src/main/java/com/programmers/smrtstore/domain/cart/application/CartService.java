@@ -31,8 +31,6 @@ public class CartService {
     private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
     private final UserRepository userRepository;
 
-    private static final Integer DEFAULT_QUANTITY = 0;
-
     public CreateCartResponse createCart(CreateCartRequest request) {
         var user = getUser(request.getUserId());
         Product product = productJPARepository.findById(request.getProductId())
@@ -42,13 +40,8 @@ public class CartService {
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         Cart cart = cartJPARepository.findByUserAndProduct(user, product)
             .orElseGet(() -> cartJPARepository.save(
-                Cart.builder()
-                    .user(user)
-                    .product(product)
-                    .detailOption(detailOption)
-                    .quantity(DEFAULT_QUANTITY)
-                    .build()));
-        cart.updateQuantity(request.getQuantity());
+                Cart.of(user, product, detailOption)));
+        cart.updateQuantity(request.getQuantity(), request.getUserId());
         return CreateCartResponse.from(cart);
     }
 
@@ -69,7 +62,7 @@ public class CartService {
 
     public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
         Cart cart = getCart(request.getCartId());
-        cart.updateQuantity(request.getQuantity());
+        cart.updateQuantity(request.getQuantity(), request.getUserId());
         return CartResponse.from(cart);
     }
 
@@ -78,7 +71,7 @@ public class CartService {
         Cart cart = getCart(request.getCartId());
         var detailOption = detailOptionJpaRepository.findById(request.getProductDetailOptionId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        cart.updateDetailOption(detailOption);
+        cart.updateDetailOption(detailOption, request.getUserId());
         return CartResponse.from(cart);
     }
 

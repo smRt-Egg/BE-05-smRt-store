@@ -46,11 +46,12 @@ public enum ErrorCode {
     POINT_ILLEGAL_ARGUMENT(BAD_REQUEST, "포인트 범위가 유효하지 않습니다."),
     CART_QUANTITY_NOT_ENOUGH(BAD_REQUEST, "장바구니의 상품 갯수는 0이하일 수 없습니다."),
     CART_ALREADY_EXIST(BAD_REQUEST, "이미 장바구니에 담긴 상품입니다."),
-    POINT_AVAILALBE_RANGE_EXCEED(BAD_REQUEST, "한 번에 사용 가능한 포인트 한도를 초과했습니다."),
+    POINT_AVAILABLE_RANGE_EXCEED(BAD_REQUEST, "한 번에 사용 가능한 포인트 한도를 초과했습니다."),
     CART_PRODUCT_DETAIL_OPTION_NOT_MATCH(BAD_REQUEST, "유효하지 않은 품목과 옵션 매칭입니다."),
     COUPON_PERCENT_EXCEED(BAD_REQUEST,"쿠폰의 퍼센트 할인값은 100% 를 초과할 수 없습니다."),
     EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS(BAD_REQUEST, "배송지 수가 이미 최대입니다."),
     DEFAULT_SHIPPING_NOT_DELETABLE(BAD_REQUEST, "다른 배송지를 기본 배송지로 변경 후 삭제해주세요."),
+    CART_REQUEST_USER_MISMATCH(BAD_REQUEST, "장바구니 유저와 일치하지 않는 유저 정보입니다."),
     // 401
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
