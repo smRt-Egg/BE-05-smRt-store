@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -56,5 +57,16 @@ public class ShippingAddress {
 
     public void disableDefault() {
         defaultYn = false;
+    }
+
+    public void updateShippingAddress(DetailShippingRequest request) {
+        this.name = request.getName();
+        this.recipient = request.getRecipient();
+        this.address1Depth = request.getAddress1Depth();
+        this.address2Depth = request.getAddress2Depth();
+        this.zipCode = request.getZipCode();
+        this.phoneNum1 = request.getPhoneNum1();
+        this.phoneNum2 = request.getPhoneNum2();
+        this.defaultYn = request.isDefaultYn();
     }
 }

@@ -6,7 +6,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateShippingResponse {
+public class DetailShippingResponse {
+
+    private Long id;
 
     private String name;
 
@@ -24,8 +26,9 @@ public class CreateShippingResponse {
 
     private boolean isDefaultYn;
 
-    public static CreateShippingResponse from(ShippingAddress address) {
-        return CreateShippingResponse.builder()
+    public static DetailShippingResponse from(ShippingAddress address) {
+        return DetailShippingResponse.builder()
+            .id(address.getId())
             .name(address.getName())
             .recipient(address.getRecipient())
             .address1Depth(address.getAddress1Depth())
