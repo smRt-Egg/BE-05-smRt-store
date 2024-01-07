@@ -72,14 +72,12 @@ class ProductQnAServiceTest {
         product1 = Product.builder()
                 .name("productName")
                 .price(1000)
-                .stockQuantity(10)
                 .category(Category.TEMP)
                 .thumbnail(new URL("https://www.naver.com"))
                 .build();
         product2 = Product.builder()
                 .name("productName2")
                 .price(10000)
-                .stockQuantity(101)
                 .category(Category.TEMP)
                 .thumbnail(new URL("https://www.google.com"))
                 .build();
