@@ -60,8 +60,10 @@ public class CreateProductAPIRequest {
                 .optionNameType3(optionNameType3)
                 .build();
         } catch (MalformedURLException ignore) {
+            // `@URL` 어노테이션을 통해서 URL 포멧에 대해 검증이 진행되었기에 익셉션이 발생하지 않습니다.
+            return null;
         }
-        return null;
+
     }
 
     public List<CreateProductDetailOptionRequest> toDetailOptionRequests() {

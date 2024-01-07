@@ -28,6 +28,8 @@ public class ProductController {
     private final ProductService productService;
     private final ReviewService reviewService;
 
+    private static final Float DEFAULT_DISCOUNT_RATIO = 0F;
+
     @PostMapping
     public ResponseEntity<ProductAPIResponse> createProduct(
         @Valid @RequestBody CreateProductAPIRequest request) {
@@ -43,9 +45,8 @@ public class ProductController {
     public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
         @PathVariable Long productId,
         @Valid ProductDiscountRatioAPIRequest request) {
-
         var result =
-            request.getDiscountRatio().equals(0F) ? productService.disableProductDiscount(productId)
+            request.getDiscountRatio().equals(DEFAULT_DISCOUNT_RATIO) ? productService.disableProductDiscount(productId)
                 : productService.updateProductDiscountRatio(productId, request.getDiscountRatio());
         return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
     }

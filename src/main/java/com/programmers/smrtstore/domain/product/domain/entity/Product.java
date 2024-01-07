@@ -296,7 +296,7 @@ public class Product {
     }
 
     public void updateDiscountRatio(Float discountRatio) {
-        if (discountRatio == 0) {
+        if (discountRatio <= 0f || discountRatio >= 100f) {
             throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
         }
         this.discountRatio = discountRatio;
