@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateCartRequest {
-
-    private Long userId;
-    private Long productId;
-    private Long detailOptionId;
-    private Integer quantity;
+public class UpdateCartOptionRequest {
+    private Long cartId;
+    private Long productDetailOptionId;
 }

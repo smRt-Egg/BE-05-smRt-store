@@ -13,6 +13,7 @@ public class CartResponse {
     private Long id;
     private Long userId;
     private Long productId;
+    private Long productDetailOptionId;
     private Integer quantity;
     private Integer price;
     private LocalDateTime createdAt;
@@ -23,6 +24,7 @@ public class CartResponse {
             cart.getId(),
             cart.getUser().getId(),
             cart.getProduct().getId(),
+            cart.getProductDetailOptionId(),
             cart.getQuantity(),
             cart.getPrice(),
             cart.getCreatedAt(),
