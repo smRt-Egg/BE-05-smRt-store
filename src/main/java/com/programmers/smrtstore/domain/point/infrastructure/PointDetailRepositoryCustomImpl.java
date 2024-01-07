@@ -3,11 +3,11 @@ package com.programmers.smrtstore.domain.point.infrastructure;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
 
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
+import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.querydsl.core.types.dsl.Expressions;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -21,7 +21,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
     private JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PointDetailResponse> findUsedDetailsByOrderId(Long orderId) {
+    public List<PointDetail> findUsedDetailsByOrderId(Long orderId) {
         return jpaQueryFactory.selectFrom(pointDetail)
             .where(pointDetail.pointId.in(
                 JPAExpressions
@@ -31,9 +31,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
                         point.orderId.eq(orderId),
                         point.pointStatus.eq(PointStatus.USED))
             ))
-            .stream()
-            .map(PointDetailResponse::from)
-            .toList();
+            .fetch();
     }
 
     @Override
