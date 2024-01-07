@@ -46,6 +46,7 @@ public enum ErrorCode {
     POINT_ILLEGAL_ARGUMENT(BAD_REQUEST, "포인트 범위가 유효하지 않습니다."),
     CART_QUANTITY_NOT_ENOUGH(BAD_REQUEST, "장바구니의 상품 갯수는 0이하일 수 없습니다."),
     CART_ALREADY_EXIST(BAD_REQUEST, "이미 장바구니에 담긴 상품입니다."),
+    CART_PRODUCT_DETAIL_OPTION_NOT_MATCH(BAD_REQUEST, "유효하지 않은 품목과 옵션 매칭입니다."),
     COUPON_PERCENT_EXCEED(BAD_REQUEST,"쿠폰의 퍼센트 할인값은 100% 를 초과할 수 없습니다."),
     EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS(BAD_REQUEST, "배송지 수가 이미 최대입니다."),
     // 401
@@ -56,6 +57,8 @@ public enum ErrorCode {
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    QUESTION_NOT_FOUND(NOT_FOUND, "문의를 찾을 수 없습니다"),
+    ANSWER_NOT_FOUND(NOT_FOUND, "답변을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(NOT_FOUND, "주문을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(NOT_FOUND, "상품을 찾을 수 없습니다."),
     PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
