@@ -74,8 +74,12 @@ public class ProductService {
 
     public ProductResponse updateProduct(ProductRequest request) {
         Product product = getProduct(productRepository, request.getId());
-        product.updateValues(request.getName(), request.getSalePrice(), request.getStockQuantity(),
-            request.getCategory(), request.getThumbnail(), request.getContentImage());
+        product.updateName(request.getName());
+        product.updatePrice(request.getPrice());
+        product.updateStockQuantity(request.getStockQuantity());
+        product.updateCategory(request.getCategory());
+        product.updateThumbnail(request.getThumbnail());
+        product.updateContentImage(request.getContentImage());
         return ProductResponse.from(product);
     }
 

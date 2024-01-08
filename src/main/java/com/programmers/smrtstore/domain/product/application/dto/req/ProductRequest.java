@@ -16,7 +16,7 @@ public class ProductRequest {
 
     private Long id;
     private String name;
-    private Integer salePrice;
+    private Integer price;
     private Integer stockQuantity;
     private Category category;
     private URL thumbnail;

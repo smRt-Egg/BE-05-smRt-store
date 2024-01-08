@@ -247,51 +247,41 @@ public class Product {
         this.productStatusType = ProductStatusType.SALE;
     }
 
-    private void updateName(String name) {
-        this.name = name;
-    }
-
-    private void updatePrice(Integer price) {
-        this.price = price;
-    }
-
-    private void updateStockQuantity(Integer stockQuantity) {
-        this.productDetailOptions.stream().findAny()
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
-            .setStockQuantity(stockQuantity);
-    }
-
-    private void updateCategory(Category category) {
-        this.category = category;
-    }
-
-    private void updateThumbnail(URL thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    private void updateContentImage(URL contentImage) {
-        this.contentImage = contentImage;
-    }
-
-    public void updateValues(String name, Integer price, Integer stockQuantity,
-        Category category, URL thumbnail, URL contentImage) {
-        if (name != null) {
-            updateName(name);
+    public void updateName(String name) {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
         }
-        if (price != null) {
-            updatePrice(price);
+    }
+
+    public void updatePrice(Integer price) {
+        if (price != null && price > 0) {
+            this.price = price;
         }
-        if (stockQuantity != null) {
-            updateStockQuantity(stockQuantity);
+    }
+
+    public void updateStockQuantity(Integer stockQuantity) {
+        if (stockQuantity != null && stockQuantity >= 0) {
+            this.productDetailOptions.stream().findAny()
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
+                .setStockQuantity(stockQuantity);
         }
+    }
+
+    public void updateCategory(Category category) {
         if (category != null) {
-            updateCategory(category);
+            this.category = category;
         }
+    }
+
+    public void updateThumbnail(URL thumbnail) {
         if (thumbnail != null) {
-            updateThumbnail(thumbnail);
+            this.thumbnail = thumbnail;
         }
+    }
+
+    public void updateContentImage(URL contentImage) {
         if (contentImage != null) {
-            updateContentImage(contentImage);
+            this.contentImage = contentImage;
         }
     }
 
