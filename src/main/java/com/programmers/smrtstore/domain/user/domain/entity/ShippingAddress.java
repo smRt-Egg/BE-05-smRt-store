@@ -8,7 +8,6 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_SHIPPING_ADDRESS_NAME_LENGTH;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

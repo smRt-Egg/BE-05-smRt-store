@@ -1,12 +1,14 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.user.application.vo.AggUserShippingInfo;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
@@ -23,10 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShippingAddressService {
 
     private final ShippingAddressJpaRepository shippingAddressRepository;
+    private final UserRepository userRepository;
     public static final int MAXIMUM_SHIPPING_SIZE = 15;
 
-    public DetailShippingResponse createShippingAddress(User user,
+    public DetailShippingResponse createShippingAddress(Long userId,
         DetailShippingRequest request) {
+        User user = findByUserId(userId);
         user.checkShippingAddressesSize();
         ShippingAddress shippingAddress = request.toShippingAddressEntity(user);
         user.checkShippingDuplicate(request.toShippingAddressEntity(user));
@@ -40,14 +44,16 @@ public class ShippingAddressService {
     }
 
     @Transactional(readOnly = true)
-    public DeliveryAddressBook getShippingAddressList(User user) {
+    public DeliveryAddressBook getShippingAddressList(Long userId) {
+        User user = findByUserId(userId);
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
         AggUserShippingInfo separated = separateDefaultShippingAddress(shippingAddresses);
         return DeliveryAddressBook.from(separated);
     }
 
-    public DetailShippingResponse updateShippingAddress(User user, Long shippingId,
+    public DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
         UpdateShippingRequest request) {
+        User user = findByUserId(userId);
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
@@ -69,7 +75,8 @@ public class ShippingAddressService {
         return DetailShippingResponse.from(shippingAddress);
     }
 
-    public void deleteShippingAddress(User user, Long shippingId) {
+    public void deleteShippingAddress(Long userId, Long shippingId) {
+        User user = findByUserId(userId);
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
@@ -93,5 +100,10 @@ public class ShippingAddressService {
         }
 
         return AggUserShippingInfo.of(defaultShippingAddress, notDefaultShippingAddresses);
+    }
+
+    private User findByUserId(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

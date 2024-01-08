@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -35,21 +34,18 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public DetailShippingResponse createShippingAddress(Long userId,
         DetailShippingRequest request) {
-        User user = userService.findByUserId(userId);
-        return shippingAddressService.createShippingAddress(user, request);
+        return shippingAddressService.createShippingAddress(userId, request);
     }
 
     @Override
     public DeliveryAddressBook getShippingAddressList(Long userId) {
-        User user = userService.findByUserId(userId);
-        return shippingAddressService.getShippingAddressList(user);
+        return shippingAddressService.getShippingAddressList(userId);
     }
 
     @Override
     public DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
         UpdateShippingRequest request) {
-        User user = userService.findByUserId(userId);
-        return shippingAddressService.updateShippingAddress(user, shippingId, request);
+        return shippingAddressService.updateShippingAddress(userId, shippingId, request);
     }
 
     @Override
@@ -59,7 +55,6 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public void deleteShippingAddress(Long userId, Long shippingId) {
-        User user = userService.findByUserId(userId);
-        shippingAddressService.deleteShippingAddress(user, shippingId);
+        shippingAddressService.deleteShippingAddress(userId, shippingId);
     }
 }

@@ -24,8 +24,7 @@ public class UserService {
         return ProfileUserResponse.from(user);
     }
 
-    @Transactional(readOnly = true)
-    public User findByUserId(Long userId) {
+    private User findByUserId(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
