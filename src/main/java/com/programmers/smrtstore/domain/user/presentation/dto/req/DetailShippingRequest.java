@@ -4,6 +4,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,10 +33,10 @@ public class DetailShippingRequest {
     private String zipCode;
 
     @NotBlank
-    @Size(min = 1, max = 15, message = "전화번호는 15자 이내여야 합니다.")
+    @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "전화번호가 형식에 맞지 않습니다.")
     private String phoneNum1;
 
-    @Size(max = 15, message = "전화번호는 15자 이내여야 합니다.")
+    @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "전화번호가 형식에 맞지 않습니다.")
     private String phoneNum2;
 
     @NotNull

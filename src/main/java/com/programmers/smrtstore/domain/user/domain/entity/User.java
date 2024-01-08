@@ -1,5 +1,12 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_AGE;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_BIRTH_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_EMAIL_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_NICKNAME_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_PHONE_NUM_FORM;
+
+import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,13 +19,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,12 +47,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Min(value = 7, message = "나이는 7살 이상이어야 합니다.")
-    @Max(value = 200, message = "나이는 200살 이하여야 합니다.")
     private Integer age;
 
     @Column(nullable = false, length = 10)
-    @Size(min = 1, max = 10, message = "별명은 1~10자여야 합니다.")
     private String nickName;
 
     @Column(nullable = false, length = 64)
@@ -55,11 +57,9 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "올바른 휴대폰 번호 형식이 아닙니다.")
     private String phone;
 
     @Column(nullable = false, length = 64)
-    @Pattern(regexp = "^\\d{8}$", message = "올바른 생년월일 형식이 아닙니다.")
     private String birth;
 
     @Column(nullable = false)
@@ -106,21 +106,21 @@ public class User {
 
     public void updateUser(UpdateUserRequest request) {
         if(request.getAge() != null)
-            this.age = request.getAge();
+            updateAge(request.getAge());
         if(request.getNickName() != null)
-            this.nickName = request.getNickName();
+            updateNickName(request.getNickName());
         if(request.getEmail() != null)
-            this.email = request.getEmail();
+            updateEmail(email);
         if(request.getPhone() != null)
-            this.phone = request.getPhone();
+            updatePhone(request.getPhone());
         if(request.getBirth() != null)
-            this.birth = request.getBirth();
+            updateBirth(request.getBirth());
         if(request.getGender() != null)
-            this.gender = request.getGender();
+            updateGender(request.getGender());
         if(request.getThumbnail() != null)
-            this.thumbnail = request.getThumbnail();
+            updateThumbnail(request.getThumbnail());
         if(request.getMarketingAgree() != null)
-            this.marketingAgree = request.getMarketingAgree();
+            updateMarketingAgree(request.getMarketingAgree());
     }
 
     public void repurchase() {
@@ -154,5 +154,56 @@ public class User {
 
     public void deleteShippingAddress(Long shippingId) {
         shippingAddresses.removeIf(address -> address.getId().equals(shippingId));
+    }
+
+    private void updateAge(int age) {
+        if(age < 7 || age > 200)
+            throw new UserException(INAPPROPRIATE_AGE, String.valueOf(age));
+        this.age = age;
+    }
+
+    private void updateNickName(String nickName) {
+        if(nickName.isEmpty() || nickName.length() > 10)
+            throw new UserException(INAPPROPRIATE_NICKNAME_LENGTH, nickName);
+        this.nickName = nickName;
+    }
+
+    private void updateEmail(String email) {
+        Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
+        Matcher matcher = emailPattern.matcher(email);
+        if(!matcher.matches())
+            throw new UserException(INAPPROPRIATE_EMAIL_FORM, email);
+
+        this.email = email;
+    }
+
+    private void updateBirth(String birth) {
+        Pattern birthPattern = Pattern.compile("^\\d{8}$");
+        Matcher matcher = birthPattern.matcher(birth);
+        if(!matcher.matches())
+            throw new UserException(INAPPROPRIATE_BIRTH_FORM, birth);
+
+        this.birth = birth;
+    }
+
+    private void updatePhone(String phone) {
+        Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
+        Matcher matcher = phonePattern.matcher(phone);
+        if(!matcher.matches())
+            throw new UserException(INAPPROPRIATE_PHONE_NUM_FORM, phone);
+
+        this.phone = phone;
+    }
+
+    private void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    private void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    private void updateMarketingAgree(Boolean marketingAgree) {
+        this.marketingAgree = marketingAgree;
     }
 }
