@@ -1,7 +1,5 @@
 package com.programmers.smrtstore.domain.product.application;
 
-import static com.programmers.smrtstore.domain.product.application.util.ProductServiceUtil.getProduct;
-
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
@@ -23,6 +21,7 @@ public class ProductService {
 
     private final ProductJpaRepository productRepository;
     private final ProductDetailOptionJpaRepository productDetailOptionJpaRepository;
+    private final ProductCommonService commonService;
 
     // 상품 추가 옵션 X
     public ProductResponse createProduct(CreateProductRequest request) {
@@ -38,7 +37,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponse getProductById(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         return ProductResponse.from(product);
     }
 
@@ -50,30 +49,30 @@ public class ProductService {
     }
 
     public Long releaseProduct(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         product.releaseProduct();
         return productId;
     }
 
     public Long makeProductAvailable(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         product.makeAvailable();
         return productId;
     }
 
     public Long makeProductNotAvailable(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         product.makeNotAvailable();
         return productId;
     }
 
     public void deleteProduct(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         productRepository.delete(product);
     }
 
     public ProductResponse updateProduct(ProductRequest request) {
-        Product product = getProduct(productRepository, request.getId());
+        Product product = commonService.getProduct(request.getId());
         product.updateName(request.getName());
         product.updatePrice(request.getPrice());
         product.updateStockQuantity(request.getStockQuantity());
@@ -86,7 +85,7 @@ public class ProductService {
     }
 
     public ProductResponse updateProductDiscountRatio(Long productId, Integer discountRatio) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         product.updateDiscountRatio(discountRatio);
         return ProductResponse.from(product);
     }

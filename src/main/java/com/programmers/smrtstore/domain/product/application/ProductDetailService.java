@@ -1,8 +1,5 @@
 package com.programmers.smrtstore.domain.product.application;
 
-import static com.programmers.smrtstore.domain.product.application.util.ProductServiceUtil.getProduct;
-import static com.programmers.smrtstore.domain.product.application.util.ProductServiceUtil.optionValidate;
-
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
@@ -26,11 +23,12 @@ public class ProductDetailService {
 
     private final ProductJpaRepository productRepository;
     private final ProductDetailOptionJpaRepository detailOptionRepository;
+    private final ProductCommonService commonService;
 
     // 상품 추가 다중 옵션
     public ProductResponse createProduct(CreateProductRequest request,
         List<CreateProductDetailOptionRequest> optionRequests) {
-        optionValidate(request.isCombinationYn());
+        commonService.optionValidate(request.isCombinationYn());
         Product product = request.toEntity();
         List<ProductDetailOption> productOptions = optionRequests.stream()
             .map(optionRequest -> optionRequest.toEntity(product))
@@ -42,14 +40,14 @@ public class ProductDetailService {
 
     public ProductDetailOptionResponse addProductDetailOption(Long productId,
         CreateProductDetailOptionRequest request) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         var detailOption = detailOptionRepository.save(request.toEntity(product));
         return ProductDetailOptionResponse.from(detailOption);
     }
 
     public Long removeProductOption(Long productId, Long productOptionId) {
-        Product product = getProduct(productRepository, productId);
-        optionValidate(product.isCombinationYn());
+        Product product = commonService.getProduct(productId);
+        commonService.optionValidate(product.isCombinationYn());
         product.removeOption(productOptionId);
         return productOptionId;
     }

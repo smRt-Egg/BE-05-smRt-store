@@ -1,7 +1,5 @@
 package com.programmers.smrtstore.domain.product.application;
 
-import static com.programmers.smrtstore.domain.product.application.util.ProductServiceUtil.getProduct;
-
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductAdditionalOptionResponse;
@@ -21,24 +19,25 @@ public class ProductAdditionalService {
 
     private final ProductJpaRepository productRepository;
     private final ProductAdditionalOptionJpaRepository additionalOptionRepository;
+    private final ProductCommonService commonService;
 
     public ProductAdditionalOptionResponse addAdditionalOption(Long productId,
         CreateProductAdditionalOptionRequest request) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         ProductAdditionalOption additionalOption = additionalOptionRepository.save(
             request.toEntity(product));
         return ProductAdditionalOptionResponse.from(additionalOption);
     }
 
     public Long removeAdditionalOption(Long productId, Long additionalId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         product.removeAdditionalOption(additionalId);
         return additionalId;
     }
 
     @Transactional(readOnly = true)
     public List<ProductAdditionalOptionResponse> getAllAdditionalOptions(Long productId) {
-        Product product = getProduct(productRepository, productId);
+        Product product = commonService.getProduct(productId);
         return product.getProductAdditionalOptions().stream()
             .map(ProductAdditionalOptionResponse::from).toList();
     }

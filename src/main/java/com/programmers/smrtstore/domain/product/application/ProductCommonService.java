@@ -1,23 +1,28 @@
-package com.programmers.smrtstore.domain.product.application.util;
+package com.programmers.smrtstore.domain.product.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProductServiceUtil {
+@Component
+@RequiredArgsConstructor
+public class ProductCommonService {
 
-    public static Product getProduct(ProductJpaRepository productRepository, Long productId)
+    private final ProductJpaRepository productRepository;
+
+    @Transactional(readOnly = true)
+    public Product getProduct(Long productId)
         throws ProductException {
         return productRepository.findById(productId)
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
     }
 
-    public static void optionValidate(boolean optionYn) throws ProductException {
+    public void optionValidate(boolean optionYn) throws ProductException {
         if (!optionYn) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_USE_OPTION);
         }
