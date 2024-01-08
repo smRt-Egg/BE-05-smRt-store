@@ -94,13 +94,20 @@ public class User {
     }
 
     public void updateUser(UpdateUserRequest request) {
-        this.age = request.getAge();
-        this.nickName = request.getNickName();
-        this.email = request.getEmail();
-        this.phone = request.getPhone();
-        this.birth = request.getBirth();
-        this.gender = request.getGender();
-        this.thumbnail = request.getThumbnail();
+        if(request.getAge() != null)
+            this.age = request.getAge();
+        if(request.getNickName() != null)
+            this.nickName = request.getNickName();
+        if(request.getEmail() != null)
+            this.email = request.getEmail();
+        if(request.getPhone() != null)
+            this.phone = request.getPhone();
+        if(request.getBirth() != null)
+            this.birth = request.getBirth();
+        if(request.getGender() != null)
+            this.gender = request.getGender();
+        if(request.getThumbnail() != null)
+            this.thumbnail = request.getThumbnail();
         this.marketingAgree = request.isMarketingAgree();
     }
 

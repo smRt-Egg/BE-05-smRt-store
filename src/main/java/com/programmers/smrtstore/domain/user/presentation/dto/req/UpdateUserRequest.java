@@ -17,29 +17,22 @@ public class UpdateUserRequest {
     @Max(value = 200, message = "나이는 200살 이하여야 합니다.")
     Integer age;
 
-    @NotBlank
     @Size(min = 1, max = 10, message = "별명은 1~10자여야 합니다.")
     String nickName;
 
-    @NotBlank @Email
+    @Email
     String email;
 
-    @NotBlank
     @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "올바른 휴대폰 번호 형식이 아닙니다.")
     String phone;
 
-    @NotBlank
     @Pattern(regexp = "^\\d{8}$", message = "올바른 생년월일 형식이 아닙니다.")
     String birth;
 
-    @NotNull
     Gender gender;
 
     String thumbnail;
 
     @NotNull
     boolean marketingAgree;
-
-    @NotNull
-    boolean membershipYn;
 }
