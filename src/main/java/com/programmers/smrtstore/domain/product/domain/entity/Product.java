@@ -296,18 +296,14 @@ public class Product {
     }
 
     public void updateDiscountRatio(Integer discountRatio) {
-        if (discountRatio <= 0f || discountRatio >= 100f) {
-            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
-        }
-        this.discountRatio = discountRatio;
-        this.discountYn = true;
-    }
-
-    public void disableDiscount() {
         if (discountRatio == 0 && !discountYn) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_DISCOUNTED);
         }
-        this.discountRatio = 0;
-        this.discountYn = false;
+        if (discountRatio < 0 || discountRatio >= 100) {
+            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
+        }
+        this.discountRatio = discountRatio;
+        this.discountYn = discountRatio != 0;
     }
+
 }

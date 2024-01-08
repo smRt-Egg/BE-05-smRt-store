@@ -30,13 +30,12 @@ public class ProductController {
     private final ProductDetailService productDetailService;
     private final ReviewService reviewService;
 
-    private static final Integer DEFAULT_DISCOUNT_RATIO = 0;
-
     @PostMapping
     public ResponseEntity<ProductAPIResponse> createProduct(
         @Valid @RequestBody CreateProductAPIRequest request) {
         var result =
-            request.isCombinationYn() ? productDetailService.createProduct(request.toProductRequest(),
+            request.isCombinationYn() ? productDetailService.createProduct(
+                request.toProductRequest(),
                 request.toDetailOptionRequests())
                 : productService.createProduct(request.toProductRequest());
         return ResponseEntity.ok(ProductAPIResponse.from(result));
@@ -46,10 +45,8 @@ public class ProductController {
     @PutMapping("/discount/{productId}")
     public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
         @PathVariable Long productId, @Valid ProductDiscountRatioAPIRequest request) {
-        var result =
-            request.getDiscountRatio().equals(DEFAULT_DISCOUNT_RATIO)
-                ? productService.disableProductDiscount(productId)
-                : productService.updateProductDiscountRatio(productId, request.getDiscountRatio());
+        var result = productService.updateProductDiscountRatio(productId,
+            request.getDiscountRatio());
         return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
     }
 

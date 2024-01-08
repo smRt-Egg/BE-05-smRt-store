@@ -79,16 +79,9 @@ public class ProductService {
         return ProductResponse.from(product);
     }
 
-    // TODO: 병합
     public ProductResponse updateProductDiscountRatio(Long productId, Integer discountRatio) {
         Product product = getProduct(productRepository, productId);
         product.updateDiscountRatio(discountRatio);
-        return ProductResponse.from(product);
-    }
-
-    public ProductResponse disableProductDiscount(Long productId) {
-        Product product = getProduct(productRepository, productId);
-        product.disableDiscount();
         return ProductResponse.from(product);
     }
 
