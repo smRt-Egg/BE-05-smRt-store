@@ -87,9 +87,6 @@ public class User {
     @Column(nullable = false)
     private Boolean membershipYn;
 
-    @Column(nullable = false)
-    private Boolean repurchaseYn;
-
     @Builder.Default
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<ShippingAddress> shippingAddresses = new ArrayList<>();
@@ -126,10 +123,6 @@ public class User {
             updateThumbnail(request.getThumbnail());
         if(request.getMarketingAgree() != null)
             updateMarketingAgree(request.getMarketingAgree());
-    }
-
-    public void repurchase() {
-        this.repurchaseYn = true;
     }
 
     public void joinMembership() {

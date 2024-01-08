@@ -62,7 +62,6 @@ class ReviewServiceTest {
                 .point(0)
                 .marketingAgree(false)
                 .membershipYn(false)
-                .repurchaseYn(false)
                 .build());
         product = productJpaRepository.save(Product.builder()
                 .name("productName")

@@ -87,7 +87,6 @@ class KeepServiceTest {
                     .point(0)
                     .marketingAgree(false)
                     .membershipYn(false)
-                    .repurchaseYn(false)
                     .build();
             userList.add(user);
         }
