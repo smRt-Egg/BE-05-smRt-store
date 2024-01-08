@@ -11,8 +11,13 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.CreateKeepResp
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.DeleteKeepResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+
 import java.util.List;
+
+import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.user.exception.UserException;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,35 +25,43 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KeepService {
     private final KeepJpaRepository keepRepository;
+    private final ProductJpaRepository productRepository;
+    private final UserJpaRepository userJpaRepository;
 
-    public CreateKeepResponse createKeep(CreateKeepRequest request) {
+    public CreateKeepResponse createKeep(Long securityUserId, CreateKeepRequest request) {
+        checkUserExists(securityUserId);
         Keep keep = Keep.builder()
-                .userId(request.getUserId())
-                .productId(request.getProductId())
+                .user(userJpaRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null)))
+                .product(productRepository.findById(request.getProductId()).orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND)))
                 .build();
         Keep saveKeepEntity = keepRepository.save(keep);
         return CreateKeepResponse.of(saveKeepEntity);
     }
 
-    public List<KeepResponse> getAllKeepsByUserId(Long userId) {
-        List<Keep> keepListFindByUserId = keepRepository.findAllByUserId(userId);
-        return keepListFindByUserId.stream().map(KeepResponse::of).toList();
+    public List<KeepResponse> getAllKeepsByUserId(Long securityUserId, Long userId) {
+        checkUserExists(securityUserId);
+        return keepRepository.findAllByUserId(userId);
     }
 
-    public DeleteKeepResponse deleteKeep(DeleteKeepRequest request) {
+    public DeleteKeepResponse deleteKeep(Long securityUserId, DeleteKeepRequest request) {
+        checkUserExists(securityUserId);
         Long deleteId = request.getId();
-        Keep deleteKeep = keepRepository.findById(deleteId).orElseThrow(() -> new KeepException(ErrorCode.KEEP_NOT_FOUND_ERROR));
+        Keep deleteKeep = keepRepository.findById(request.getId()).orElseThrow(() -> new KeepException(ErrorCode.KEEP_NOT_FOUND_ERROR));
         keepRepository.delete(deleteKeep);
         return DeleteKeepResponse.from(deleteId);
     }
 
-    public List<KeepResponse> findKeepByUserAndCategory(FindKeepByCategoryRequest request) {
-        Long userId = request.getUserId();
-        Category category = request.getCategory();
-        return keepRepository.findKeepByUserAndCategory(userId, category);
+    public List<KeepResponse> findKeepByUserAndCategory(Long securityUserId, FindKeepByCategoryRequest request) {
+        checkUserExists(securityUserId);
+        return keepRepository.findKeepByUserAndCategory(request.getUserId(), request.getCategory());
     }
 
-    public List<KeepRankingResponse> getKeepRanking(int limit) {
+    public List<KeepRankingResponse> getKeepRanking(Long securityUserId, int limit) {
+        checkUserExists(securityUserId);
         return keepRepository.findTopProductIdsWithCount(limit);
+    }
+
+    private void checkUserExists(Long securityUserId) {
+        userJpaRepository.findById(securityUserId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
     }
 }

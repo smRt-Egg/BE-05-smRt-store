@@ -1,15 +1,17 @@
 package com.programmers.smrtstore.domain.keep.infrastructure;
 
-import static com.programmers.smrtstore.domain.keep.domain.entity.QKeep.keep;
-import static com.programmers.smrtstore.domain.product.domain.entity.QProduct.product;
-
+import com.programmers.smrtstore.domain.keep.domain.entity.Keep;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingResponse;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import static com.programmers.smrtstore.domain.keep.domain.entity.QKeep.keep;
+import static com.programmers.smrtstore.domain.product.domain.entity.QProduct.product;
 
 @RequiredArgsConstructor
 public class KeepRepositoryCustomImpl implements KeepRepositoryCustom {
@@ -17,21 +19,44 @@ public class KeepRepositoryCustomImpl implements KeepRepositoryCustom {
 
     @Override
     public List<KeepRankingResponse> findTopProductIdsWithCount(int limit) {
-       return jpaQueryFactory.select(Projections.constructor(KeepRankingResponse.class, keep.productId, keep.productId.count()))
-               .from(keep)
-               .groupBy(keep.productId)
-               .orderBy(keep.productId.count().desc())
-               .limit(limit)
-               .fetch();
+        return jpaQueryFactory.select(Projections.constructor(KeepRankingResponse.class, keep.product.id, keep.product.id.count()))
+                .from(keep)
+                .groupBy(keep.product.id)
+                .orderBy(keep.product.id.count().desc())
+                .limit(limit)
+                .fetch();
     }
 
     @Override
     public List<KeepResponse> findKeepByUserAndCategory(Long userId, Category category) {
-        return jpaQueryFactory.selectFrom(keep)
-                .leftJoin(product).on(keep.productId.eq(product.id))
-                .where(keep.userId.eq(userId),
+        List<Keep> keepList = jpaQueryFactory.selectFrom(keep)
+                .leftJoin(product).on(keep.product.id.eq(product.id))
+                .fetchJoin()
+                .where(keep.user.id.eq(userId),
                         product.category.eq(category))
-                .stream().map(KeepResponse::of)
-                .toList();
+                .fetch();
+        return keepList.stream().map(k -> new KeepResponse(
+                k.getId(),
+                k.getUser().getId(),
+                k.getProduct().getName(),
+                k.getProduct().getSalePrice(),
+                k.getProduct().getContentImage()
+        )).toList();
+    }
+
+    @Override
+    public List<KeepResponse> findAllByUserId(Long userId) {
+        List<Keep> keepList = jpaQueryFactory.selectFrom(keep)
+                .leftJoin(product).on(keep.product.id.eq(product.id))
+                .fetchJoin()
+                .where(keep.user.id.eq(userId))
+                .fetch();
+        return keepList.stream().map(k -> new KeepResponse(
+                k.getId(),
+                k.getUser().getId(),
+                k.getProduct().getName(),
+                k.getProduct().getSalePrice(),
+                k.getProduct().getContentImage()
+        )).toList();
     }
 }

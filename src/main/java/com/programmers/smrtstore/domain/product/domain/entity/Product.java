@@ -49,7 +49,7 @@ public class Product {
     private Integer price;
 
     @Column(name = "discount_ratio", nullable = false)
-    private Float discountRatio;
+    private Integer discountRatio;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
@@ -99,7 +99,7 @@ public class Product {
         String optionNameType3) {
         this.name = name;
         this.price = price;
-        this.discountRatio = 0f;
+        this.discountRatio = 0;
         this.combinationYn = combinationYn;
         this.category = category;
         this.thumbnail = thumbnail;
@@ -117,7 +117,7 @@ public class Product {
 
     public Integer getSalePrice() {
         if (discountYn) {
-            return price - (int) (price * discountRatio / 100);
+            return price - (price * discountRatio / 100);
         }
         return price;
     }
@@ -128,7 +128,7 @@ public class Product {
                 .filter(option -> option.getId().equals(productOptionId))
                 .findAny()
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-            return price - (int) ((price + productOption.getPrice()) * discountRatio / 100);
+            return price - ((price + productOption.getPrice()) * discountRatio / 100);
         }
         return price;
     }
@@ -144,7 +144,7 @@ public class Product {
         productAdditionalOptions.add(additionalOption);
     }
 
-    public void addStockQuantity(Integer quantity) {
+    public void increaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
@@ -154,21 +154,21 @@ public class Product {
         productStatusType = ProductStatusType.SALE;
     }
 
-    public void addStockQuantity(Integer quantity, Long productOptionId) {
+    public void increaseDetailStockQuantity(Integer quantity, Long productOptionId) {
         productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
-    public void addAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+    public void increaseAdditionalStockQuantity(Integer quantity, Long productOptionId) {
         productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
-    public void removeStockQuantity(Integer quantity) {
+    public void decreaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
@@ -180,14 +180,14 @@ public class Product {
         }
     }
 
-    public void removeStockQuantity(Integer quantity, Long productOptionId) {
+    public void decreaseDetailStockQuantity(Integer quantity, Long productOptionId) {
         productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .removeStockQuantity(quantity);
     }
 
-    public void removeAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+    public void decreaseAdditionalStockQuantity(Integer quantity, Long productOptionId) {
         productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
@@ -247,67 +247,58 @@ public class Product {
         this.productStatusType = ProductStatusType.SALE;
     }
 
-    private void updateName(String name) {
-        this.name = name;
-    }
-
-    private void updatePrice(Integer price) {
-        this.price = price;
-    }
-
-    private void updateStockQuantity(Integer stockQuantity) {
-        this.productDetailOptions.stream().findAny()
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
-            .setStockQuantity(stockQuantity);
-    }
-
-    private void updateCategory(Category category) {
-        this.category = category;
-    }
-
-    private void updateThumbnail(URL thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    private void updateContentImage(URL contentImage) {
-        this.contentImage = contentImage;
-    }
-
-    public void updateValues(String name, Integer price, Integer stockQuantity,
-        Category category, URL thumbnail, URL contentImage) {
-        if (name != null) {
-            updateName(name);
+    public void updateName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
         }
-        if (price != null) {
-            updatePrice(price);
+    }
+
+    public void updatePrice(Integer price) {
+        if (price != null && price > 0) {
+            this.price = price;
         }
-        if (stockQuantity != null) {
-            updateStockQuantity(stockQuantity);
+    }
+
+    public void updateStockQuantity(Integer stockQuantity) {
+        if (stockQuantity != null && stockQuantity >= 0) {
+            this.productDetailOptions.stream().findAny()
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
+                .updateStockQuantity(stockQuantity);
         }
+    }
+
+    public void updateCategory(Category category) {
         if (category != null) {
-            updateCategory(category);
+            this.category = category;
         }
+    }
+
+    public void updateThumbnail(URL thumbnail) {
         if (thumbnail != null) {
-            updateThumbnail(thumbnail);
+            this.thumbnail = thumbnail;
         }
+    }
+
+    public void updateOptionNameTypes(String optionNameType1, String optionNameType2,
+        String optionNameType3) {
+        optionNameTypes.updateOptionNameTypes(optionNameType1, optionNameType2, optionNameType3);
+    }
+
+    public void updateContentImage(URL contentImage) {
         if (contentImage != null) {
-            updateContentImage(contentImage);
+            this.contentImage = contentImage;
         }
     }
 
-    public void updateDiscountRatio(Float discountRatio) {
-        if (discountRatio == 0) {
-            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
-        }
-        this.discountRatio = discountRatio;
-        this.discountYn = true;
-    }
-
-    public void disableDiscount() {
+    public void updateDiscountRatio(Integer discountRatio) {
         if (discountRatio == 0 && !discountYn) {
             throw new ProductException(ErrorCode.PRODUCT_NOT_DISCOUNTED);
         }
-        this.discountRatio = 0f;
-        this.discountYn = false;
+        if (discountRatio < 0 || discountRatio >= 100) {
+            throw new ProductException(ErrorCode.PRODUCT_DISCOUNT_RATIO_NOT_VALID);
+        }
+        this.discountRatio = discountRatio;
+        this.discountYn = discountRatio != 0;
     }
+
 }

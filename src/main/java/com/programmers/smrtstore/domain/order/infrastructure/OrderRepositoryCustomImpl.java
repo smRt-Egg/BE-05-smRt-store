@@ -1,9 +1,8 @@
 package com.programmers.smrtstore.domain.order.infrastructure;
 
 import static com.programmers.smrtstore.domain.order.domain.entity.QOrder.order;
-import static com.programmers.smrtstore.domain.order.domain.entity.QOrderSheet.orderSheet;
-import static com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus.DELIVERED;
-import static com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus.PAYMENT_COMPLETED;
+import static com.programmers.smrtstore.domain.order.domain.entity.enums.OrderStatus.*;
+import static com.programmers.smrtstore.domain.order.orderSheet.domain.entity.QOrderSheet.orderSheet;
 
 import com.programmers.smrtstore.util.DateTimeUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -37,12 +36,12 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Boolean verifyOrderDelivered(Long userId, Long productId) {
+    public Boolean existsOrderPurchaseConfirmed(Long userId, Long productId) {
         var result = queryFactory.selectFrom(order)
             .join(order.orderSheet, orderSheet)
             .where(orderSheet.user.id.eq(userId)
                 .and(orderSheet.orderedProducts.any().product.id.eq(productId))
-                .and(order.orderStatus.eq(DELIVERED))
+                .and(order.orderStatus.eq(PURCHASE_CONFIRMED))
             ).fetch();
         return !result.isEmpty();
     }

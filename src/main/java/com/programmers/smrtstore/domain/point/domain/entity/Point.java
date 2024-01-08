@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import jakarta.persistence.Column;
@@ -74,6 +75,7 @@ public class Point {
     }
 
     private static void validatePointValue(PointStatus pointStatus, Integer pointValue) {
+
         if (pointStatus.equals(PointStatus.ACCUMULATED) || pointStatus.equals(PointStatus.USE_CANCELED)) {
             if (pointValue < 0) {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
@@ -81,6 +83,9 @@ public class Point {
         } else {
             if (pointValue > 0) {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+            if (Math.abs(pointValue) > PointService.MAX_AVAILALBE_USE_POINT) {
+                throw new PointException(ErrorCode.POINT_AVAILABLE_RANGE_EXCEED, String.valueOf(pointValue));
             }
         }
     }
