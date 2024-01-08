@@ -28,7 +28,7 @@ public class Point {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "point_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id")
