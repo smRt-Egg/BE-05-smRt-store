@@ -47,8 +47,10 @@ public class ProductAdditionalService {
         ProductAdditionalOptionRequest request) {
         var additionalOption = additionalOptionRepository.findById(request.getId())
             .orElseThrow();
-        additionalOption.updateValues(request.getQuantity(), request.getPrice(),
-            request.getGroupName(), request.getName());
+        additionalOption.updateGroupName(request.getGroupName());
+        additionalOption.updateName(request.getName());
+        additionalOption.updatePrice(request.getPrice());
+        additionalOption.updateStockQuantity(request.getQuantity());
         return ProductAdditionalOptionResponse.from(additionalOption);
     }
 

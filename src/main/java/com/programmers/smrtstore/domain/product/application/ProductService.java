@@ -80,6 +80,8 @@ public class ProductService {
         product.updateCategory(request.getCategory());
         product.updateThumbnail(request.getThumbnail());
         product.updateContentImage(request.getContentImage());
+        product.updateOptionNameTypes(request.getOptionNameType1(), request.getOptionNameType2(),
+            request.getOptionNameType3());
         return ProductResponse.from(product);
     }
 

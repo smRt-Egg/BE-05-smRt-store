@@ -21,4 +21,7 @@ public class ProductRequest {
     private Category category;
     private URL thumbnail;
     private URL contentImage;
+    private String optionNameType1;
+    private String optionNameType2;
+    private String optionNameType3;
 }

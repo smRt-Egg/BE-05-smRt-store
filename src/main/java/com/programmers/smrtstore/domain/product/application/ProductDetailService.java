@@ -56,11 +56,13 @@ public class ProductDetailService {
 
     public ProductDetailOptionResponse updateProductOption(
         ProductDetailOptionRequest request) {
-        ProductDetailOption option = detailOptionRepository.findById(request.getId())
-            .orElseThrow(() -> new ProductException(
-                ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        option.updateValues(request.getQuantity(), request.getPrice(), request.getOptionNames());
-        return ProductDetailOptionResponse.from(option);
+        ProductDetailOption detailOption = detailOptionRepository.findById(request.getId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        detailOption.updateStockQuantity(request.getQuantity());
+        detailOption.updatePrice(request.getPrice());
+        detailOption.updateOptionNames(request.getOptionName1(), request.getOptionName2(),
+            request.getOptionName3());
+        return ProductDetailOptionResponse.from(detailOption);
     }
 
 }

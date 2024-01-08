@@ -31,6 +31,8 @@ public enum ErrorCode {
     PRODUCT_NOT_DISCOUNTED(BAD_REQUEST, "할인을 진행하지 않은 상품입니다."),
     PRODUCT_DISCOUNT_RATIO_NOT_VALID(BAD_REQUEST, "할인율이 올바르지 않습니다."),
     PRODUCT_OPTION_TYPE_INVALID(BAD_REQUEST, "잘못된 옵션 타입입니다."),
+    PRODUCT_OPTION_NAME_TYPE_INVALID(BAD_REQUEST, "잘못된 옵션 이름입니다."),
+    PRODUCT_OPTION_NAME_INVALID(BAD_REQUEST, "잘못된 옵션입니다."),
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
     COUPON_NOT_ENOUGH(BAD_REQUEST, "쿠폰 재고가 부족합니다."),
     COUPON_DATE_INVALID(BAD_REQUEST, "쿠폰 유효 기간이 끝났습니다."),

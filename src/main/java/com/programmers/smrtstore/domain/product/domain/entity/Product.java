@@ -248,7 +248,7 @@ public class Product {
     }
 
     public void updateName(String name) {
-        if (name != null && !name.isEmpty()) {
+        if (name != null && !name.isBlank()) {
             this.name = name;
         }
     }
@@ -263,7 +263,7 @@ public class Product {
         if (stockQuantity != null && stockQuantity >= 0) {
             this.productDetailOptions.stream().findAny()
                 .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
-                .setStockQuantity(stockQuantity);
+                .updateStockQuantity(stockQuantity);
         }
     }
 
@@ -277,6 +277,11 @@ public class Product {
         if (thumbnail != null) {
             this.thumbnail = thumbnail;
         }
+    }
+
+    public void updateOptionNameTypes(String optionNameType1, String optionNameType2,
+        String optionNameType3) {
+        optionNameTypes.updateOptionNameTypes(optionNameType1, optionNameType2, optionNameType3);
     }
 
     public void updateContentImage(URL contentImage) {
