@@ -34,8 +34,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public ProfileUserResponse getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        User user = findByUserId(userId);
         return ProfileUserResponse.from(user);
     }
 
@@ -46,15 +45,13 @@ public class UserService {
     }
 
     public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        User user = findByUserId(userId);
         user.updateUser(request);
         return ProfileUserResponse.from(user);
     }
 
     public void withdraw(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+        User user = findByUserId(userId);
         user.saveDeleteDate();
     }
 }
