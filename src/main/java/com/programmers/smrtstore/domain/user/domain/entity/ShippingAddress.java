@@ -1,10 +1,14 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.DEFAULT_SHIPPING_NOT_DELETABLE;
+import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
+import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_ADDRESS_1_DEPTH_LENGTH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_ADDRESS_2_DEPTH_LENGTH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_PHONE_NUM_FORM;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_RECIPIENT_LENGTH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_SHIPPING_ADDRESS_NAME_LENGTH;
+import static com.programmers.smrtstore.domain.user.application.ShippingAddressService.MAXIMUM_SHIPPING_SIZE;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
@@ -16,6 +20,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -85,6 +91,12 @@ public class ShippingAddress {
             updatePhoneNum2(request.getPhoneNum2());
         if(request.getDefaultYn() != null)
             updateDefaultYn(request.getDefaultYn());
+    }
+
+    public void checkIsDefault() {
+        if (defaultYn) {
+            throw new UserException(DEFAULT_SHIPPING_NOT_DELETABLE, String.valueOf(id));
+        }
     }
 
     private void updateDefaultYn(Boolean defaultYn) {

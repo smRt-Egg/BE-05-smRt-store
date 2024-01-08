@@ -1,12 +1,16 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
+import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_AGE;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_BIRTH_FORM;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_EMAIL_FORM;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_NICKNAME_LENGTH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_PHONE_NUM_FORM;
+import static com.programmers.smrtstore.domain.user.application.ShippingAddressService.MAXIMUM_SHIPPING_SIZE;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,6 +26,7 @@ import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -154,6 +159,30 @@ public class User {
 
     public void deleteShippingAddress(Long shippingId) {
         shippingAddresses.removeIf(address -> address.getId().equals(shippingId));
+    }
+
+    public void checkShippingAddressesSize() {
+        if (shippingAddresses.size() >= MAXIMUM_SHIPPING_SIZE) {
+            throw new UserException(EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS,
+                String.valueOf(MAXIMUM_SHIPPING_SIZE));
+        }
+    }
+
+    public void checkShippingDuplicate(DetailShippingRequest request) {
+        shippingAddresses.forEach(address -> {
+
+            if (Objects.equals(request.getPhoneNum2(), address.getPhoneNum2())) {
+                if (address.getName().equals(request.getName())
+                    && address.getRecipient().equals(request.getRecipient())
+                    && address.getAddress1Depth().equals(request.getAddress1Depth())
+                    && address.getAddress2Depth().equals(request.getAddress2Depth())
+                    && address.getZipCode().equals(request.getZipCode())
+                    && address.getPhoneNum1().equals(request.getPhoneNum1())) {
+                    throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
+                        String.valueOf(address.getId()));
+                }
+            }
+        });
     }
 
     private void updateAge(int age) {
