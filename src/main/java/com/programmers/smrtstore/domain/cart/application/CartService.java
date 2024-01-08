@@ -15,7 +15,7 @@ import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOpti
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class CartService {
     private final CartJPARepository cartJPARepository;
     private final ProductJpaRepository productJPARepository;
     private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     public CreateCartResponse createCart(CreateCartRequest request) {
         var user = getUser(request.getUserId());
@@ -87,7 +87,7 @@ public class CartService {
     }
 
     private User getUser(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(
                 ErrorCode.USER_NOT_FOUND));
     }

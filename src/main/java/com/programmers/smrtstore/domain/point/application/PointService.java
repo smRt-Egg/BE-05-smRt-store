@@ -18,7 +18,7 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class PointService {
     private final PointFacade pointFacade;
     private final OrderService orderService;
     private final ProductJpaRepository productRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PointJpaRepository pointRepository;
 
     public static final int MAX_AVAILALBE_USE_POINT = 2000000;
@@ -239,7 +239,7 @@ public class PointService {
     }
 
     private User validateUserExists(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

@@ -14,7 +14,7 @@ import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCus
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointDetailService {
 
     private final PointFacade pointFacade;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PointJpaRepository pointRepository;
     private final PointDetailJpaRepository pointDetailRepository;
 
@@ -132,7 +132,7 @@ public class PointDetailService {
     }
 
     private User validateUserExists(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

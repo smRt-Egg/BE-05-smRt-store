@@ -19,7 +19,7 @@ import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaReposit
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import jakarta.persistence.EntityManager;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -50,7 +50,7 @@ class KeepServiceTest {
     @Autowired
     private ProductJpaRepository productRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     private Long userId1;
     private Long userId2;
@@ -90,7 +90,7 @@ class KeepServiceTest {
             userList.add(user);
         }
         productRepository.saveAll(productList);
-        userRepository.saveAll(userList);
+        userJpaRepository.saveAll(userList);
         productId1 = productList.get(0).getId();
         productId2 = productList.get(1).getId();
         userId1 = userList.get(0).getId();
@@ -185,7 +185,7 @@ class KeepServiceTest {
     @Test
     void deleteKeepWhenDeleteUser() {
         //Given
-        userRepository.deleteAll();
+        userJpaRepository.deleteAll();
         persistContextClear();
         //When
         List<Keep> allKeeps = keepRepository.findAll();
@@ -197,7 +197,7 @@ class KeepServiceTest {
     @Test
     void deleteOneKeepWithDeleteUser() {
         //Given
-        userRepository.deleteById(userId1);
+        userJpaRepository.deleteById(userId1);
         persistContextClear();
         //When
         List<KeepResponse> keepList = keepRepository.findAllByUserId(userId1);
