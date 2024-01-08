@@ -68,7 +68,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
 
         LocalDate today = LocalDate.now();
 
-        return jpaQueryFactory
+        var queryResult = jpaQueryFactory
             .select(
                 pointDetail.originAcmId,
                 point.userId,
@@ -95,8 +95,9 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
             )
             .having(pointDetail.pointAmount.sum().gt(0))
             .orderBy(pointDetail.originAcmId.asc())
-            .fetch()
-            .stream()
+            .fetch();
+
+        return  queryResult.stream()
             .map(tuple ->
                 ExpiredPointDetailResponse.of(
                     tuple.get(pointDetail.originAcmId),
