@@ -16,7 +16,7 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class AdminCouponService {
     private final CouponJpaRepository couponJpaRepository;
     private final ProductJpaRepository productJpaRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
     private final CouponAvailableProductJpaRepository couponAvailableProductJpaRepository;
     private final CouponCommonTransactionJpaRepository couponCommonTransactionJpaRepository;
@@ -136,7 +136,7 @@ public class AdminCouponService {
     }
 
     private User getUser(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         return user;
     }
