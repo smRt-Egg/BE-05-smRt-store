@@ -17,7 +17,7 @@ public class PointRequest {
     private Long userId;
     private Long orderId;
 
-    public Point toEntity(PointStatus pointStatus, int pointValue, boolean membershipApplyYn) {
+    public Point toEntity(PointStatus pointStatus, Integer pointValue, boolean membershipApplyYn) {
         return Point.builder()
             .userId(userId)
             .orderId(orderId)

@@ -2,7 +2,8 @@ package com.programmers.smrtstore.domain.cart.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.cart.application.dto.req.CreateCartRequest;
-import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartRequest;
+import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartOptionRequest;
+import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartQuantityRequest;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CartResponse;
 import com.programmers.smrtstore.domain.cart.application.dto.res.CreateCartResponse;
 import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
@@ -10,10 +11,11 @@ import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
+import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,25 +28,20 @@ public class CartService {
 
     private final CartJPARepository cartJPARepository;
     private final ProductJpaRepository productJPARepository;
-    private final UserRepository userRepository;
+    private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
     public CreateCartResponse createCart(CreateCartRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new UserException(
-                ErrorCode.USER_NOT_FOUND, null));
+        var user = getUser(request.getUserId());
         Product product = productJPARepository.findById(request.getProductId())
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
-        cartJPARepository.findByUserAndProduct(user, product).ifPresent(cart -> {
-            throw new CartException(ErrorCode.CART_ALREADY_EXIST);
-        });
-        Cart cart = cartJPARepository.save(
-            Cart.builder()
-                .user(user)
-                .product(product)
-                .quantity(request.getQuantity())
-                .build()
-        );
+        var detailOption = detailOptionJpaRepository.findById(request.getDetailOptionId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        Cart cart = cartJPARepository.findByUserAndProduct(user, product)
+            .orElseGet(() -> cartJPARepository.save(
+                Cart.of(user, product, detailOption)));
+        cart.updateQuantity(request.getQuantity(), request.getUserId());
         return CreateCartResponse.from(cart);
     }
 
@@ -56,23 +53,25 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public List<CartResponse> getAllCarts(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(
-                ErrorCode.USER_NOT_FOUND, null));
-
+        var user = getUser(userId);
         return cartJPARepository.findByUser(user)
             .stream()
             .map(CartResponse::from)
             .toList();
     }
 
-    public CartResponse updateCartQuantity(UpdateCartRequest request) {
+    public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
         Cart cart = getCart(request.getCartId());
-        if (request.isAddYn()) {
-            cart.addQuantity(request.getQuantity());
-        } else {
-            cart.removeQuantity(request.getQuantity());
-        }
+        cart.updateQuantity(request.getQuantity(), request.getUserId());
+        return CartResponse.from(cart);
+    }
+
+
+    public CartResponse updateCartProductOption(UpdateCartOptionRequest request) {
+        Cart cart = getCart(request.getCartId());
+        var detailOption = detailOptionJpaRepository.findById(request.getProductDetailOptionId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        cart.updateDetailOption(detailOption, request.getUserId());
         return CartResponse.from(cart);
     }
 
@@ -85,6 +84,12 @@ public class CartService {
         return cartJPARepository.findById(cartId)
             .orElseThrow(() -> new CartException(
                 ErrorCode.CART_NOT_FOUND));
+    }
+
+    private User getUser(Long userId) {
+        return userJpaRepository.findById(userId)
+            .orElseThrow(() -> new UserException(
+                ErrorCode.USER_NOT_FOUND));
     }
 
 }

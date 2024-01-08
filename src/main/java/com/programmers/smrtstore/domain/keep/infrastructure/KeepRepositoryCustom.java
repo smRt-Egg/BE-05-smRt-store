@@ -8,4 +8,5 @@ import java.util.List;
 public interface KeepRepositoryCustom {
     List<KeepRankingResponse> findTopProductIdsWithCount(int limit);
     List<KeepResponse> findKeepByUserAndCategory(Long userId, Category category);
+    List<KeepResponse> findAllByUserId(Long userId);
 }

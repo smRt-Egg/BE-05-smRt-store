@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import jakarta.persistence.Column;
@@ -41,7 +42,7 @@ public class Point {
     private PointStatus pointStatus;
 
     @Column(name = "point_value", nullable = false)
-    private int pointValue;
+    private Integer pointValue;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "issued_at", nullable = false)
@@ -55,21 +56,26 @@ public class Point {
     private Boolean membershipApplyYn;
 
     @Builder
-    private Point(Long userId, Long orderId, PointStatus pointStatus, int pointValue, Boolean membershipApplyYn) {
+    private Point(Long userId, Long orderId, PointStatus pointStatus, Integer pointValue, Boolean membershipApplyYn) {
         validatePointValue(pointStatus, pointValue);
         this.userId = userId;
         this.orderId = orderId;
         this.pointStatus = pointStatus;
         this.pointValue = pointValue;
         this.issuedAt = LocalDateTime.now();
-        this.expiredAt = !pointStatus.equals(PointStatus.ACCUMULATED) ? null : issuedAt.plusYears(10)
-            .withHour(0)
-            .withMinute(0)
-            .withSecond(0);
+        this.expiredAt = setExpiredAt(pointStatus);
         this.membershipApplyYn = membershipApplyYn;
     }
 
-    private static void validatePointValue(PointStatus pointStatus, int pointValue) {
+    private LocalDateTime setExpiredAt(PointStatus pointStatus) {
+        return !pointStatus.equals(PointStatus.ACCUMULATED) ? null : issuedAt.plusYears(10)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0);
+    }
+
+    private static void validatePointValue(PointStatus pointStatus, Integer pointValue) {
+
         if (pointStatus.equals(PointStatus.ACCUMULATED) || pointStatus.equals(PointStatus.USE_CANCELED)) {
             if (pointValue < 0) {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
@@ -77,6 +83,9 @@ public class Point {
         } else {
             if (pointValue > 0) {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
+            }
+            if (Math.abs(pointValue) > PointService.MAX_AVAILALBE_USE_POINT) {
+                throw new PointException(ErrorCode.POINT_AVAILABLE_RANGE_EXCEED, String.valueOf(pointValue));
             }
         }
     }

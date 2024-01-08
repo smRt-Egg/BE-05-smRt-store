@@ -25,7 +25,7 @@ public class CreateProductDetailOptionRequest {
 
     public ProductDetailOption toEntity(Product product) {
         return ProductDetailOption.builder()
-            .optionNames(getOptionNames())
+            .optionNames(getOptionNames(product.getOptionNameTypes().getSize()))
             .optionType(OptionType.COMBINATION)
             .price(price)
             .stockQuantity(stockQuantity)
@@ -33,11 +33,12 @@ public class CreateProductDetailOptionRequest {
             .build();
     }
 
-    private OptionNames getOptionNames() {
+    private OptionNames getOptionNames(int optionSize) {
         return OptionNames.builder()
             .optionName1(optionName1)
             .optionName2(optionName2)
             .optionName3(optionName3)
+            .optionSize(optionSize)
             .build();
     }
 }

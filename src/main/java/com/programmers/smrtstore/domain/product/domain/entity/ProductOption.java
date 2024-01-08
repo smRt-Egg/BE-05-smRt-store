@@ -18,7 +18,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "product_option_TB")
@@ -36,7 +35,6 @@ public class ProductOption {
     private ProductQuantity productQuantity;
 
     @Getter
-    @Setter(value = AccessLevel.PRIVATE)
     @Column(name = "price", nullable = false)
     private Integer price;
 
@@ -73,16 +71,13 @@ public class ProductOption {
         return getStockQuantity();
     }
 
-    protected void setStockQuantity(Integer quantity) {
+    public void updateStockQuantity(Integer quantity) {
         productQuantity.setStockQuantity(quantity);
     }
 
-    protected void updateValues(Integer quantity, Integer price) {
-        if (quantity != null) {
-            setStockQuantity(quantity);
-        }
-        if (price != null) {
-            setPrice(price);
+    public void updatePrice(Integer price) {
+        if (price >= 0) {
+            this.price = price;
         }
     }
 }

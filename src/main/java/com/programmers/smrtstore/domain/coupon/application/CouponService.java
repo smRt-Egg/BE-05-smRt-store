@@ -3,9 +3,12 @@ package com.programmers.smrtstore.domain.coupon.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
 import com.programmers.smrtstore.domain.coupon.domain.entity.CouponAvailableUser;
+import com.programmers.smrtstore.domain.coupon.domain.entity.CouponCommonTransaction;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponStatus;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponAvailableUserJpaRepository;
+import com.programmers.smrtstore.domain.coupon.infrastructure.CouponCommonTransactionJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.facade.CouponQuantityFacade;
 import com.programmers.smrtstore.domain.coupon.presentation.req.SaveCouponRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.res.*;
@@ -14,7 +17,7 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +32,11 @@ import java.util.stream.Collectors;
 public class CouponService {
 
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final ProductJpaRepository productJpaRepository;
     private final CouponJpaRepository couponJpaRepository;
     private final CouponQuantityFacade couponQuantityFacade;
+    private final CouponCommonTransactionJpaRepository couponCommonTransactionJpaRepository;
 
     public Long download(SaveCouponRequest request, Long userId) {
         Long couponId = request.getCouponId();
@@ -46,7 +49,7 @@ public class CouponService {
 
         return couponAvailableUser
                 .map(cu -> {
-                    return reIssueCoupon(cu, couponId);
+                    return reIssueCoupon(coupon,user,cu, couponId);
                 })
                 .orElseGet(() -> {
                     return firstIssueCoupon(coupon, user, couponId);
@@ -109,7 +112,7 @@ public class CouponService {
     }
 
     private User getUser(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
         return user;
     }
@@ -120,15 +123,17 @@ public class CouponService {
         return couponAvailableUser;
     }
 
-    private Long reIssueCoupon(CouponAvailableUser cu, Long couponId) {
+    private Long reIssueCoupon(Coupon coupon,User user,CouponAvailableUser cu, Long couponId) {
         cu.reIssueCoupon();
         couponQuantityFacade.decrease(couponId);
+        couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.RE_DOWNLOAD));
         return cu.getId();
     }
 
     private Long firstIssueCoupon(Coupon coupon, User user, Long couponId) {
         CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
         couponQuantityFacade.decrease(couponId);
+        couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.DOWNLOAD));
         return savedCouponAvailableUser.getId();
     }
 

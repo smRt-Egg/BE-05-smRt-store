@@ -14,7 +14,7 @@ import com.programmers.smrtstore.domain.auth.jwt.JwtHelper;
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.UpdatePasswordRequest;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthJpaRepository authJPARepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final TokenEntityJpaRepository tokenEntityJPARepository;
     private final JwtHelper jwtHelper;
 
@@ -41,7 +41,7 @@ public class AuthService {
 
     public SignUpResponse signUp(SignUpRequest request) {
         checkDuplicateUsername(request.getUsername());
-        User user = userRepository.save(request.toUserEntity());
+        User user = userJpaRepository.save(request.toUserEntity());
         Auth auth = authJPARepository.save(request.toAuthEntity(user, passwordEncoder));
         return SignUpResponse.from(auth);
     }
