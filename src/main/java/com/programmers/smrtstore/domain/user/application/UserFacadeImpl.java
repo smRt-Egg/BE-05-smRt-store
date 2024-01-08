@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.user.application;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
@@ -46,7 +47,7 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
-        DetailShippingRequest request) {
+        UpdateShippingRequest request) {
         User user = userService.findByUserId(userId);
         return shippingAddressService.updateShippingAddress(user, shippingId, request);
     }

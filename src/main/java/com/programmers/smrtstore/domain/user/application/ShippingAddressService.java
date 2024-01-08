@@ -8,6 +8,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class ShippingAddressService {
         DetailShippingRequest request) {
         user.checkShippingAddressesSize();
         ShippingAddress shippingAddress = request.toShippingAddressEntity(user);
-        user.checkShippingDuplicate(request);
+        user.checkShippingDuplicate(request.toShippingAddressEntity(user));
         if (shippingAddress.getDefaultYn()) {
             user.disableOriginalDefault();
         }
@@ -46,12 +47,12 @@ public class ShippingAddressService {
     }
 
     public DetailShippingResponse updateShippingAddress(User user, Long shippingId,
-        DetailShippingRequest request) {
+        UpdateShippingRequest request) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
                 () -> new UserException(SHIPPING_ADDRESS_NOT_FOUND, String.valueOf(shippingId)));
 
-        user.checkShippingDuplicate(request);
+        user.checkShippingDuplicate(request.toShippingAddressEntity(user));
         if (!shippingAddress.getDefaultYn() && request.getDefaultYn()) //기본 배송지 갱신할 경우 기존 기본 배송지 해제
         {
             user.disableOriginalDefault();

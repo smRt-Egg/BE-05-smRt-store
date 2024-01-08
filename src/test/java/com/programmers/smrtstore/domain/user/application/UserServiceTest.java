@@ -12,6 +12,7 @@ import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import org.junit.jupiter.api.AfterEach;
@@ -75,6 +76,15 @@ class UserServiceTest {
         "01000000000", "01012345678", true
     );
     DetailShippingRequest request5 = new DetailShippingRequest(
+        "동방", "푸리나", "경기도", "분당시", "12345",
+        "01000000000", "01012345678", true
+    );
+
+    UpdateShippingRequest request6 = new UpdateShippingRequest(
+        "학교", "나히다", "서울", "광진구", "12345",
+        "01000000000", "01012345678", false
+    );
+    UpdateShippingRequest request7 = new UpdateShippingRequest(
         "동방", "푸리나", "경기도", "분당시", "12345",
         "01000000000", "01012345678", true
     );
@@ -182,7 +192,7 @@ class UserServiceTest {
         DetailShippingResponse response4 = userFacade.createShippingAddress(kazuhaId,
             request4);
 
-        userFacade.updateShippingAddress(kazuhaId, response4.getId(), request5);
+        userFacade.updateShippingAddress(kazuhaId, response4.getId(), request7);
 
         assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getRecipient()).isEqualTo("푸리나");
         assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getDefaultYn()).isTrue();
@@ -194,7 +204,7 @@ class UserServiceTest {
         DetailShippingResponse response1 = userFacade.createShippingAddress(kazuhaId,
             request1);
 
-        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request5);
+        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request7);
 
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("푸리나");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isTrue();
@@ -206,7 +216,7 @@ class UserServiceTest {
         DetailShippingResponse response1 = userFacade.createShippingAddress(kazuhaId,
             request1);
 
-        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request2);
+        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request6);
 
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();

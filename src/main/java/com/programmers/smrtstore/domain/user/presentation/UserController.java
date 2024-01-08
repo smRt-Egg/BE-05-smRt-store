@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.user.presentation;
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.user.application.UserFacade;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
@@ -63,7 +64,7 @@ public class UserController {
 
     @PostMapping("shipping/{shippingId}")
     public ResponseEntity<DetailShippingResponse> updateDefaultShippingAddress(@UserId Long userId,
-        @PathVariable Long shippingId, @RequestBody @Valid DetailShippingRequest request) {
+        @PathVariable Long shippingId, @RequestBody @Valid UpdateShippingRequest request) {
         DetailShippingResponse response = userFacade.updateShippingAddress(userId, shippingId,
             request);
         return ResponseEntity.ok(response);

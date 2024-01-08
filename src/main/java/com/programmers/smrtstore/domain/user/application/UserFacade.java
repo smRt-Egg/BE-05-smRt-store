@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
@@ -19,7 +20,7 @@ public interface UserFacade {
     DeliveryAddressBook getShippingAddressList(Long userId);
 
     DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
-        DetailShippingRequest request);
+        UpdateShippingRequest request);
 
     DetailShippingResponse findByShippingId(Long shippingId);
 

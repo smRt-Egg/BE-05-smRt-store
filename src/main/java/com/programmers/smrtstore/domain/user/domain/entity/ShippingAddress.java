@@ -9,6 +9,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,7 +70,7 @@ public class ShippingAddress {
         defaultYn = false;
     }
 
-    public void updateShippingAddress(DetailShippingRequest request) {
+    public void updateShippingAddress(UpdateShippingRequest request) {
         if (request.getName() != null) {
             updateName(request.getName());
         }

@@ -169,16 +169,16 @@ public class User {
         }
     }
 
-    public void checkShippingDuplicate(DetailShippingRequest request) {
+    public void checkShippingDuplicate(ShippingAddress requestAddress) {
         shippingAddresses.forEach(address -> {
 
-            if (Objects.equals(request.getPhoneNum2(), address.getPhoneNum2())) {
-                if (address.getName().equals(request.getName())
-                    && address.getRecipient().equals(request.getRecipient())
-                    && address.getAddress1Depth().equals(request.getAddress1Depth())
-                    && address.getAddress2Depth().equals(request.getAddress2Depth())
-                    && address.getZipCode().equals(request.getZipCode())
-                    && address.getPhoneNum1().equals(request.getPhoneNum1())) {
+            if (Objects.equals(requestAddress.getPhoneNum2(), address.getPhoneNum2())) {
+                if (address.getName().equals(requestAddress.getName())
+                    && address.getRecipient().equals(requestAddress.getRecipient())
+                    && address.getAddress1Depth().equals(requestAddress.getAddress1Depth())
+                    && address.getAddress2Depth().equals(requestAddress.getAddress2Depth())
+                    && address.getZipCode().equals(requestAddress.getZipCode())
+                    && address.getPhoneNum1().equals(requestAddress.getPhoneNum1())) {
                     throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
                         String.valueOf(address.getId()));
                 }
