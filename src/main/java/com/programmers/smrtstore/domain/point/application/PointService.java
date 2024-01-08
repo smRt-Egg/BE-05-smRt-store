@@ -8,7 +8,6 @@ import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
-import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
@@ -40,13 +39,6 @@ public class PointService {
     private static final int MAX_AVAILABLE_POINT = 20000;
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
     private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
-
-    @Transactional(readOnly = true)
-    public PointResponse getPointById(Long pointId) {
-        Point point = pointRepository.findById(pointId)
-            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
-        return PointResponse.from(point);
-    }
 
     public PointResponse accumulatePoint(PointRequest request) {
 
@@ -160,18 +152,12 @@ public class PointService {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
-    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
-            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
-        return PointResponse.from(point);
-    }
-
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
 
         validateUserExists(request.getUserId());
 
         Long orderId = request.getOrderId();
-        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
+        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
 
         Point point = request.toEntity(
             PointStatus.ACCUMULATE_CANCELED,
