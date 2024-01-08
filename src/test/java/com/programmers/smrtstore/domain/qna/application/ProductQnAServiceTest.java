@@ -12,7 +12,7 @@ import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class ProductQnAServiceTest {
     @Autowired
     ProductAnswerRepository answerRepository;
     @Autowired
-    UserRepository userRepository;
+    UserJpaRepository userJpaRepository;
     @Autowired
     ProductJpaRepository productRepository;
 
@@ -66,7 +66,7 @@ class ProductQnAServiceTest {
                 .thumbnail("lsfsdfds")
                 .point(0)
                 .build();
-        User saveUser = userRepository.save(user);
+        User saveUser = userJpaRepository.save(user);
         userId = saveUser.getId();
         // 상품이 등록되어 있어야 한다.
         product1 = Product.builder()

@@ -17,7 +17,7 @@ import java.util.List;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +26,12 @@ import org.springframework.stereotype.Service;
 public class KeepService {
     private final KeepJpaRepository keepRepository;
     private final ProductJpaRepository productRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     public CreateKeepResponse createKeep(Long securityUserId, CreateKeepRequest request) {
         checkUserExists(securityUserId);
         Keep keep = Keep.builder()
-                .user(userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null)))
+                .user(userJpaRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null)))
                 .product(productRepository.findById(request.getProductId()).orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND)))
                 .build();
         Keep saveKeepEntity = keepRepository.save(keep);
@@ -62,6 +62,6 @@ public class KeepService {
     }
 
     private void checkUserExists(Long securityUserId) {
-        userRepository.findById(securityUserId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
+        userJpaRepository.findById(securityUserId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
     }
 }

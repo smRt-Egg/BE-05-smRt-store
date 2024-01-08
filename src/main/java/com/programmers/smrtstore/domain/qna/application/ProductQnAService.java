@@ -8,7 +8,7 @@ import com.programmers.smrtstore.domain.qna.infrastructure.ProductAnswerReposito
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductQuestionRepository;
 import com.programmers.smrtstore.domain.qna.presentation.dto.req.*;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ProductQnAService {
     private final ProductAnswerRepository productAnswerRepository;
 
     private final ProductQuestionRepository questionRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     public CreateQuestionResponse createQuestion(Long userId, CreateQuestionRequest request) {
         checkUserValid(userId, request.getUserId());
@@ -99,6 +99,6 @@ public class ProductQnAService {
     }
 
     void checkUserExist(Long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new QnAException(ErrorCode.USER_NOT_FOUND));
+        userJpaRepository.findById(userId).orElseThrow(() -> new QnAException(ErrorCode.USER_NOT_FOUND));
     }
 }

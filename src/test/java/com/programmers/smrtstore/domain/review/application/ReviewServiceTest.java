@@ -14,7 +14,7 @@ import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepositor
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,14 +45,14 @@ class ReviewServiceTest {
     @Autowired
     ProductJpaRepository productJpaRepository;
     @Autowired
-    UserRepository userRepository;
+    UserJpaRepository userJpaRepository;
 
     User user;
     Product product;
 
     @BeforeEach
     void init() throws MalformedURLException {
-        user = userRepository.save(User.builder()
+        user = userJpaRepository.save(User.builder()
                 .nickName("nickName")
                 .email("void@email.com")
                 .phone("010-5555-5555")

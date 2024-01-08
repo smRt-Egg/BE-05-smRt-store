@@ -13,7 +13,7 @@ import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderResponse
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.util.DateTimeUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final OrderJpaRepository orderJpaRepository;
 
     @Transactional
@@ -78,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private User checkUserExistence(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
 }
