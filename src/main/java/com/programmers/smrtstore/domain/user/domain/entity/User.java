@@ -10,7 +10,6 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_
 import static com.programmers.smrtstore.domain.user.application.ShippingAddressService.MAXIMUM_SHIPPING_SIZE;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
