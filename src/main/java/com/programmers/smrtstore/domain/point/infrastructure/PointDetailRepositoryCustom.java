@@ -1,13 +1,12 @@
 package com.programmers.smrtstore.domain.point.infrastructure;
 
-import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
-import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import com.querydsl.core.Tuple;
 import java.util.List;
 
 public interface PointDetailRepositoryCustom {
 
     List<PointDetail> findUsedDetailsByOrderId(Long orderId);
-    List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId);
-    List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId();
+    List<Tuple> getSumGroupByOriginAcmId(Long userId);
+    List<Tuple> getExpiredSumGroupByOriginAcmId();
 }

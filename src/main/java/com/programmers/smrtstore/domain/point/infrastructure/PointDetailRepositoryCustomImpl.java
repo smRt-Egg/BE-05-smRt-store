@@ -3,10 +3,9 @@ package com.programmers.smrtstore.domain.point.infrastructure;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
 
-import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
-import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,14 +35,12 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
     }
 
     @Override
-    public List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId) {
+    public List<Tuple> getSumGroupByOriginAcmId(Long userId) {
+
         return jpaQueryFactory
             .select(
                 pointDetail.originAcmId,
-                Expressions.numberTemplate(
-                    Integer.class,
-                    "SUM({0})", pointDetail.pointAmount
-                ).as("pointAmount")
+                pointDetail.pointAmount.sum().as("sum_of_point")
             )
             .from(pointDetail)
             .where(pointDetail.userId.eq(userId))
@@ -53,22 +50,15 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
                 "SUM({0})", pointDetail.pointAmount)
                 .gt(0))
             .orderBy(pointDetail.originAcmId.asc())
-            .fetch()
-            .stream()
-            .map(tuple ->
-                PointDetailCustomResponse.of(
-                    tuple.get(pointDetail.originAcmId),
-                    tuple.get(pointDetail.pointAmount))
-            )
-            .toList();
+            .fetch();
     }
 
     @Override
-    public List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId() {
+    public List<Tuple> getExpiredSumGroupByOriginAcmId() {
 
         LocalDate today = LocalDate.now();
 
-        var queryResult = jpaQueryFactory
+        return jpaQueryFactory
             .select(
                 pointDetail.originAcmId,
                 point.userId,
@@ -96,16 +86,5 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
             .having(pointDetail.pointAmount.sum().gt(0))
             .orderBy(pointDetail.originAcmId.asc())
             .fetch();
-
-        return  queryResult.stream()
-            .map(tuple ->
-                ExpiredPointDetailResponse.of(
-                    tuple.get(pointDetail.originAcmId),
-                    tuple.get(point.userId),
-                    tuple.get(point.orderId),
-                    tuple.get(3, Integer.class),
-                    Boolean.TRUE.equals(tuple.get(point.membershipApplyYn))
-                ))
-            .toList();
     }
 }

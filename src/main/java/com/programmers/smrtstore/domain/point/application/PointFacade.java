@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.point.application;
 
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
@@ -15,4 +16,5 @@ public interface PointFacade {
     boolean validateExpiredAt(PointResponse pointResponse);
     Integer makeNegativeNumber(Integer pointAmount);
     List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId();
+    List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId);
 }
