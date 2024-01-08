@@ -33,6 +33,5 @@ public class UpdateUserRequest {
 
     String thumbnail;
 
-    @NotNull
-    boolean marketingAgree;
+    Boolean marketingAgree;
 }

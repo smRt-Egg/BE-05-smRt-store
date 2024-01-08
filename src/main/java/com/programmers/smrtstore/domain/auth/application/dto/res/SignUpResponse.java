@@ -37,9 +37,9 @@ public class SignUpResponse {
             auth.getUser().getBirth(),
             auth.getUser().getGender(),
             auth.getUser().getThumbnail(),
-            auth.getUser().isMarketingAgree(),
-            auth.getUser().isMembershipYn(),
-            auth.getUser().isRepurchaseYn(),
+            auth.getUser().getMarketingAgree(),
+            auth.getUser().getMembershipYn(),
+            auth.getUser().getRepurchaseYn(),
             auth.getUser().getPoint(),
             auth.getUser().getCreatedAt()
         );

@@ -77,13 +77,13 @@ public class User {
     private Integer point;
 
     @Column(nullable = false)
-    private boolean marketingAgree;
+    private Boolean marketingAgree;
 
     @Column(nullable = false)
-    private boolean membershipYn;
+    private Boolean membershipYn;
 
     @Column(nullable = false)
-    private boolean repurchaseYn;
+    private Boolean repurchaseYn;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -119,7 +119,8 @@ public class User {
             this.gender = request.getGender();
         if(request.getThumbnail() != null)
             this.thumbnail = request.getThumbnail();
-        this.marketingAgree = request.isMarketingAgree();
+        if(request.getMarketingAgree() != null)
+            this.marketingAgree = request.getMarketingAgree();
     }
 
     public void repurchase() {
@@ -144,7 +145,7 @@ public class User {
 
     public void disableOriginalDefault() {
         for (ShippingAddress shippingAddress : shippingAddresses) {
-            if (shippingAddress.isDefaultYn()) {
+            if (shippingAddress.getDefaultYn()) {
                 shippingAddress.disableDefault();
                 break;
             }

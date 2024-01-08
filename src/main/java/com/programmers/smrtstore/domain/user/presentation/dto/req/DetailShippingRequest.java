@@ -39,7 +39,7 @@ public class DetailShippingRequest {
     private String phoneNum2;
 
     @NotNull
-    private boolean defaultYn;
+    private Boolean defaultYn;
 
     public ShippingAddress toShippingAddressEntity(User user) {
         return ShippingAddress.builder()

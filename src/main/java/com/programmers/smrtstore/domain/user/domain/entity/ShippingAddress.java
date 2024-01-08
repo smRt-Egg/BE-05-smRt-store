@@ -49,7 +49,7 @@ public class ShippingAddress {
     private String phoneNum2;
 
     @Column(nullable = false)
-    private boolean defaultYn;
+    private Boolean defaultYn;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -67,6 +67,6 @@ public class ShippingAddress {
         this.zipCode = request.getZipCode();
         this.phoneNum1 = request.getPhoneNum1();
         this.phoneNum2 = request.getPhoneNum2();
-        this.defaultYn = request.isDefaultYn();
+        this.defaultYn = request.getDefaultYn();
     }
 }
