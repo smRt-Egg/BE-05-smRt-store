@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.point.domain.entity;
 
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,5 +41,14 @@ public class PointDetail {
         this.userId = userId;
         this.pointAmount = pointAmount;
         this.originAcmId = originAcmId;
+    }
+
+    public static PointDetail makeExpirationHistory(ExpiredPointDetailResponse expireDetail) {
+        return PointDetail.builder()
+            .pointId(null)
+            .userId(expireDetail.getUserId())
+            .pointAmount(expireDetail.getPointAmount() * -1)
+            .originAcmId(expireDetail.getOriginAcmId())
+            .build();
     }
 }
