@@ -17,45 +17,45 @@ public class ProductOrderService {
 
     private final ProductJpaRepository productRepository;
 
-    public ProductResponse addProductStockQuantity(Long productId, Integer quantityValue) {
+    public ProductResponse increaseProductStockQuantity(Long productId, Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
-        product.addStockQuantity(quantityValue);
+        product.increaseStockQuantity(quantityValue);
         return ProductResponse.from(product);
     }
 
-    public ProductResponse addProductDetailOptionStockQuantity(Long productId, Long detailOptionId,
+    public ProductResponse increaseProductDetailOptionStockQuantity(Long productId, Long detailOptionId,
         Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
         optionValidate(product.isCombinationYn());
-        product.addStockQuantity(quantityValue, detailOptionId);
+        product.increaseDetailStockQuantity(quantityValue, detailOptionId);
         return ProductResponse.from(product);
     }
 
-    public ProductResponse addAdditionalOptionStockQuantity(Long productId,
+    public ProductResponse increaseAdditionalOptionStockQuantity(Long productId,
         Long additionalOptionId, Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
-        product.addAdditionalStockQuantity(quantityValue, additionalOptionId);
+        product.increaseAdditionalStockQuantity(quantityValue, additionalOptionId);
         return ProductResponse.from(product);
     }
 
-    public ProductResponse removeProductStockQuantity(Long productId, Integer quantityValue) {
+    public ProductResponse decreaseProductStockQuantity(Long productId, Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
-        product.removeStockQuantity(quantityValue);
+        product.decreaseStockQuantity(quantityValue);
         return ProductResponse.from(product);
     }
 
-    public ProductResponse removeProductDetailOptionStockQuantity(Long productId,
+    public ProductResponse decreaseProductDetailOptionStockQuantity(Long productId,
         Long productOptionId, Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
         optionValidate(product.isCombinationYn());
-        product.removeStockQuantity(quantityValue, productOptionId);
+        product.decreaseDetailStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
 
-    public ProductResponse removeAdditionalOptionStockQuantity(Long productId,
+    public ProductResponse decreaseAdditionalOptionStockQuantity(Long productId,
         Long additionalOptionId, Integer quantityValue) {
         Product product = getProduct(productRepository, productId);
-        product.removeAdditionalStockQuantity(quantityValue, additionalOptionId);
+        product.decreaseAdditionalStockQuantity(quantityValue, additionalOptionId);
         return ProductResponse.from(product);
     }
 

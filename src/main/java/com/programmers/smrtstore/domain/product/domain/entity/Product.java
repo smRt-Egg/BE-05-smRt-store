@@ -144,7 +144,7 @@ public class Product {
         productAdditionalOptions.add(additionalOption);
     }
 
-    public void addStockQuantity(Integer quantity) {
+    public void increaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
@@ -154,21 +154,21 @@ public class Product {
         productStatusType = ProductStatusType.SALE;
     }
 
-    public void addStockQuantity(Integer quantity, Long productOptionId) {
+    public void increaseDetailStockQuantity(Integer quantity, Long productOptionId) {
         productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
-    public void addAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+    public void increaseAdditionalStockQuantity(Integer quantity, Long productOptionId) {
         productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
 
-    public void removeStockQuantity(Integer quantity) {
+    public void decreaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
             throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
         }
@@ -180,14 +180,14 @@ public class Product {
         }
     }
 
-    public void removeStockQuantity(Integer quantity, Long productOptionId) {
+    public void decreaseDetailStockQuantity(Integer quantity, Long productOptionId) {
         productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .removeStockQuantity(quantity);
     }
 
-    public void removeAdditionalStockQuantity(Integer quantity, Long productOptionId) {
+    public void decreaseAdditionalStockQuantity(Integer quantity, Long productOptionId) {
         productAdditionalOptions.stream().filter(option -> option.getId().equals(productOptionId))
             .findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
