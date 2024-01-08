@@ -9,12 +9,19 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserRes
 public interface UserFacade {
 
     ProfileUserResponse getUserInfo(Long userId);
+
     ProfileUserResponse update(Long userId, UpdateUserRequest request);
+
     void withdraw(Long userId);
 
     DetailShippingResponse createShippingAddress(Long userId, DetailShippingRequest request);
+
     DeliveryAddressBook getShippingAddressList(Long userId);
-    DetailShippingResponse updateShippingAddress(Long userId, Long shippingId, DetailShippingRequest request);
+
+    DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
+        DetailShippingRequest request);
+
     DetailShippingResponse findByShippingId(Long shippingId);
+
     void deleteShippingAddress(Long userId, Long shippingId);
 }

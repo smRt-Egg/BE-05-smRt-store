@@ -107,22 +107,30 @@ public class User {
     }
 
     public void updateUser(UpdateUserRequest request) {
-        if(request.getAge() != null)
+        if (request.getAge() != null) {
             updateAge(request.getAge());
-        if(request.getNickName() != null)
+        }
+        if (request.getNickName() != null) {
             updateNickName(request.getNickName());
-        if(request.getEmail() != null)
+        }
+        if (request.getEmail() != null) {
             updateEmail(email);
-        if(request.getPhone() != null)
+        }
+        if (request.getPhone() != null) {
             updatePhone(request.getPhone());
-        if(request.getBirth() != null)
+        }
+        if (request.getBirth() != null) {
             updateBirth(request.getBirth());
-        if(request.getGender() != null)
+        }
+        if (request.getGender() != null) {
             updateGender(request.getGender());
-        if(request.getThumbnail() != null)
+        }
+        if (request.getThumbnail() != null) {
             updateThumbnail(request.getThumbnail());
-        if(request.getMarketingAgree() != null)
+        }
+        if (request.getMarketingAgree() != null) {
             updateMarketingAgree(request.getMarketingAgree());
+        }
     }
 
     public void joinMembership() {
@@ -179,22 +187,26 @@ public class User {
     }
 
     private void updateAge(int age) {
-        if(age < 7 || age > 200)
+        if (age < 7 || age > 200) {
             throw new UserException(INAPPROPRIATE_AGE, String.valueOf(age));
+        }
         this.age = age;
     }
 
     private void updateNickName(String nickName) {
-        if(nickName.isEmpty() || nickName.length() > 10)
+        if (nickName.isEmpty() || nickName.length() > 10) {
             throw new UserException(INAPPROPRIATE_NICKNAME_LENGTH, nickName);
+        }
         this.nickName = nickName;
     }
 
     private void updateEmail(String email) {
-        Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
+        Pattern emailPattern = Pattern.compile(
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
         Matcher matcher = emailPattern.matcher(email);
-        if(!matcher.matches())
+        if (!matcher.matches()) {
             throw new UserException(INAPPROPRIATE_EMAIL_FORM, email);
+        }
 
         this.email = email;
     }
@@ -202,8 +214,9 @@ public class User {
     private void updateBirth(String birth) {
         Pattern birthPattern = Pattern.compile("^\\d{8}$");
         Matcher matcher = birthPattern.matcher(birth);
-        if(!matcher.matches())
+        if (!matcher.matches()) {
             throw new UserException(INAPPROPRIATE_BIRTH_FORM, birth);
+        }
 
         this.birth = birth;
     }
@@ -211,8 +224,9 @@ public class User {
     private void updatePhone(String phone) {
         Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
         Matcher matcher = phonePattern.matcher(phone);
-        if(!matcher.matches())
+        if (!matcher.matches()) {
             throw new UserException(INAPPROPRIATE_PHONE_NUM_FORM, phone);
+        }
 
         this.phone = phone;
     }

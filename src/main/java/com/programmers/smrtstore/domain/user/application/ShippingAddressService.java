@@ -1,23 +1,17 @@
 package com.programmers.smrtstore.domain.user.application;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.DEFAULT_SHIPPING_NOT_DELETABLE;
-import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
-import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
-import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.user.application.vo.AggUserShippingInfo;
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +53,9 @@ public class ShippingAddressService {
 
         user.checkShippingDuplicate(request);
         if (!shippingAddress.getDefaultYn() && request.getDefaultYn()) //기본 배송지 갱신할 경우 기존 기본 배송지 해제
+        {
             user.disableOriginalDefault();
+        }
         shippingAddress.updateShippingAddress(request);
         return DetailShippingResponse.from(shippingAddress);
     }
