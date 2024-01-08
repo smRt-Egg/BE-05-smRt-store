@@ -10,7 +10,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
@@ -33,7 +33,7 @@ class UserServiceTest {
     AuthService authService;
 
     @Autowired
-    UserRepository userRepository;
+    UserJpaRepository userJpaRepository;
 
     @Autowired
     AuthJpaRepository authJpaRepository;
@@ -87,7 +87,7 @@ class UserServiceTest {
     @AfterEach
     public void afterEach() {
         authJpaRepository.deleteAll();
-        userRepository.deleteAll();
+        userJpaRepository.deleteAll();
     }
 
     @Test
@@ -128,7 +128,7 @@ class UserServiceTest {
 
         DeliveryAddressBook response = userService.getShippingAddressList(kazuhaId);
 
-        assertThat(userRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(4);
+        assertThat(userJpaRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(4);
         assertThat(response.getDefaultDeliveryAddress().getRecipient()).isEqualTo("라이덴");
         assertThat(response.getDeliveryAddresses().size()).isEqualTo(3);
     }
@@ -160,7 +160,7 @@ class UserServiceTest {
 
         userService.deleteShippingAddress(kazuhaId, response1.getId());
 
-        assertThat(userRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(3);
+        assertThat(userJpaRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(3);
     }
 
     @Test

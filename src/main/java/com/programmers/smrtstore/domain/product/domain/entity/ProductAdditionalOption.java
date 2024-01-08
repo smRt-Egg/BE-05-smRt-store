@@ -10,18 +10,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductAdditionalOption extends ProductOption {
 
-    @Setter(value = AccessLevel.PRIVATE)
     @Column(name = "group_name", length = 50)
     private String groupName;
 
-    @Setter(value = AccessLevel.PRIVATE)
     @Column(name = "name", length = 50)
     private String name;
 
@@ -39,17 +36,24 @@ public class ProductAdditionalOption extends ProductOption {
         this.getProduct().addAdditionalOption(this);
     }
 
-    public void updateValues(Integer quantity, Integer price, String groupName, String name) {
-        if (quantity != null) {
+    @Override
+    public void updateStockQuantity(Integer quantity) {
+        super.updateStockQuantity(quantity);
+        if (quantity != null && quantity >= 0) {
             productStatusType =
                 quantity == 0 ? ProductStatusType.OUT_OF_STOCK : ProductStatusType.SALE;
         }
-        super.updateValues(quantity, price);
-        if (groupName != null) {
-            setGroupName(groupName);
+    }
+
+    public void updateGroupName(String groupName) {
+        if (groupName != null && !groupName.isBlank()) {
+            this.groupName = groupName;
         }
-        if (name != null) {
-            setName(name);
+    }
+
+    public void updateName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
         }
     }
 

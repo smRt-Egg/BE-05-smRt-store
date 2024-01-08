@@ -15,20 +15,18 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingRes
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-
+import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.user.domain.entity.Gender;
+import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.entity.User;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import jakarta.persistence.EntityManager;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
-import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +50,7 @@ class KeepServiceTest {
     @Autowired
     private ProductJpaRepository productRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     private Long userId1;
     private Long userId2;
@@ -72,7 +70,7 @@ class KeepServiceTest {
             Product product = Product.builder()
                     .name("productName" + i)
                     .price(i * 1000)
-                    .category(Category.TEMP)
+                    .category(Category.IT)
                     .contentImage(new URL("https://www.naver.com"))
                     .thumbnail(new URL("https://www.naver.com"))
                     .build();
@@ -92,7 +90,7 @@ class KeepServiceTest {
             userList.add(user);
         }
         productRepository.saveAll(productList);
-        userRepository.saveAll(userList);
+        userJpaRepository.saveAll(userList);
         productId1 = productList.get(0).getId();
         productId2 = productList.get(1).getId();
         userId1 = userList.get(0).getId();
@@ -175,7 +173,7 @@ class KeepServiceTest {
         //Given
         FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
                 .userId(userId1)
-                .category(Category.TEMP)
+                .category(Category.IT)
                 .build();
         //When
         List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(userId1, request);
@@ -187,7 +185,7 @@ class KeepServiceTest {
     @Test
     void deleteKeepWhenDeleteUser() {
         //Given
-        userRepository.deleteAll();
+        userJpaRepository.deleteAll();
         persistContextClear();
         //When
         List<Keep> allKeeps = keepRepository.findAll();
@@ -199,7 +197,7 @@ class KeepServiceTest {
     @Test
     void deleteOneKeepWithDeleteUser() {
         //Given
-        userRepository.deleteById(userId1);
+        userJpaRepository.deleteById(userId1);
         persistContextClear();
         //When
         List<KeepResponse> keepList = keepRepository.findAllByUserId(userId1);

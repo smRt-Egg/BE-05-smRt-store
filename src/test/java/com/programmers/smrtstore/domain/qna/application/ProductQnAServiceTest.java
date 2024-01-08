@@ -1,18 +1,32 @@
 package com.programmers.smrtstore.domain.qna.application;
 
-import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductAnswer;
 import com.programmers.smrtstore.domain.qna.domain.entity.ProductQuestion;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductAnswerRepository;
 import com.programmers.smrtstore.domain.qna.infrastructure.ProductQuestionRepository;
-import com.programmers.smrtstore.domain.qna.presentation.dto.req.*;
-import com.programmers.smrtstore.domain.qna.presentation.dto.res.*;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateAnswerRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.CreateQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.UpdateAnswerRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.UpdateQuestionRequest;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.AnswerResponse;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.CreateQuestionResponse;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.DeleteQuestionResponse;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.QuestionResponse;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.UpdateAnswerResponse;
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.UpdateQuestionResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,12 +35,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -41,7 +49,7 @@ class ProductQnAServiceTest {
     @Autowired
     ProductAnswerRepository answerRepository;
     @Autowired
-    UserRepository userRepository;
+    UserJpaRepository userJpaRepository;
     @Autowired
     ProductJpaRepository productRepository;
 
@@ -66,19 +74,19 @@ class ProductQnAServiceTest {
                 .thumbnail("lsfsdfds")
                 .point(0)
                 .build();
-        User saveUser = userRepository.save(user);
+        User saveUser = userJpaRepository.save(user);
         userId = saveUser.getId();
         // 상품이 등록되어 있어야 한다.
         product1 = Product.builder()
                 .name("productName")
                 .price(1000)
-                .category(Category.TEMP)
+                .category(Category.IT)
                 .thumbnail(new URL("https://www.naver.com"))
                 .build();
         product2 = Product.builder()
                 .name("productName2")
                 .price(10000)
-                .category(Category.TEMP)
+                .category(Category.IT)
                 .thumbnail(new URL("https://www.google.com"))
                 .build();
         Product saveProduct1 = productRepository.save(product1);

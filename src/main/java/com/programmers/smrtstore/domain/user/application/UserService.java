@@ -11,7 +11,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
@@ -29,34 +29,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final ShippingAddressJpaRepository shippingAddressRepository;
     private static final int MAXIMUM_SHIPPING_SIZE = 15;
 
 
     @Transactional(readOnly = true)
     public ProfileUserResponse getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         return ProfileUserResponse.from(user);
     }
 
     public ProfileUserResponse update(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         user.updateUser(request);
         return ProfileUserResponse.from(user);
     }
 
     public void withdraw(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         user.saveDeleteDate();
     }
 
     public DetailShippingResponse createShippingAddress(Long userId,
         DetailShippingRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
 
@@ -99,7 +99,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public DeliveryAddressBook getShippingAddressList(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         List<ShippingAddress> shippingAddresses = user.getShippingAddresses();
         AggUserShippingInfo separated = separateDefaultShippingAddress(shippingAddresses);
@@ -124,7 +124,7 @@ public class UserService {
 
     public DetailShippingResponse updateShippingAddress(Long userId, Long shippingId,
         DetailShippingRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(
@@ -148,7 +148,7 @@ public class UserService {
     }
 
     public void deleteShippingAddress(Long userId, Long shippingId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
         ShippingAddress shippingAddress = shippingAddressRepository.findById(shippingId)
             .orElseThrow(

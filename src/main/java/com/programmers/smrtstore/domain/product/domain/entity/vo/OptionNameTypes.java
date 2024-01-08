@@ -1,7 +1,10 @@
 package com.programmers.smrtstore.domain.product.domain.entity.vo;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,24 +33,44 @@ public class OptionNameTypes {
     @Builder
     private OptionNameTypes(String optionNameType1, String optionNameType2,
         String optionNameType3) {
+        this.size = getSize(optionNameType1, optionNameType2, optionNameType3);
+        validateOptionNameTypes(size, optionNameType1, optionNameType2, optionNameType3);
         this.optionNameType1 = optionNameType1;
         this.optionNameType2 = optionNameType2;
         this.optionNameType3 = optionNameType3;
-        this.size = getSize(optionNameType1, optionNameType2, optionNameType3);
     }
 
     private static int getSize(String optionNameType1, String optionNameType2,
         String optionNameType3) {
-        int result = 0;
-        if (optionNameType1 != null) {
-            result += 1;
+        return Stream.of(optionNameType1, optionNameType2, optionNameType3)
+            .filter(optionType -> !optionType.isBlank())
+            .mapToInt(option -> 1)
+            .sum();
+    }
+
+    private static void validateOptionNameTypes(int size, String optionNameType1,
+        String optionNameType2, String optionNameType3) {
+        if (size == 1) {
+            if (optionNameType1 == null || optionNameType1.isBlank()) {
+                throw new ProductException(ErrorCode.PRODUCT_OPTION_NAME_TYPE_INVALID);
+            }
+        } else if (size == 2) {
+            if (optionNameType2 == null || optionNameType2.isBlank() || optionNameType2.equals(
+                optionNameType1)) {
+                throw new ProductException(ErrorCode.PRODUCT_OPTION_NAME_TYPE_INVALID);
+            }
+        } else if (size == 3 && (optionNameType3 == null || optionNameType3.isBlank()
+            || optionNameType3.equals(
+            optionNameType1) || optionNameType3.equals(optionNameType2))) {
+            throw new ProductException(ErrorCode.PRODUCT_OPTION_NAME_TYPE_INVALID);
         }
-        if (optionNameType2 != null) {
-            result += 1;
-        }
-        if (optionNameType3 != null) {
-            result += 1;
-        }
-        return result;
+    }
+
+    public void updateOptionNameTypes(String optionNameType1, String optionNameType2,
+        String optionNameType3){
+        validateOptionNameTypes(size, optionNameType1, optionNameType2, optionNameType3);
+        this.optionNameType1 = optionNameType1;
+        this.optionNameType2 = optionNameType2;
+        this.optionNameType3 = optionNameType3;
     }
 }

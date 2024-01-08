@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.review.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -14,7 +17,11 @@ import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepositor
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,14 +30,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -45,14 +44,14 @@ class ReviewServiceTest {
     @Autowired
     ProductJpaRepository productJpaRepository;
     @Autowired
-    UserRepository userRepository;
+    UserJpaRepository userJpaRepository;
 
     User user;
     Product product;
 
     @BeforeEach
     void init() throws MalformedURLException {
-        user = userRepository.save(User.builder()
+        user = userJpaRepository.save(User.builder()
                 .nickName("nickName")
                 .email("void@email.com")
                 .phone("010-5555-5555")
@@ -67,7 +66,7 @@ class ReviewServiceTest {
         product = productJpaRepository.save(Product.builder()
                 .name("productName")
                 .price(1000)
-                .category(Category.TEMP)
+                .category(Category.IT)
                 .thumbnail(new URL("https://www.naver.com"))
                 .contentImage(new URL("https://www.naver.com"))
                 .build());
