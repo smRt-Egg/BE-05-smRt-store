@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.point.application.dto.req;
 
-import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,12 +16,12 @@ public class PointDetailRequest {
     private Long userId;
     private Long pointId;
 
-    public PointDetail toEntity(Point point) {
+    public PointDetail toEntity(Integer pointAmount, Long originAcmId) {
         return PointDetail.builder()
             .pointId(pointId)
             .userId(userId)
-            .pointAmount(point.getPointValue())
-            .originAcmId(pointId)
+            .pointAmount(pointAmount)
+            .originAcmId(originAcmId)
             .build();
     }
 }

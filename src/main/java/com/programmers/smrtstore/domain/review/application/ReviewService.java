@@ -18,7 +18,7 @@ import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepositor
 import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,13 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewService {
 
     private final ReviewJpaRepository reviewJPARepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final ProductJpaRepository productJPARepository;
     private final ReviewLikeJpaRepository reviewLikeJPARepository;
     private final OrderJpaRepository orderJpaRepository;
 
     public CreateReviewResponse createReview(CreateReviewRequest request) {
-        if (!orderJpaRepository.verifyOrderDelivered(request.getUserId(), request.getProductId())) {
+        if (!orderJpaRepository.existsOrderPurchaseConfirmed(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT);
         }
         if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
@@ -122,7 +122,7 @@ public class ReviewService {
     }
 
     private User getUser(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
     }
 

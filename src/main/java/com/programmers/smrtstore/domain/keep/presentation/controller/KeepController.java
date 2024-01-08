@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.keep.presentation.controller;
 
+import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.keep.application.KeepService;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.CreateKeepRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.DeleteKeepRequest;
@@ -22,32 +23,32 @@ public class KeepController {
     private final KeepService keepService;
 
     @PostMapping
-    public ResponseEntity<CreateKeepResponse> createKeep(@RequestBody CreateKeepRequest request) {
-        CreateKeepResponse response = keepService.createKeep(request);
+    public ResponseEntity<CreateKeepResponse> createKeep(@UserId Long securityUserId, @RequestBody CreateKeepRequest request) {
+        CreateKeepResponse response = keepService.createKeep(securityUserId, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<KeepResponse>> getAllKeepsByUserId(@PathVariable Long userId) {
-        List<KeepResponse> response = keepService.getAllKeepsByUserId(userId);
+    public ResponseEntity<List<KeepResponse>> getAllKeepsByUserId(@UserId Long securityUserId, @PathVariable Long userId) {
+        List<KeepResponse> response = keepService.getAllKeepsByUserId(securityUserId, userId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping
-    public ResponseEntity<DeleteKeepResponse> deleteKeep(@RequestBody DeleteKeepRequest request) {
-        DeleteKeepResponse response = keepService.deleteKeep(request);
+    public ResponseEntity<DeleteKeepResponse> deleteKeep(@UserId Long securityUserId, @RequestBody DeleteKeepRequest request) {
+        DeleteKeepResponse response = keepService.deleteKeep(securityUserId, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<KeepResponse>> getAllKeepsByUserIdAndCategory(@RequestBody FindKeepByCategoryRequest request) {
-        List<KeepResponse> response = keepService.findKeepByUserAndCategory(request);
+    public ResponseEntity<List<KeepResponse>> getAllKeepsByUserIdAndCategory(@UserId Long securityUserId, @RequestBody FindKeepByCategoryRequest request) {
+        List<KeepResponse> response = keepService.findKeepByUserAndCategory(securityUserId, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<KeepRankingResponse>> getKeepRanking(@RequestParam @Positive Integer size) {
-        List<KeepRankingResponse> response = keepService.getKeepRanking(size);
+    public ResponseEntity<List<KeepRankingResponse>> getKeepRanking(@UserId Long securityUserId, @RequestParam @Positive Integer size) {
+        List<KeepRankingResponse> response = keepService.getKeepRanking(securityUserId, size);
         return ResponseEntity.ok(response);
     }
 

@@ -19,7 +19,7 @@ public class PointDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "point_detail_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "point_id")
@@ -28,14 +28,14 @@ public class PointDetail {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "point_amount")
-    private int pointAmount;
+    @Column(name = "point_amount", nullable = false)
+    private Integer pointAmount;
 
-    @Column(name = "origin_acm_id")
+    @Column(name = "origin_acm_id", nullable = false)
     private Long originAcmId;
 
     @Builder
-    private PointDetail(Long pointId, Long userId, int pointAmount, Long originAcmId) {
+    private PointDetail(Long pointId, Long userId, Integer pointAmount, Long originAcmId) {
         this.pointId = pointId;
         this.userId = userId;
         this.pointAmount = pointAmount;

@@ -4,5 +4,5 @@ public interface OrderRepositoryCustom {
 
     Integer calculateMonthlyTotalSpending(Long userId, int month, int year);
 
-    Boolean verifyOrderDelivered(Long userId, Long productId);
+    Boolean existsOrderPurchaseConfirmed(Long userId, Long productId);
 }

@@ -6,7 +6,7 @@ import com.programmers.smrtstore.exception.exceptionClass.CustomException;
 public class CartException extends CustomException {
 
     public CartException(ErrorCode errorCode) {
-        super(errorCode, null);
+        super(errorCode);
     }
 
     public CartException(ErrorCode errorCode,

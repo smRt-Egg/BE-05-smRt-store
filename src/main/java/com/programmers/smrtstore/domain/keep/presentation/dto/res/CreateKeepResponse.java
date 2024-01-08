@@ -21,8 +21,8 @@ public class CreateKeepResponse {
 
     public static CreateKeepResponse of(Keep keep) {
         return new CreateKeepResponse(
-                keep.getUserId(),
-                keep.getProductId(),
+                keep.getUser().getId(),
+                keep.getProduct().getId(),
                 keep.getCreatedAt()
         );
     }
