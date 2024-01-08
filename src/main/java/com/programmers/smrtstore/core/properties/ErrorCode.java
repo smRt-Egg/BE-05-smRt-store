@@ -39,6 +39,7 @@ public enum ErrorCode {
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     COUPON_STOCK_INVALID(BAD_REQUEST,"쿠폰 수량은 0개 이상이어야 합니다."),
+    COUPON_ALREADY_APPLIED_PRODUCT(BAD_REQUEST,"이미 쿠폰이 적용된 상품입니다"),
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
     REVIEW_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
     REVIEW_LIKE_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 좋아요 하였습니다."),
