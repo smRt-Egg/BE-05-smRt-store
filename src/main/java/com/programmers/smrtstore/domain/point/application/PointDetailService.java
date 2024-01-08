@@ -5,12 +5,8 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
-import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
-import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
-import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
-import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -28,7 +24,6 @@ public class PointDetailService {
 
     private final PointFacade pointFacade;
     private final UserJpaRepository userJpaRepository;
-    private final PointJpaRepository pointRepository;
     private final PointDetailJpaRepository pointDetailRepository;
 
     public Long saveAccumulationHistory(PointDetailRequest request) {
@@ -42,18 +37,12 @@ public class PointDetailService {
         return pointDetail.getId();
     }
 
-    public PointResponse getByPointIdAndStatus(Long pointId, PointStatus pointStatus) {
-        Point point =  pointRepository.findByPointIdAndPointStatus(pointId, pointStatus)
-            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
-        return PointResponse.from(point);
-    }
-
     public Long saveAccumulationCancelHistory(PointDetailRequest request) {
 
         validateUserExists(request.getUserId());
 
         Long pointId = request.getPointId();
-        PointResponse pointResponse = getByPointIdAndStatus(pointId, PointStatus.ACCUMULATED);
+        PointResponse pointResponse = pointFacade.getPointById(pointId);
 
         PointDetail pointDetail = request.toEntity(pointResponse.getPointValue(), pointResponse.getId());
         pointDetailRepository.save(pointDetail);
@@ -67,7 +56,7 @@ public class PointDetailService {
         Long pointId = request.getPointId();
         Long userId = request.getUserId();
 
-        List<PointDetailCustomResponse> history = pointDetailRepository.getSumGroupByOriginAcmId(userId);
+        List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
 
         PointResponse point = pointFacade.getPointById(pointId);
         int usedPoint = Math.abs(point.getPointValue());
@@ -106,7 +95,6 @@ public class PointDetailService {
         Long pointDetailId = null;
         for (PointDetailResponse pointDetail : usedDetailHistory) {
             while (canceledPoint != 0) {
-
                 PointDetail canceledDetail = request.toEntity(
                     Math.abs(pointDetail.getPointValue()),
                     pointDetail.getOriginAcmId());
@@ -134,14 +122,11 @@ public class PointDetailService {
 
         Long pointDetailId = null;
         for (ExpiredPointDetailResponse expireDetail : expireHistory) {
-            PointDetail pointDetail = PointDetail.builder()
-                .pointId(null)
-                .userId(expireDetail.getUserId())
-                .pointAmount(pointFacade.makeNegativeNumber(expireDetail.getPointAmount()))
-                .originAcmId(expireDetail.getOriginAcmId())
-                .build();
+            PointDetail pointDetail = PointDetail.makeExpirationHistory(expireDetail);
             pointDetailRepository.save(pointDetail);
-            if (pointDetailId == null) pointDetailId = pointDetail.getId();
+            if (pointDetailId == null) {
+                pointDetailId = pointDetail.getId();
+            }
         }
         return pointDetailId;
     }
