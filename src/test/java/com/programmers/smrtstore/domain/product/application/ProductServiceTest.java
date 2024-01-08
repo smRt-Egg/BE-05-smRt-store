@@ -484,7 +484,7 @@ class ProductServiceTest {
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
-        var expectedDiscountRatio = 10.5f;
+        var expectedDiscountRatio = 10;
         // Act
         var actualResult = productService.updateProductDiscountRatio(expectedId,
             expectedDiscountRatio);
@@ -506,7 +506,7 @@ class ProductServiceTest {
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
-        var expectedDiscountRatio = 0f;
+        var expectedDiscountRatio = 0;
         // Assert
         assertThrows(ProductException.class,
             () -> productService.updateProductDiscountRatio(expectedId, expectedDiscountRatio));
@@ -525,7 +525,7 @@ class ProductServiceTest {
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
-        var expectedDiscountRatio = 10.5f;
+        var expectedDiscountRatio = 10;
         productService.updateProductDiscountRatio(expectedId,
             expectedDiscountRatio);
         // Act

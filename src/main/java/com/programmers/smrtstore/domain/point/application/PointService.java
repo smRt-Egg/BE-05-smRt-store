@@ -4,14 +4,15 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.order.application.OrderService;
 import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
-import com.programmers.smrtstore.domain.point.presentation.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -29,11 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PointService {
 
+    private final PointFacade pointFacade;
     private final OrderService orderService;
     private final ProductJpaRepository productRepository;
     private final UserRepository userRepository;
     private final PointJpaRepository pointRepository;
 
+    public static final int MAX_AVAILALBE_USE_POINT = 2000000;
     private static final int MAX_AVAILABLE_POINT = 20000;
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
     private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
@@ -85,7 +88,7 @@ public class PointService {
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = 0;
         if (user.isMembershipYn()) {
-            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액정
+            // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
             additionalPoint = calculateAdditionalAcmPoint(product, user.getId());
         }
         return ProductEstimatedPointDto.of(
@@ -157,21 +160,74 @@ public class PointService {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
-    private User validateUserExists(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
+    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelAccumulatedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        Long orderId = request.getOrderId();
+        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
+
+        Point point = request.toEntity(
+            PointStatus.ACCUMULATE_CANCELED,
+            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse usePoint(UsePointRequest request) {
-        return null;
+
+        User user = validateUserExists(request.getUserId());
+
+        Point point = request.toEntity(user.isMembershipYn());
+        pointRepository.save(point);
+        return PointResponse.from(point);
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
-        return null;
+
+        validateUserExists(request.getUserId());
+
+        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(
+            request.getOrderId(),
+            PointStatus.USED
+        );
+
+        Point point = request.toEntity(
+            PointStatus.USE_CANCELED,
+            pointResponse.getPointValue(),
+            pointResponse.getMembershipApplyYn());
+        pointRepository.save(point);
+
+        int expiredPoint = calculateExpiredPoint(pointResponse.getOrderId());
+        if (expiredPoint != 0) {
+            Point expiredpoint = request.toEntity(
+                PointStatus.EXPIRED,
+                expiredPoint,
+                pointResponse.getMembershipApplyYn());
+            pointRepository.save(expiredpoint);
+        }
+        return PointResponse.from(point);
+    }
+
+    private int calculateExpiredPoint(Long orderId) {
+
+        List<PointDetailResponse> usedDetailHistory = pointFacade.getUsedDetailByOrderId(orderId);
+
+        int expiredPoint = 0;
+        for (PointDetailResponse pointDetail : usedDetailHistory) {
+            PointResponse originAcmPoint = pointFacade.getPointById(pointDetail.getPointId());
+            if (pointFacade.validateExpiredAt(originAcmPoint)) {
+                expiredPoint += pointDetail.getPointValue();
+            }
+        }
+        return expiredPoint;
     }
 
     public PointResponse expirePoint(Long userId) {
@@ -180,5 +236,10 @@ public class PointService {
 
     public PointResponse getPointHistory(Long userId) {
         return null;
+    }
+
+    private User validateUserExists(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

@@ -12,17 +12,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PointRequest {
+public class UsePointRequest {
 
     private Long userId;
     private Long orderId;
+    private Integer pointAmount;
 
-    public Point toEntity(PointStatus pointStatus, Integer pointValue, boolean membershipApplyYn) {
+    public Point toEntity(boolean membershipApplyYn) {
         return Point.builder()
             .userId(userId)
             .orderId(orderId)
-            .pointStatus(pointStatus)
-            .pointValue(pointValue)
+            .pointStatus(PointStatus.USED)
+            .pointValue(-1 * pointAmount)
             .membershipApplyYn(membershipApplyYn)
             .build();
     }

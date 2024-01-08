@@ -2,16 +2,17 @@ package com.programmers.smrtstore.domain.user.presentation;
 
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.user.application.UserService;
-import com.programmers.smrtstore.domain.user.presentation.dto.req.CreateShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.CreateShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,10 +47,10 @@ public class UserController {
     }
 
     @PostMapping("/shipping")
-    public ResponseEntity<CreateShippingResponse> createShippingAddress(
+    public ResponseEntity<DetailShippingResponse> createShippingAddress(
         @UserId Long userId,
-        @RequestBody @Valid CreateShippingRequest request) {
-        CreateShippingResponse response = userService.createShippingAddress(userId, request);
+        @RequestBody @Valid DetailShippingRequest request) {
+        DetailShippingResponse response = userService.createShippingAddress(userId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -58,5 +59,26 @@ public class UserController {
         @UserId Long userId) {
         DeliveryAddressBook response = userService.getShippingAddressList(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("shipping/{shippingId}")
+    public ResponseEntity<DetailShippingResponse> updateDefaultShippingAddress(@UserId Long userId,
+        @PathVariable Long shippingId, @RequestBody @Valid DetailShippingRequest request) {
+        DetailShippingResponse response = userService.updateShippingAddress(userId, shippingId,
+            request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/shipping/{shippingId}")
+    public ResponseEntity<DetailShippingResponse> findByShippingId(@PathVariable Long shippingId) {
+        DetailShippingResponse response = userService.findByShippingId(shippingId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/shipping/{shippingId}")
+    public ResponseEntity<Void> deleteShippingAddress(@UserId Long userId,
+        @PathVariable Long shippingId) {
+        userService.deleteShippingAddress(userId, shippingId);
+        return ResponseEntity.noContent().build();
     }
 }
