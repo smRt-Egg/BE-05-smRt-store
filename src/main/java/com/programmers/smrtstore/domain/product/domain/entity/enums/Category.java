@@ -1,18 +1,17 @@
 package com.programmers.smrtstore.domain.product.domain.entity.enums;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
 public enum Category {
-    TEMP(1, "TEMP"),
-    ERROR(-1, "ERROR");
+    CLOTHES(1), FOOD(2), ELECTRIC(3), HOUSE(4), IT(5);
 
 
     private final Integer id;
-    private final String name;
-
 
     public static Category findById(Integer id) {
         for (Category category : Category.values()) {
@@ -20,7 +19,7 @@ public enum Category {
                 return category;
             }
         }
-        return ERROR;
+        throw new ProductException(ErrorCode.PRODUCT_CATEGORY_NOT_FOUND);
     }
 
 }

@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
@@ -21,7 +20,6 @@ import org.hibernate.annotations.CreationTimestamp;
 public class ProductDetailOption extends ProductOption {
 
     @Embedded
-    @Setter(value = AccessLevel.PRIVATE)
     private OptionNames optionNames;
 
     @CreationTimestamp
@@ -39,11 +37,8 @@ public class ProductDetailOption extends ProductOption {
         this.getProduct().addOption(this);
     }
 
-    public void updateValues(Integer quantity, Integer price, OptionNames optionNames) {
-        super.updateValues(quantity, price);
-        if (optionNames != null) {
-            setOptionNames(optionNames);
-        }
+    public void updateOptionNames(String optionName1, String optionName2, String optionName3) {
+        optionNames.updateOptionNames(optionName1, optionName2, optionName3);
     }
 
 }

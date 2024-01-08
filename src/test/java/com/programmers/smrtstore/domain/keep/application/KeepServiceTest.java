@@ -15,20 +15,18 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepRankingRes
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityManager;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,7 +70,7 @@ class KeepServiceTest {
             Product product = Product.builder()
                     .name("productName" + i)
                     .price(i * 1000)
-                    .category(Category.TEMP)
+                    .category(Category.IT)
                     .contentImage(new URL("https://www.naver.com"))
                     .thumbnail(new URL("https://www.naver.com"))
                     .build();
@@ -175,7 +173,7 @@ class KeepServiceTest {
         //Given
         FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
                 .userId(userId1)
-                .category(Category.TEMP)
+                .category(Category.IT)
                 .build();
         //When
         List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(userId1, request);
