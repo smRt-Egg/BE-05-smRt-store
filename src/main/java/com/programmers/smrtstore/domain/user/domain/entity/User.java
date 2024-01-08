@@ -11,6 +11,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,18 +42,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(value = 7, message = "나이는 7살 이상이어야 합니다.")
+    @Max(value = 200, message = "나이는 200살 이하여야 합니다.")
     private Integer age;
 
     @Column(nullable = false, length = 10)
+    @Size(min = 1, max = 10, message = "별명은 1~10자여야 합니다.")
     private String nickName;
 
     @Column(nullable = false, length = 64)
+    @Email
     private String email;
 
     @Column(nullable = false)
+    @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "올바른 휴대폰 번호 형식이 아닙니다.")
     private String phone;
 
     @Column(nullable = false, length = 64)
+    @Pattern(regexp = "^\\d{8}$", message = "올바른 생년월일 형식이 아닙니다.")
     private String birth;
 
     @Column(nullable = false)
