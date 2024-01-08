@@ -17,9 +17,8 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,7 @@ import java.util.Optional;
 public class CouponService {
 
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final ProductJpaRepository productJpaRepository;
     private final CouponJpaRepository couponJpaRepository;
     private final CouponQuantityFacade couponQuantityFacade;
@@ -143,7 +142,7 @@ public class CouponService {
     }
 
     private User getUser(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         return user;
     }
