@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.product.presentation;
 
+import com.programmers.smrtstore.domain.product.application.ProductDetailService;
 import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.ProductDiscountRatioAPIRequest;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductDetailService productDetailService;
     private final ReviewService reviewService;
 
     private static final Integer DEFAULT_DISCOUNT_RATIO = 0;
@@ -34,7 +36,7 @@ public class ProductController {
     public ResponseEntity<ProductAPIResponse> createProduct(
         @Valid @RequestBody CreateProductAPIRequest request) {
         var result =
-            request.isCombinationYn() ? productService.createProduct(request.toProductRequest(),
+            request.isCombinationYn() ? productDetailService.createProduct(request.toProductRequest(),
                 request.toDetailOptionRequests())
                 : productService.createProduct(request.toProductRequest());
         return ResponseEntity.ok(ProductAPIResponse.from(result));
