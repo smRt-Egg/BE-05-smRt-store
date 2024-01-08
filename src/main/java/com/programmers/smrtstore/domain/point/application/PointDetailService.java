@@ -137,7 +137,7 @@ public class PointDetailService {
             PointDetail pointDetail = PointDetail.builder()
                 .pointId(null)
                 .userId(expireDetail.getUserId())
-                .pointAmount(expireDetail.getPointAmount() * -1)
+                .pointAmount(pointFacade.makeNegativeNumber(expireDetail.getPointAmount()))
                 .originAcmId(expireDetail.getOriginAcmId())
                 .build();
             pointDetailRepository.save(pointDetail);
