@@ -34,7 +34,7 @@ public class UserController {
 
     @PostMapping("/profile")
     public ResponseEntity<ProfileUserResponse> update(
-        @UserId Long userId, @RequestBody
+        @UserId Long userId, @RequestBody @Valid
     UpdateUserRequest request) {
         ProfileUserResponse response = userService.update(userId, request);
         return ResponseEntity.ok(response);
