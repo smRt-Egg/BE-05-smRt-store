@@ -1,6 +1,11 @@
 package com.programmers.smrtstore.domain.point.application;
 
+import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
+import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
+
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
@@ -8,8 +13,8 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
-import java.time.LocalDateTime;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,7 +72,39 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId, PointStatus pointStatus, TradeDateRange tradeDateRange) {
+    public List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId() {
+
+        int aliasIdxForTotal = 3;
+        return pointDetailRepository.getExpiredSumGroupByOriginAcmId()
+            .stream()
+            .map(tuple ->
+                ExpiredPointDetailResponse.of(
+                    tuple.get(pointDetail.originAcmId),
+                    tuple.get(point.userId),
+                    tuple.get(point.orderId),
+                    tuple.get(aliasIdxForTotal, Integer.class),
+                    Boolean.TRUE.equals(tuple.get(point.membershipApplyYn))
+                ))
+            .toList();
+    }
+
+    @Override
+    public List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId) {
+
+        int aliasIdxForSumOfPoint = 1;
+        return pointDetailRepository.getSumGroupByOriginAcmId(userId)
+            .stream()
+            .map(tuple ->
+                PointDetailCustomResponse.of(
+                    tuple.get(pointDetail.originAcmId),
+                    tuple.get(aliasIdxForSumOfPoint, Integer.class))
+            )
+            .toList();
+    }
+
+    @Override
+    public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
+        PointStatus pointStatus, TradeDateRange tradeDateRange) {
         return pointRepository.findPointByPointStatusAndIssuedAt(
             userId,
             pointStatus,
