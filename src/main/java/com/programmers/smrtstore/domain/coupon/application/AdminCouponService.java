@@ -45,6 +45,7 @@ public class AdminCouponService {
 
         return savedCoupon.getId();
     }
+
     //쿠폰 목록
     @Transactional(readOnly = true)
     public List<CouponResponse> getCoupons() {
@@ -53,13 +54,14 @@ public class AdminCouponService {
                 .map(CouponResponse::from)
                 .collect(Collectors.toList());
     }
+
     //쿠폰 상세 조회
     @Transactional(readOnly = true)
     public CouponResponse getCouponById(Long id) {
         Coupon coupon = getCoupon(id);
         return CouponResponse.from(coupon);
     }
-    
+
     //상품에 쿠폰 추가
     public void addCouponToProduct(Long couponId, Long productId) {
 
@@ -67,18 +69,17 @@ public class AdminCouponService {
 
         Coupon coupon = getCoupon(couponId);
 
-        if (couponAvailableProductJpaRepository.findByCouponIdAndProductId(couponId, productId).isPresent()) {
-            throw new CouponException(ErrorCode.COUPON_ALREADY_APPLIED_PRODUCT);
-        }
+        couponAvailableProductJpaRepository.findByCouponIdAndProductId(couponId, productId).ifPresent(
+                e -> {throw new CouponException(ErrorCode.COUPON_ALREADY_APPLIED_PRODUCT);}
+        );
 
         couponAvailableProductJpaRepository.save(CouponAvailableProduct.of(coupon, product));
     }
 
     //유저에게 쿠폰 지급(ALLOCATE)
     public void addCouponToUser(Long couponId, Long userId) {
-        if (couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId).isPresent()) {
-            throw new CouponException(ErrorCode.COUPON_EXIST);
-        }
+        couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId).ifPresent(
+                e ->   {throw new CouponException(ErrorCode.COUPON_EXIST_BY_USER);});
         User user = getUser(userId);
 
         Coupon coupon = getCoupon(couponId);
@@ -89,23 +90,27 @@ public class AdminCouponService {
     }
 
     //쿠폰 무효화
-    public void makeAvailableNoCouponById(Long userId, Long id) {
+    public Long makeAvailableNoCouponById(Long userId, Long id) {
 
         Coupon coupon = getCoupon(id);
         coupon.makeAvailableYes(getUser(userId));
+        return id;
     }
+
     //쿠폰 유효화
-    public void makeUnavailableYesCouponById(Long userId, Long id) {
+    public Long makeUnavailableYesCouponById(Long userId, Long id) {
         Coupon coupon = getCoupon(id);
         coupon.makeAvailableNo(getUser(userId));
-
+        return id;
     }
+
     //쿠폰 수량 업데이트
-    public void updateCouponQuantity(Long couponId, Integer quantity) {
+    public Integer updateCouponQuantity(Long couponId, Integer quantity) {
 
-        couponQuantityFacade.update(couponId, quantity);
+        return couponQuantityFacade.update(couponId, quantity);
 
     }
+
     //자정마다 쿠폰 무효화 작업
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정 00:00에 실행
     public void checkExpiredCoupon() {
@@ -121,11 +126,11 @@ public class AdminCouponService {
         Coupon coupon = getCoupon(couponId);
         Product product = getProduct(productId);
 
-        couponAvailableProductJpaRepository.deleteByCouponIdAndProductId(couponId,productId);
+        couponAvailableProductJpaRepository.deleteByCouponIdAndProductId(couponId, productId);
     }
 
     //유저에게 쿠폰 회수
-    public void removeCouponOfUser(Long couponId,Long userId) {
+    public void removeCouponOfUser(Long couponId, Long userId) {
         Coupon coupon = getCoupon(couponId);
         User user = getUser(userId);
 
