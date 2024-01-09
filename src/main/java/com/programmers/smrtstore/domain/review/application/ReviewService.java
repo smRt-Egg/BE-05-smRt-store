@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.review.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
+import com.programmers.smrtstore.domain.orderManagement.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;

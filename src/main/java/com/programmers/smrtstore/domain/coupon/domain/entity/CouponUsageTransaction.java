@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponStatus;
-import com.programmers.smrtstore.domain.order.domain.entity.Order;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.Order;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
