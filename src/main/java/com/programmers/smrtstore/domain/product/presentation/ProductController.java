@@ -54,6 +54,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductAPIResponse.from(result));
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/{productId}/detailOptions")
     public ResponseEntity<ProductDetailOptionAPIResponse> addNewDetailOption(
         @PathVariable Long productId,
@@ -62,6 +63,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductDetailOptionAPIResponse.from(result));
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/{productId}/additionalOptions")
     public ResponseEntity<ProductAdditionalOptionAPIResponse> addNewAdditionalOption(
         @PathVariable Long productId,
@@ -136,6 +138,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductAdditionalOptionAPIResponse.from(result));
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{productId}/detailOptions/{optionId}")
     public ResponseEntity<Long> removeDetailOption(@PathVariable Long productId,
         @PathVariable Long optionId) {
@@ -143,6 +146,7 @@ public class ProductController {
         return ResponseEntity.ok(result);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{productId}/additionalOptions/{optionId}")
     public ResponseEntity<Long> removeAdditionalOption(@PathVariable Long productId,
         @PathVariable Long optionId) {
