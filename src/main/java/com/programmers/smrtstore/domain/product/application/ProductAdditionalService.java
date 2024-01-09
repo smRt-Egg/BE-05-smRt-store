@@ -1,10 +1,12 @@
 package com.programmers.smrtstore.domain.product.application;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductAdditionalOptionResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductAdditionalOption;
+import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductAdditionalOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import java.util.List;
@@ -44,13 +46,20 @@ public class ProductAdditionalService {
 
     public ProductAdditionalOptionResponse updateAdditionalOption(
         ProductAdditionalOptionRequest request) {
-        var additionalOption = additionalOptionRepository.findById(request.getId())
-            .orElseThrow();
+        var additionalOption = additionalOptionRepository.findById(request.getOptionId())
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        validateOption(request.getProductId(), additionalOption);
         additionalOption.updateGroupName(request.getGroupName());
         additionalOption.updateName(request.getName());
         additionalOption.updatePrice(request.getPrice());
         additionalOption.updateStockQuantity(request.getQuantity());
         return ProductAdditionalOptionResponse.from(additionalOption);
+    }
+
+    private void validateOption(Long productId, ProductAdditionalOption option) {
+        if (!option.getProduct().getId().equals(productId)) {
+            throw new ProductException(ErrorCode.PRODUCT_OPTION_MISMATCH);
+        }
     }
 
 }

@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductAdditionalOptionRequest {
-    private Long id;
+    private Long productId;
+    private Long optionId;
     private Integer quantity;
     private Integer price;
     private String groupName;

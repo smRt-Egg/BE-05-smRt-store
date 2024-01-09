@@ -33,6 +33,7 @@ public enum ErrorCode {
     PRODUCT_OPTION_TYPE_INVALID(BAD_REQUEST, "잘못된 옵션 타입입니다."),
     PRODUCT_OPTION_NAME_TYPE_INVALID(BAD_REQUEST, "잘못된 옵션 이름입니다."),
     PRODUCT_OPTION_NAME_INVALID(BAD_REQUEST, "잘못된 옵션입니다."),
+    PRODUCT_OPTION_MISMATCH(BAD_REQUEST, "상품에 존재하지 않는 옵션입니다."),
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
     COUPON_NOT_ENOUGH(BAD_REQUEST, "쿠폰 재고가 부족합니다."),
     COUPON_DATE_INVALID(BAD_REQUEST, "쿠폰 유효 기간이 끝났습니다."),
