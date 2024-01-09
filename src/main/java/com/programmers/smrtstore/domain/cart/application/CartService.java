@@ -1,14 +1,14 @@
 package com.programmers.smrtstore.domain.cart.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.cart.application.dto.req.CreateCartRequest;
-import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartOptionRequest;
-import com.programmers.smrtstore.domain.cart.application.dto.req.UpdateCartQuantityRequest;
-import com.programmers.smrtstore.domain.cart.application.dto.res.CartResponse;
-import com.programmers.smrtstore.domain.cart.application.dto.res.CreateCartResponse;
 import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
 import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
+import com.programmers.smrtstore.domain.cart.presentation.dto.req.CreateCartRequest;
+import com.programmers.smrtstore.domain.cart.presentation.dto.req.UpdateCartOptionRequest;
+import com.programmers.smrtstore.domain.cart.presentation.dto.req.UpdateCartQuantityRequest;
+import com.programmers.smrtstore.domain.cart.presentation.dto.res.CartResponse;
+import com.programmers.smrtstore.domain.cart.presentation.dto.res.CreateCartResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -32,8 +32,8 @@ public class CartService {
     private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
     private final UserJpaRepository userJpaRepository;
 
-    public CreateCartResponse createCart(CreateCartRequest request) {
-        var user = getUser(request.getUserId());
+    public CreateCartResponse createCart(Long userId, CreateCartRequest request) {
+        var user = getUser(userId);
         Product product = productJPARepository.findByIdAndProductStatusType(request.getProductId(),
                 ProductStatusType.SALE)
             .orElseThrow(() -> new ProductException(
@@ -43,7 +43,7 @@ public class CartService {
         Cart cart = cartJPARepository.findByUserAndProduct(user, product)
             .orElseGet(() -> cartJPARepository.save(
                 Cart.of(user, product, detailOption)));
-        cart.updateQuantity(request.getQuantity(), request.getUserId());
+        cart.updateQuantity(request.getQuantity(), userId);
         return CreateCartResponse.from(cart);
     }
 
@@ -63,20 +63,22 @@ public class CartService {
             .toList();
     }
 
-    public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
-        Cart cart = getCart(request.getCartId());
+    public CartResponse updateCartQuantity(Long cartId, Long userId,
+        UpdateCartQuantityRequest request) {
+        Cart cart = getCart(cartId);
         validateProduct(cart.getProduct());
-        cart.updateQuantity(request.getQuantity(), request.getUserId());
+        cart.updateQuantity(request.getQuantity(), userId);
         return CartResponse.from(cart);
     }
 
 
-    public CartResponse updateCartProductOption(UpdateCartOptionRequest request) {
-        Cart cart = getCart(request.getCartId());
+    public CartResponse updateCartProductOption(Long userId, Long cartId,
+        UpdateCartOptionRequest request) {
+        Cart cart = getCart(cartId);
         validateProduct(cart.getProduct());
         var detailOption = detailOptionJpaRepository.findById(request.getProductDetailOptionId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        cart.updateDetailOption(detailOption, request.getUserId());
+        cart.updateDetailOption(detailOption, userId);
         return CartResponse.from(cart);
     }
 

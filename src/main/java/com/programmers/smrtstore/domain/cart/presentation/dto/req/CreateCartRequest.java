@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.cart.application.dto.req;
+package com.programmers.smrtstore.domain.cart.presentation.dto.req;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UpdateCartQuantityRequest {
-    private Long cartId;
-    private Long userId;
+public class CreateCartRequest {
+
+    private Long productId;
+    private Long detailOptionId;
     private Integer quantity;
 }
