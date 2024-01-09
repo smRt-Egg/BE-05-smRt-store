@@ -34,7 +34,6 @@ public class ProductResponse {
     private OptionNameTypes optionNameTypes;
 
     private List<ProductDetailOptionResponse> detailOptionResponses;
-    private List<ProductAdditionalOptionResponse> additionalOptionResponses;
 
     public static ProductResponse from(Product product) {
         return new ProductResponse(
@@ -55,9 +54,7 @@ public class ProductResponse {
             product.isDiscountYn(),
             product.getOptionNameTypes(),
             product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from)
-                .toList(),
-            product.getProductAdditionalOptions().stream()
-                .map(ProductAdditionalOptionResponse::from).toList()
+                .toList()
         );
     }
 }
