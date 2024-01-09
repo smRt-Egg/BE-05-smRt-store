@@ -8,7 +8,6 @@ import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductAdditionalOption;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductAdditionalOptionJpaRepository;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductAdditionalService {
 
-    private final ProductJpaRepository productRepository;
     private final ProductAdditionalOptionJpaRepository additionalOptionRepository;
     private final ProductCommonService commonService;
 

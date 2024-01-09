@@ -24,6 +24,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -133,6 +134,20 @@ public class ProductController {
                 .name(request.getName())
                 .build());
         return ResponseEntity.ok(ProductAdditionalOptionAPIResponse.from(result));
+    }
+
+    @DeleteMapping("/{productId}/detailOptions/{optionId}")
+    public ResponseEntity<Long> removeDetailOption(@PathVariable Long productId,
+        @PathVariable Long optionId) {
+        var result = productDetailService.removeProductOption(productId, optionId);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/{productId}/additionalOptions/{optionId}")
+    public ResponseEntity<Long> removeAdditionalOption(@PathVariable Long productId,
+        @PathVariable Long optionId) {
+        var result = productAdditionalService.removeAdditionalOption(productId, optionId);
+        return ResponseEntity.ok(result);
     }
 
 }
