@@ -281,7 +281,10 @@ public class Product {
 
     public void updateOptionNameTypes(String optionNameType1, String optionNameType2,
         String optionNameType3) {
-        optionNameTypes.updateOptionNameTypes(optionNameType1, optionNameType2, optionNameType3);
+        if (combinationYn) {
+            optionNameTypes.updateOptionNameTypes(optionNameType1, optionNameType2,
+                optionNameType3);
+        }
     }
 
     public void updateContentImage(URL contentImage) {
