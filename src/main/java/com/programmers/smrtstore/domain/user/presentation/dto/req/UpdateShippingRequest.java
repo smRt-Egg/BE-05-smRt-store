@@ -2,8 +2,6 @@ package com.programmers.smrtstore.domain.user.presentation.dto.req;
 
 import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -11,35 +9,29 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class DetailShippingRequest {
+public class UpdateShippingRequest {
 
     @Size(max = 10, message = "배송지 이름은 10자 이하여야 합니다.")
     private String name;
 
-    @NotBlank
     @Size(min = 1, max = 10, message = "수령인 이름은 1~10자여야 합니다.")
     private String recipient;
 
-    @NotBlank
     @Size(min = 1, max = 50, message = "주소는 1~50자여야 합니다.")
     private String address1Depth;
 
-    @NotBlank
     @Size(min = 1, max = 30, message = "상세 주소는 1~30자여야 합니다.")
     private String address2Depth;
 
-    @NotBlank
     @Size(min = 1, max = 10, message = "우편 번호는 1~10자여야 합니다.")
     private String zipCode;
 
-    @NotBlank
     @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "전화번호가 형식에 맞지 않습니다.")
     private String phoneNum1;
 
     @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "전화번호가 형식에 맞지 않습니다.")
     private String phoneNum2;
 
-    @NotNull
     private Boolean defaultYn;
 
     public ShippingAddress toShippingAddressEntity(User user) {
