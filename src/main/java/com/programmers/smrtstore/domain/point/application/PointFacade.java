@@ -1,8 +1,10 @@
 package com.programmers.smrtstore.domain.point.application;
 
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import java.util.List;
 
 public interface PointFacade {
@@ -13,4 +15,6 @@ public interface PointFacade {
     List<PointDetailResponse> getUsedDetailByOrderId(Long orderId);
     boolean validateExpiredAt(PointResponse pointResponse);
     Integer makeNegativeNumber(Integer pointAmount);
+    List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId();
+    List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId);
 }

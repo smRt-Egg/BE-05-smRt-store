@@ -4,7 +4,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Transactional(readOnly = true)
     public ProfileUserResponse getUserInfo(Long userId) {
@@ -25,7 +25,7 @@ public class UserService {
     }
 
     private User findByUserId(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
     }
 

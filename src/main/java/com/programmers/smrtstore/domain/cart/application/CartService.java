@@ -10,12 +10,13 @@ import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
 import com.programmers.smrtstore.domain.cart.exception.CartException;
 import com.programmers.smrtstore.domain.cart.infrastructure.CartJPARepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,12 @@ public class CartService {
     private final CartJPARepository cartJPARepository;
     private final ProductJpaRepository productJPARepository;
     private final ProductDetailOptionJpaRepository detailOptionJpaRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     public CreateCartResponse createCart(CreateCartRequest request) {
         var user = getUser(request.getUserId());
-        Product product = productJPARepository.findById(request.getProductId())
+        Product product = productJPARepository.findByIdAndProductStatusType(request.getProductId(),
+                ProductStatusType.SALE)
             .orElseThrow(() -> new ProductException(
                 ErrorCode.PRODUCT_NOT_FOUND));
         var detailOption = detailOptionJpaRepository.findById(request.getDetailOptionId())
@@ -56,12 +58,14 @@ public class CartService {
         var user = getUser(userId);
         return cartJPARepository.findByUser(user)
             .stream()
+            .filter(cart -> cart.getProduct().getProductStatusType().equals(ProductStatusType.SALE))
             .map(CartResponse::from)
             .toList();
     }
 
     public CartResponse updateCartQuantity(UpdateCartQuantityRequest request) {
         Cart cart = getCart(request.getCartId());
+        validateProduct(cart.getProduct());
         cart.updateQuantity(request.getQuantity(), request.getUserId());
         return CartResponse.from(cart);
     }
@@ -69,6 +73,7 @@ public class CartService {
 
     public CartResponse updateCartProductOption(UpdateCartOptionRequest request) {
         Cart cart = getCart(request.getCartId());
+        validateProduct(cart.getProduct());
         var detailOption = detailOptionJpaRepository.findById(request.getProductDetailOptionId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
         cart.updateDetailOption(detailOption, request.getUserId());
@@ -87,9 +92,15 @@ public class CartService {
     }
 
     private User getUser(Long userId) {
-        return userRepository.findById(userId)
+        return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(
                 ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void validateProduct(Product product) {
+        if (!product.getProductStatusType().equals(ProductStatusType.SALE)) {
+            throw new CartException(ErrorCode.PRODUCT_NOT_AVAILABLE);
+        }
     }
 
 }

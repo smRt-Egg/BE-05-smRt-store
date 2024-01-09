@@ -28,7 +28,7 @@ public class Point {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "point_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id")
@@ -85,7 +85,7 @@ public class Point {
                 throw new PointException(ErrorCode.POINT_ILLEGAL_ARGUMENT, String.valueOf(pointValue));
             }
             if (Math.abs(pointValue) > PointService.MAX_AVAILALBE_USE_POINT) {
-                throw new PointException(ErrorCode.POINT_AVAILALBE_RANGE_EXCEED, String.valueOf(pointValue));
+                throw new PointException(ErrorCode.POINT_AVAILABLE_RANGE_EXCEED, String.valueOf(pointValue));
             }
         }
     }
