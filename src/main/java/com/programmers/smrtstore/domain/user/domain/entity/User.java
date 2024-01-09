@@ -99,6 +99,8 @@ public class User {
 
     private LocalDateTime deletedAt;
 
+    public static final int MAXIMUM_SHIPPING_SIZE = 15;
+
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
             .map(GrantedAuthority.class::cast)

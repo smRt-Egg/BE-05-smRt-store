@@ -26,7 +26,6 @@ public class ShippingAddressService {
 
     private final ShippingAddressJpaRepository shippingAddressRepository;
     private final UserRepository userRepository;
-    public static final int MAXIMUM_SHIPPING_SIZE = 15;
 
     public DetailShippingResponse createShippingAddress(Long userId,
         DetailShippingRequest request) {
