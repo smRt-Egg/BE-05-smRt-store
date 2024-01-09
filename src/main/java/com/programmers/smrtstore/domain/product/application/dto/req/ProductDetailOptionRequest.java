@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductDetailOptionRequest {
 
-    private Long id;
+    private Long productId;
+    private Long optionId;
     private String optionName1;
     private String optionName2;
     private String optionName3;
