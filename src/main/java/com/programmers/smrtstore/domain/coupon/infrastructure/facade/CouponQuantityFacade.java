@@ -36,14 +36,14 @@ public class CouponQuantityFacade {
         }
     }
 
-    public void update(Long couponId, Integer value) {
+    public Integer update(Long couponId, Integer value) {
         while (true) {
             try {
                 CouponQuantity couponQuantity = couponJpaRepository.findCouponQuantity(couponId)
                                 .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, "false"));
 
                 couponQuantity.update(value);
-                break;
+                return value;
 
             } catch (OptimisticLockException e) {
                 log.info("쿠폰 수량 업데이트 시도중입니다.");
