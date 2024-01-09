@@ -7,7 +7,6 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_BIRTH_
 import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_EMAIL_FORM;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_NICKNAME_LENGTH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_PHONE_NUM_FORM;
-import static com.programmers.smrtstore.domain.user.application.ShippingAddressService.MAXIMUM_SHIPPING_SIZE;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -99,7 +98,9 @@ public class User {
 
     private LocalDateTime deletedAt;
 
-    public static final int MAXIMUM_SHIPPING_SIZE = 15;
+    private static final int MAXIMUM_SHIPPING_SIZE = 15;
+    private static final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
+    private static final Pattern birthPattern = Pattern.compile("^\\d{8}$");
 
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
@@ -202,8 +203,6 @@ public class User {
     }
 
     private void updateEmail(String email) {
-        Pattern emailPattern = Pattern.compile(
-            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
         Matcher matcher = emailPattern.matcher(email);
         if (!matcher.matches()) {
             throw new UserException(INVALID_EMAIL_FORM, email);
@@ -213,7 +212,6 @@ public class User {
     }
 
     private void updateBirth(String birth) {
-        Pattern birthPattern = Pattern.compile("^\\d{8}$");
         Matcher matcher = birthPattern.matcher(birth);
         if (!matcher.matches()) {
             throw new UserException(INVALID_BIRTH_FORM, birth);
