@@ -1,5 +1,7 @@
-package com.programmers.smrtstore.domain.user.application;
+package com.programmers.smrtstore.domain.user.presentation.controller;
 
+import com.programmers.smrtstore.domain.user.application.ShippingAddressService;
+import com.programmers.smrtstore.domain.user.application.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;

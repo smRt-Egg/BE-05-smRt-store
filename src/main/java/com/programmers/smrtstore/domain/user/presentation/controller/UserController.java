@@ -1,7 +1,6 @@
-package com.programmers.smrtstore.domain.user.presentation;
+package com.programmers.smrtstore.domain.user.presentation.controller;
 
 import com.programmers.smrtstore.common.annotation.UserId;
-import com.programmers.smrtstore.domain.user.application.UserFacade;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
