@@ -55,7 +55,7 @@ public class ProductDetailOption {
     private OptionNames optionNames;
 
     @CreationTimestamp
-    @Column(name = "register_date")
+    @Column(name = "register_date", nullable = false, updatable = false)
     private LocalDateTime registerDate;
 
     @Builder
