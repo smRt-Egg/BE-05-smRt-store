@@ -23,7 +23,7 @@ public class ProductDetailOption extends ProductOption {
     private OptionNames optionNames;
 
     @CreationTimestamp
-    @Column(name = "register_date", nullable = false, updatable = false)
+    @Column(name = "register_date")
     private LocalDateTime registerDate;
 
     @Builder
