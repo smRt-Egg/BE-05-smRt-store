@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/profile")
+    @PatchMapping("/profile")
     public ResponseEntity<ProfileUserResponse> update(
         @UserId Long userId, @RequestBody @Valid
     UpdateUserRequest request) {
@@ -61,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("shipping/{shippingId}")
+    @PatchMapping("/shipping/{shippingId}")
     public ResponseEntity<DetailShippingResponse> updateDefaultShippingAddress(@UserId Long userId,
         @PathVariable Long shippingId, @RequestBody @Valid UpdateShippingRequest request) {
         DetailShippingResponse response = userFacade.updateShippingAddress(userId, shippingId,
