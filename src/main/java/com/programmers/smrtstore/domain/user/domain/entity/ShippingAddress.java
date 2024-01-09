@@ -127,7 +127,7 @@ public class ShippingAddress {
     }
 
     private void updateAddress2Depth(String address2Depth) {
-        if (address1Depth.isEmpty() || recipient.length() > 30) {
+        if (address2Depth.isEmpty() || recipient.length() > 30) {
             throw new UserException(INVALID_ADDRESS_2_DEPTH_LENGTH, address2Depth);
         }
 
