@@ -1,11 +1,11 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.DEFAULT_SHIPPING_NOT_DELETABLE;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_ADDRESS_1_DEPTH_LENGTH;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_ADDRESS_2_DEPTH_LENGTH;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_PHONE_NUM_FORM;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_RECIPIENT_LENGTH;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_SHIPPING_ADDRESS_NAME_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_ADDRESS_1_DEPTH_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_ADDRESS_2_DEPTH_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_PHONE_NUM_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_RECIPIENT_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_SHIPPING_ADDRESS_NAME_LENGTH;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
@@ -110,7 +110,7 @@ public class ShippingAddress {
         Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
         Matcher matcher = phonePattern.matcher(phoneNum2);
         if (!matcher.matches()) {
-            throw new UserException(INAPPROPRIATE_PHONE_NUM_FORM, phoneNum2);
+            throw new UserException(INVALID_PHONE_NUM_FORM, phoneNum2);
         }
 
         this.phoneNum2 = phoneNum2;
@@ -120,7 +120,7 @@ public class ShippingAddress {
         Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
         Matcher matcher = phonePattern.matcher(phoneNum1);
         if (!matcher.matches()) {
-            throw new UserException(INAPPROPRIATE_PHONE_NUM_FORM, phoneNum1);
+            throw new UserException(INVALID_PHONE_NUM_FORM, phoneNum1);
         }
 
         this.phoneNum1 = phoneNum1;
@@ -128,7 +128,7 @@ public class ShippingAddress {
 
     private void updateAddress2Depth(String address2Depth) {
         if (address1Depth.isEmpty() || recipient.length() > 30) {
-            throw new UserException(INAPPROPRIATE_ADDRESS_2_DEPTH_LENGTH, address2Depth);
+            throw new UserException(INVALID_ADDRESS_2_DEPTH_LENGTH, address2Depth);
         }
 
         this.address2Depth = address2Depth;
@@ -136,7 +136,7 @@ public class ShippingAddress {
 
     private void updateAddress1Depth(String address1Depth) {
         if (address1Depth.isEmpty() || recipient.length() > 50) {
-            throw new UserException(INAPPROPRIATE_ADDRESS_1_DEPTH_LENGTH, address1Depth);
+            throw new UserException(INVALID_ADDRESS_1_DEPTH_LENGTH, address1Depth);
         }
 
         this.address1Depth = address1Depth;
@@ -144,7 +144,7 @@ public class ShippingAddress {
 
     private void updateRecipient(String recipient) {
         if (recipient.isEmpty() || recipient.length() > 10) {
-            throw new UserException(INAPPROPRIATE_RECIPIENT_LENGTH, recipient);
+            throw new UserException(INVALID_RECIPIENT_LENGTH, recipient);
         }
 
         this.recipient = recipient;
@@ -152,7 +152,7 @@ public class ShippingAddress {
 
     private void updateName(String name) {
         if (name.length() > 10) {
-            throw new UserException(INAPPROPRIATE_SHIPPING_ADDRESS_NAME_LENGTH, name);
+            throw new UserException(INVALID_SHIPPING_ADDRESS_NAME_LENGTH, name);
         }
 
         this.name = name;

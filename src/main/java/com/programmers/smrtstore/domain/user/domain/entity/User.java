@@ -2,11 +2,11 @@ package com.programmers.smrtstore.domain.user.domain.entity;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_AGE;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_BIRTH_FORM;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_EMAIL_FORM;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_NICKNAME_LENGTH;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INAPPROPRIATE_PHONE_NUM_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_AGE;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_BIRTH_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_EMAIL_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_NICKNAME_LENGTH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_PHONE_NUM_FORM;
 import static com.programmers.smrtstore.domain.user.application.ShippingAddressService.MAXIMUM_SHIPPING_SIZE;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -187,14 +187,14 @@ public class User {
 
     private void updateAge(int age) {
         if (age < 7 || age > 200) {
-            throw new UserException(INAPPROPRIATE_AGE, String.valueOf(age));
+            throw new UserException(INVALID_AGE, String.valueOf(age));
         }
         this.age = age;
     }
 
     private void updateNickName(String nickName) {
         if (nickName.isEmpty() || nickName.length() > 10) {
-            throw new UserException(INAPPROPRIATE_NICKNAME_LENGTH, nickName);
+            throw new UserException(INVALID_NICKNAME_LENGTH, nickName);
         }
         this.nickName = nickName;
     }
@@ -204,7 +204,7 @@ public class User {
             "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
         Matcher matcher = emailPattern.matcher(email);
         if (!matcher.matches()) {
-            throw new UserException(INAPPROPRIATE_EMAIL_FORM, email);
+            throw new UserException(INVALID_EMAIL_FORM, email);
         }
 
         this.email = email;
@@ -214,7 +214,7 @@ public class User {
         Pattern birthPattern = Pattern.compile("^\\d{8}$");
         Matcher matcher = birthPattern.matcher(birth);
         if (!matcher.matches()) {
-            throw new UserException(INAPPROPRIATE_BIRTH_FORM, birth);
+            throw new UserException(INVALID_BIRTH_FORM, birth);
         }
 
         this.birth = birth;
@@ -224,7 +224,7 @@ public class User {
         Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
         Matcher matcher = phonePattern.matcher(phone);
         if (!matcher.matches()) {
-            throw new UserException(INAPPROPRIATE_PHONE_NUM_FORM, phone);
+            throw new UserException(INVALID_PHONE_NUM_FORM, phone);
         }
 
         this.phone = phone;
