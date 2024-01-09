@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.domain.entity.ProductAdditionalOption;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -24,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@DisplayName("Test Product Detail Service")
+@DisplayName("Test Product Additional Option Service")
 @Testcontainers
 @Transactional
 class ProductAdditionalServiceTest {
@@ -136,4 +137,36 @@ class ProductAdditionalServiceTest {
             .isNotEmpty()
             .hasSize(1);
     }
+
+    @Test
+    void testUpdateAdditionalOption() {
+        // Arrange
+        var product = productRepository.findById(productId).orElseThrow();
+        var additionalOption = additionalOptionRepository.save(
+            ProductAdditionalOption.builder()
+                .groupName("groupName")
+                .name("name")
+                .price(1000)
+                .stockQuantity(100)
+                .product(product)
+                .build());
+        var request = ProductAdditionalOptionRequest.builder()
+            .productId(productId)
+            .optionId(additionalOption.getId())
+            .name("test")
+            .groupName("test")
+            .price(100)
+            .quantity(300)
+            .build();
+        // Act
+        var actualResult = productAdditionalService.updateAdditionalOption(request);
+        // Assert
+        assertThat(actualResult)
+            .isNotNull()
+            .hasFieldOrPropertyWithValue("name", request.getName())
+            .hasFieldOrPropertyWithValue("groupName", request.getGroupName())
+            .hasFieldOrPropertyWithValue("price", request.getPrice())
+            .hasFieldOrPropertyWithValue("stockQuantity", request.getQuantity());
+    }
+
 }
