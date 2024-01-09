@@ -106,9 +106,13 @@ public class PointFacadeImpl implements PointFacade {
     public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
         PointStatus pointStatus, TradeDateRange tradeDateRange) {
         return pointRepository.findPointByPointStatusAndIssuedAt(
-            userId,
-            pointStatus,
-            tradeDateRange.getYear(),
-            tradeDateRange.getMonth());
+                userId,
+                pointStatus,
+                tradeDateRange.getYear(),
+                tradeDateRange.getMonth()
+            )
+            .stream()
+            .map(PointResponse::from)
+            .toList();
     }
 }
