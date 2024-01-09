@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.product.application;
 
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.res.ProductDetailResponse;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductThumbnailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
@@ -71,7 +72,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductResponse updateProduct(ProductRequest request) {
+    public ProductDetailResponse updateProduct(ProductRequest request) {
         Product product = commonService.getProduct(request.getId());
         product.updateName(request.getName());
         product.updatePrice(request.getPrice());
@@ -81,7 +82,7 @@ public class ProductService {
         product.updateContentImage(request.getContentImage());
         product.updateOptionNameTypes(request.getOptionNameType1(), request.getOptionNameType2(),
             request.getOptionNameType3());
-        return ProductResponse.from(product);
+        return ProductDetailResponse.from(product);
     }
 
     public ProductResponse updateProductDiscountRatio(Long productId, Integer discountRatio) {

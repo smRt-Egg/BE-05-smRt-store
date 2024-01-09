@@ -9,8 +9,10 @@ import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProdu
 import com.programmers.smrtstore.domain.product.presentation.dto.req.ProductDiscountRatioAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateAdditionalOptionAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateDetailOptionAPIRequest;
+import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateProductAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAdditionalOptionAPIResponse;
+import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailOptionAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDiscountAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductThumbnailAPIResponse;
@@ -71,8 +73,11 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Void> productDetailUpdate(@PathVariable Long productId) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ProductDetailAPIResponse> productDetailUpdate(
+        @PathVariable Long productId,
+        @Valid @RequestBody UpdateProductAPIRequest request) {
+        var result = productService.updateProduct(request.toEntity(productId));
+        return ResponseEntity.ok(ProductDetailAPIResponse.from(result));
     }
 
     @PutMapping("/{productId}/detailOptions/{optionId}")
