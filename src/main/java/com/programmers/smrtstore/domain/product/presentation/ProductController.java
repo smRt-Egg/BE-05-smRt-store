@@ -1,10 +1,14 @@
 package com.programmers.smrtstore.domain.product.presentation;
 
+import com.programmers.smrtstore.domain.product.application.ProductAdditionalService;
 import com.programmers.smrtstore.domain.product.application.ProductDetailService;
 import com.programmers.smrtstore.domain.product.application.ProductService;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.ProductDiscountRatioAPIRequest;
+import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateAdditionalOptionAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAPIResponse;
+import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAdditionalOptionAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDiscountAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductThumbnailAPIResponse;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
@@ -28,6 +32,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductDetailService productDetailService;
+    private final ProductAdditionalService productAdditionalService;
     private final ReviewService reviewService;
 
     @PostMapping
@@ -50,7 +55,6 @@ public class ProductController {
         return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
     }
 
-
     @GetMapping
     public ResponseEntity<List<ProductThumbnailAPIResponse>> findAllProducts() {
         var result = productService.getAllProducts().stream()
@@ -62,4 +66,32 @@ public class ProductController {
             .toList();
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<Void> productDetailUpdate(@PathVariable Long productId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{productId}/detailOptions/{optionId}")
+    public ResponseEntity<Void> productDetailOptionUpdate(
+        @PathVariable Long productId, @PathVariable Long optionId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{productId}/additionalOptions/{optionId}")
+    public ResponseEntity<ProductAdditionalOptionAPIResponse> productAdditionalOptionUpdate(
+        @PathVariable Long productId, @PathVariable Long optionId,
+        @Valid @RequestBody UpdateAdditionalOptionAPIRequest request) {
+        var result = productAdditionalService.updateAdditionalOption(
+            ProductAdditionalOptionRequest.builder()
+                .productId(productId)
+                .optionId(optionId)
+                .quantity(request.getQuantity())
+                .price(request.getPrice())
+                .groupName(request.getGroupName())
+                .name(request.getName())
+                .build());
+        return ResponseEntity.ok(ProductAdditionalOptionAPIResponse.from(result));
+    }
+
 }
