@@ -54,13 +54,20 @@ public class ProductDetailService {
 
     public ProductDetailOptionResponse updateProductOption(
         ProductDetailOptionRequest request) {
-        ProductDetailOption detailOption = detailOptionRepository.findById(request.getId())
+        ProductDetailOption detailOption = detailOptionRepository.findById(request.getOptionId())
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        validateOption(request.getProductId(), detailOption);
         detailOption.updateStockQuantity(request.getQuantity());
         detailOption.updatePrice(request.getPrice());
         detailOption.updateOptionNames(request.getOptionName1(), request.getOptionName2(),
             request.getOptionName3());
         return ProductDetailOptionResponse.from(detailOption);
+    }
+
+    private void validateOption(Long productId, ProductDetailOption option) {
+        if (!option.getProduct().getId().equals(productId)) {
+            throw new ProductException(ErrorCode.PRODUCT_OPTION_MISMATCH);
+        }
     }
 
 }

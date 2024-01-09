@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
@@ -24,7 +23,6 @@ public class ProductQuantity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter(value = AccessLevel.PROTECTED)
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
@@ -45,6 +43,12 @@ public class ProductQuantity {
             throw new ProductException(PRODUCT_QUANTITY_NOT_ENOUGH);
         }
         this.stockQuantity -= quantity;
+    }
+
+    protected void setStockQuantity(Integer quantity) {
+        if (quantity >= 0) {
+            this.stockQuantity = quantity;
+        }
     }
 
 }

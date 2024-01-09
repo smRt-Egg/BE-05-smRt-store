@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -24,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@DisplayName("Test Product Detail Service")
+@DisplayName("Test Product Detail Option Service")
 @Testcontainers
 @Transactional
 class ProductDetailServiceTest {
@@ -157,6 +158,45 @@ class ProductDetailServiceTest {
         // Act & Assert
         assertThrows(ProductException.class,
             () -> productDetailService.removeProductOption(productId, 100L));
+    }
+
+    @Test
+    void testUpdateProductOptionSuccess() {
+        // Arrange
+        init();
+        var request = ProductDetailOptionRequest.builder()
+            .productId(productId)
+            .optionId(detailOptionId)
+            .price(100)
+            .quantity(300)
+            .optionName1("test")
+            .optionName2("test2")
+            .build();
+        // Act
+        var actualResult = productDetailService.updateProductOption(request);
+        // Assert
+        assertThat(actualResult)
+            .isNotNull()
+            .hasFieldOrProperty("id").isNotNull()
+            .hasFieldOrPropertyWithValue("price", 100)
+            .hasFieldOrPropertyWithValue("stockQuantity", 300);
+    }
+
+    @Test
+    void testUpdateProductOptionFailWhenDuplicatedNameInserted(){
+        // Arrange
+        init();
+        var request = ProductDetailOptionRequest.builder()
+            .productId(productId)
+            .optionId(detailOptionId)
+            .price(100)
+            .quantity(300)
+            .optionName1("test")
+            .optionName2("test")
+            .build();
+        // Act & Assert
+        assertThrows(ProductException.class,
+            () -> productDetailService.updateProductOption(request));
     }
 
     private void init() {
