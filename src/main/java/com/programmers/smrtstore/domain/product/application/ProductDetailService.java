@@ -48,7 +48,7 @@ public class ProductDetailService {
     public Long removeProductOption(Long productId, Long productOptionId) {
         Product product = commonService.getProduct(productId);
         commonService.optionValidate(product.isCombinationYn());
-        product.removeOption(productOptionId);
+        product.removeDetailOption(productOptionId);
         return productOptionId;
     }
 

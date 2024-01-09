@@ -99,8 +99,7 @@ class ProductDetailServiceTest {
             .hasFieldOrPropertyWithValue("combinationYn", true)
             .hasFieldOrPropertyWithValue("discountYn", false)
             .hasFieldOrProperty("optionNameTypes").isNotNull()
-            .hasFieldOrProperty("detailOptionResponses").isNotNull()
-            .hasFieldOrProperty("additionalOptionResponses").isNotNull();
+            .hasFieldOrProperty("detailOptionResponses").isNotNull();
     }
 
     @Test
