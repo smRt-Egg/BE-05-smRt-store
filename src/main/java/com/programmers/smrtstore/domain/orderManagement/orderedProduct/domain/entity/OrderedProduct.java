@@ -9,7 +9,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_OPTION
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.exception.OrderedProductException;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.domain.entity.ProductOption;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,7 +45,7 @@ public class OrderedProduct {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
-    private ProductOption productOption;
+    private ProductDetailOption productOption;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -57,16 +57,16 @@ public class OrderedProduct {
     private Integer orgPrice;
 
     @Column(name = "immediate_discount")
-    private Integer ImmediateDiscountRatio;
+    private Integer immediateDiscountRatio;
 
-    @Column(name = "coupon_discount")
+    @Column(name = "coupon_discount", nullable = true)
     private Integer couponDiscount;
 
     @Builder
     public OrderedProduct(
-        Long id, OrderSheet orderSheet, Product product, ProductOption productOption,
-        Integer quantity, Integer totalPrice, Integer orgPrice, Integer ImmediateDiscountRatio,
-        Integer couponDiscount
+        Long id, OrderSheet orderSheet, Product product,
+        ProductDetailOption productOption, Integer quantity, Integer totalPrice, Integer orgPrice,
+        Integer immediateDiscountRatio, Integer couponDiscount
     ) {
         this.id = id;
         this.orderSheet = orderSheet;
@@ -75,17 +75,34 @@ public class OrderedProduct {
         this.quantity = quantity;
         this.totalPrice = totalPrice;
         this.orgPrice = orgPrice;
-        this.ImmediateDiscountRatio = ImmediateDiscountRatio;
+        this.immediateDiscountRatio = immediateDiscountRatio;
         this.couponDiscount = couponDiscount;
         validateMatchingProductAndOption(product, productOption);
         validateQuantity(quantity);
         validateTotalPrice(totalPrice);
         validateOrgPrice(orgPrice);
-        validateImmediateDiscount(ImmediateDiscountRatio);
+        validateImmediateDiscount(immediateDiscountRatio);
         validateCouponDiscount(couponDiscount);
     }
 
-    private void validateMatchingProductAndOption(Product product, ProductOption productOption) {
+    public static OrderedProduct createWithDefaultCouponDiscount(
+        Product product, ProductDetailOption productOption,
+        Integer quantity, Integer totalPrice, Integer orgPrice, Integer immediateDiscountRatio
+    ) {
+        return OrderedProduct.builder()
+            .product(product)
+            .productOption(productOption)
+            .quantity(quantity)
+            .totalPrice(totalPrice)
+            .orgPrice(orgPrice)
+            .immediateDiscountRatio(immediateDiscountRatio)
+            .couponDiscount(null)
+            .build();
+    }
+
+    private void validateMatchingProductAndOption(
+        Product product, ProductDetailOption productOption
+    ) {
         var productId = product.getId();
         var productIdInOption = productOption.getProduct().getId();
 
@@ -95,10 +112,13 @@ public class OrderedProduct {
     }
 
     private void validateQuantity(Integer quantity) {
+        // 수량 자체가 유효한지
         if (quantity <= 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_QUANTITY_INVALID);
         }
-        if (quantity > this.productOption.getStockQuantity()) {
+        // 현재 재고 내에서 수량이 유효한지
+        // TODO: product 에서 구현할지 상의
+        if (productOption.getStockQuantity() < quantity) {
             throw new OrderedProductException(ORDERED_PRODUCT_QUANTITY_INVALID);
         }
     }
@@ -119,22 +139,39 @@ public class OrderedProduct {
         }
     }
 
-    private void validateImmediateDiscount(Integer ImmediateDiscountRatio) {
-        if (ImmediateDiscountRatio <= 0 || ImmediateDiscountRatio >= 100) {
+    private void validateImmediateDiscount(Integer immediateDiscountRatio) {
+        if (immediateDiscountRatio <= 0 || immediateDiscountRatio >= 100) {
             throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
         }
     }
 
     private void validateCouponDiscount(Integer couponDiscount) {
+        if (couponDiscount == null) {
+            return;
+        }
         if (couponDiscount < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
         }
     }
 
+    // OrderedProduct 에 있는 가격 정보들로 total price 를 계산한 금액
     private Integer getCalculatedTotalPrice() {
-        return ((this.orgPrice * (this.ImmediateDiscountRatio / 100) + this.productOption.getPrice())
-            * this.quantity) - this.couponDiscount;
+        return getOptionAppliedPriceAfterCoupon() * this.quantity;
     }
 
+    // 즉시할인 된 금액에서 옵션 추가금까지 붙인 후 쿠폰 할인 금액을 뺀 금액
+    private Integer getOptionAppliedPriceAfterCoupon() {
+        return getOptionAppliedPrice() - this.couponDiscount;
+    }
+
+    // 즉시할인 된 금액에서 옵션 추가금까지 붙인 금액
+    private Integer getOptionAppliedPrice() {
+        return getProductSalePrice() + this.productOption.getPrice();
+    }
+
+    // 즉시할인 된 금액
+    private Integer getProductSalePrice() {
+        return this.orgPrice * (this.immediateDiscountRatio / 100);
+    }
 
 }
