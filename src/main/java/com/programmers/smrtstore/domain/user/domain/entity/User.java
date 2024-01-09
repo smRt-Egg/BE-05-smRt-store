@@ -99,7 +99,8 @@ public class User {
     private LocalDateTime deletedAt;
 
     private static final int MAXIMUM_SHIPPING_SIZE = 15;
-    private static final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
+    private static final Pattern emailPattern = Pattern.compile(
+        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
     private static final Pattern birthPattern = Pattern.compile("^\\d{8}$");
 
     public List<GrantedAuthority> getAuthorities() {
