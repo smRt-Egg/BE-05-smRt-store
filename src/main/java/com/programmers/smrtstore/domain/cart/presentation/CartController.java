@@ -45,7 +45,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{cartId}")
+    @PatchMapping("/quantity/{cartId}")
     public ResponseEntity<CartResponse> updateCartQuantity(@UserId Long userId,
         @PathVariable Long cartId, @RequestBody
     UpdateCartQuantityRequest request) {
@@ -53,7 +53,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{cartId}")
+    @PatchMapping("/productOption/{cartId}")
     public ResponseEntity<CartResponse> updateCartProductOption(@UserId Long userId,
         @PathVariable Long cartId, @RequestBody
     UpdateCartOptionRequest request) {
