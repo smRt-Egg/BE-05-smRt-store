@@ -8,7 +8,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.ShippingAddress;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
-import com.programmers.smrtstore.domain.user.infrastructure.UserRepository;
+import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShippingAddressService {
 
     private final ShippingAddressJpaRepository shippingAddressRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userRepository;
 
     public DetailShippingResponse createShippingAddress(Long userId,
         DetailShippingRequest request) {

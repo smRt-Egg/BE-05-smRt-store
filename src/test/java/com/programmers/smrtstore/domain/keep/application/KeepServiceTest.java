@@ -77,7 +77,7 @@ class KeepServiceTest {
             productList.add(product);
             User user = User.builder()
                     .nickName("nickname" + i)
-                    .email(i + "email.com")
+                    .email(i + "@email.com")
                     .phone("010-0000-000" + i)
                     .birth("1999-01-01")
                     .gender(Gender.MALE)
