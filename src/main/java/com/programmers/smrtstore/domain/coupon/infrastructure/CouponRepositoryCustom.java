@@ -7,10 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface CouponRepositoryCustom {
-    CouponQuantity findCouponQuantity(Long couponId);
+    Optional<CouponQuantity> findCouponQuantity(Long couponId);
     List<Coupon> findUserCoupons(Long userId);
     Optional<Coupon> findCouponByUserIdAndCouponId(Long userId, Long couponId);
     Long findUserCouponCount(Long userId);
     List<Coupon> findCouponByProductId(Long productId);
+    void updateExpiredCoupons();
 }

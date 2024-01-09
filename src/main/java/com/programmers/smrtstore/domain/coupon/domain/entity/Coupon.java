@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 @Table(name = "coupon_TB")
 public class Coupon {
 
+    private static final Long DISCOUNT_ZERO = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -72,7 +74,7 @@ public class Coupon {
 
     @Builder
     private Coupon(CouponValue couponValue, boolean membershipCouponYn, boolean duplicationYn, boolean availableYn, CouponType couponType, BenefitUnitType benefitUnitType, CustomerManageBenefitType customerManageBenefitType, CouponPublicationType couponPublicationType, LocalDateTime validPeriodStartDate, LocalDateTime validPeriodEndDate, CouponQuantity couponQuantity) {
-        validatePercentValue(benefitUnitType,couponValue.getBenefitValue());
+        validatePercentValue(benefitUnitType, couponValue.getBenefitValue());
         this.couponValue = couponValue;
         this.membershipCouponYn = membershipCouponYn;
         this.duplicationYn = duplicationYn;
@@ -92,9 +94,9 @@ public class Coupon {
     public Long discountProduct(Integer price) {
         validateMinPrice(price);
         if (couponType.equals(CouponType.DELIVERY)) {
-            return couponValue.getBenefitValue();
+            return DISCOUNT_ZERO;
         }
-        Long discountPrice = 0L;
+        Long discountPrice = DISCOUNT_ZERO;
         switch (benefitUnitType) {
             case AMOUNT:
                 discountPrice = discountAmount(price);
@@ -104,14 +106,18 @@ public class Coupon {
         return discountPrice;
     }
 
-    public void makeAvailableYes(User user) { //admin 개발하면 그때 검증 로직 추가 예정
-        validateAdmin(user);
-        availableYn = true;
+    public void makeAvailableYes(User user) {
+        if (validPeriodEndDate.isAfter(LocalDateTime.now())) {
+            validateAdmin(user);
+            availableYn = true;
+        }
     }
 
     public void makeAvailableNo(User user) {
-        validateAdmin(user);
-        availableYn = false;
+        if (validPeriodEndDate.isBefore(LocalDateTime.now()) && availableYn) {
+            validateAdmin(user);
+            availableYn = false;
+        }
     }
 
     public void validateCoupon() {
@@ -132,7 +138,7 @@ public class Coupon {
     }
 
     private Long discountPercent(Integer price) {
-        Long discountPrice = couponValue.getBenefitValue() * price/100;
+        Long discountPrice = calculateDiscountValue(price);
         if (discountPrice < couponValue.getMaxDiscountValue())
             return discountPrice;
         else
@@ -164,6 +170,10 @@ public class Coupon {
         if (user.getRole() != Role.ROLE_ADMIN) {
             throw new CouponException(ErrorCode.SECURITY_ACCESS_DENIED);
         }
+    }
+
+    private Long calculateDiscountValue(Integer price) {
+        return  couponValue.getBenefitValue() * price / 100;
     }
 
 }

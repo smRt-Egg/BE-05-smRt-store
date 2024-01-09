@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface CouponAvailableUserJpaRepository extends JpaRepository<CouponAvailableUser,Long> {
 
     Optional<CouponAvailableUser> findByCouponIdAndUserId(Long couponId, Long userId);
+
+    void deleteByCouponIdAndUserId(Long couponId, Long userId);
 }
