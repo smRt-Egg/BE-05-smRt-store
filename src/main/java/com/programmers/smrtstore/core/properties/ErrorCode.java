@@ -36,7 +36,7 @@ public enum ErrorCode {
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
     COUPON_NOT_ENOUGH(BAD_REQUEST, "쿠폰 재고가 부족합니다."),
     COUPON_DATE_INVALID(BAD_REQUEST, "쿠폰 유효 기간이 끝났습니다."),
-    COUPON_EXIST(BAD_REQUEST, "사용 하지 않은 쿠폰이 존재합니다."),
+    COUPON_EXIST_BY_USER(BAD_REQUEST, "유저에게 사용 하지 않은 쿠폰이 존재합니다."),
     ISSUE_COUNT_EXCEED(BAD_REQUEST, "인당 쿠폰 발급 횟수를 초과했습니다."),
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
