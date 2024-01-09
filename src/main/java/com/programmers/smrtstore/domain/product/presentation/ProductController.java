@@ -6,6 +6,8 @@ import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductAPIRequest;
+import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductAdditionalOptionAPIRequest;
+import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductDetailOptionAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.ProductDiscountRatioAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateAdditionalOptionAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateDetailOptionAPIRequest;
@@ -50,6 +52,24 @@ public class ProductController {
                 : productService.createProduct(request.toProductRequest());
         return ResponseEntity.ok(ProductAPIResponse.from(result));
     }
+
+    @PostMapping("/{productId}/detailOptions")
+    public ResponseEntity<ProductDetailOptionAPIResponse> addNewDetailOption(
+        @PathVariable Long productId,
+        @Valid @RequestBody CreateProductDetailOptionAPIRequest request) {
+        var result = productDetailService.addProductDetailOption(productId, request.toRequest());
+        return ResponseEntity.ok(ProductDetailOptionAPIResponse.from(result));
+    }
+
+    @PostMapping("/{productId}/additionalOptions")
+    public ResponseEntity<ProductAdditionalOptionAPIResponse> addNewAdditionalOption(
+        @PathVariable Long productId,
+        @Valid @RequestBody CreateProductAdditionalOptionAPIRequest request) {
+        var result = productAdditionalService.addAdditionalOption(productId, request.toRequest());
+        return ResponseEntity.ok(ProductAdditionalOptionAPIResponse.from(result));
+    }
+
+    // ProductDetailPage
 
     @GetMapping
     public ResponseEntity<List<ProductThumbnailAPIResponse>> findAllProducts() {
