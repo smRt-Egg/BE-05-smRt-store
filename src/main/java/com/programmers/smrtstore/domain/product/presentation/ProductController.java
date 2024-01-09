@@ -51,15 +51,6 @@ public class ProductController {
         return ResponseEntity.ok(ProductAPIResponse.from(result));
     }
 
-    @Secured("ROLE_ADMIN")
-    @PutMapping("/discount/{productId}")
-    public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
-        @PathVariable Long productId, @Valid ProductDiscountRatioAPIRequest request) {
-        var result = productService.updateProductDiscountRatio(productId,
-            request.getDiscountRatio());
-        return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
-    }
-
     @GetMapping
     public ResponseEntity<List<ProductThumbnailAPIResponse>> findAllProducts() {
         var result = productService.getAllProducts().stream()
@@ -79,6 +70,15 @@ public class ProductController {
         @Valid @RequestBody UpdateProductAPIRequest request) {
         var result = productService.updateProduct(request.toEntity(productId));
         return ResponseEntity.ok(ProductDetailAPIResponse.from(result));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PutMapping("/discount/{productId}")
+    public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
+        @PathVariable Long productId, @Valid ProductDiscountRatioAPIRequest request) {
+        var result = productService.updateProductDiscountRatio(productId,
+            request.getDiscountRatio());
+        return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
     }
 
     @Secured("ROLE_ADMIN")
