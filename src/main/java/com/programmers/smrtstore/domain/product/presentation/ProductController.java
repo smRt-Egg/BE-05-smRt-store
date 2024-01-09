@@ -4,11 +4,14 @@ import com.programmers.smrtstore.domain.product.application.ProductAdditionalSer
 import com.programmers.smrtstore.domain.product.application.ProductDetailService;
 import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductAdditionalOptionRequest;
+import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.CreateProductAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.ProductDiscountRatioAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateAdditionalOptionAPIRequest;
+import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateDetailOptionAPIRequest;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAdditionalOptionAPIResponse;
+import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailOptionAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDiscountAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductThumbnailAPIResponse;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
@@ -73,9 +76,19 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}/detailOptions/{optionId}")
-    public ResponseEntity<Void> productDetailOptionUpdate(
-        @PathVariable Long productId, @PathVariable Long optionId) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ProductDetailOptionAPIResponse> productDetailOptionUpdate(
+        @PathVariable Long productId, @PathVariable Long optionId,
+        @Valid @RequestBody UpdateDetailOptionAPIRequest request) {
+        var result = productDetailService.updateProductOption(ProductDetailOptionRequest.builder()
+            .productId(productId)
+            .optionId(optionId)
+            .optionName1(request.getOptionName1())
+            .optionName2(request.getOptionName2())
+            .optionName3(request.getOptionName3())
+            .quantity(request.getQuantity())
+            .price(request.getPrice())
+            .build());
+        return ResponseEntity.ok(ProductDetailOptionAPIResponse.from(result));
     }
 
     @PutMapping("/{productId}/additionalOptions/{optionId}")
