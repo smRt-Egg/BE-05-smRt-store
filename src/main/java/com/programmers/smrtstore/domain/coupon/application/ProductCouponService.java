@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CouponService {
+public class ProductCouponService {
 
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
     private final UserJpaRepository userJpaRepository;
@@ -52,24 +52,6 @@ public class CouponService {
                 .orElseGet(() -> {
                     return firstIssueCoupon(coupon, user, couponId);
                 });
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserCouponResponse> getCouponsByUserId(Long userId) {   //쿠폰 리스트 (마이페이지)
-
-        getUser(userId);
-
-        return couponJpaRepository.findUserCoupons(userId).stream()
-                .map(coupon -> UserCouponResponse.from(coupon))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public Long getUserCouponQuantity(Long userId) { //유저의쿠폰 잔여개수
-
-        getUser(userId);
-
-        return couponJpaRepository.findUserCouponCount(userId);
     }
 
     //Todo: product detail 페이지에서 사용될 메서드
