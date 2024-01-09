@@ -72,6 +72,7 @@ public class ProductController {
         return ResponseEntity.ok(result);
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDetailAPIResponse> productDetailUpdate(
         @PathVariable Long productId,
@@ -80,6 +81,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductDetailAPIResponse.from(result));
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{productId}/detailOptions/{optionId}")
     public ResponseEntity<ProductDetailOptionAPIResponse> productDetailOptionUpdate(
         @PathVariable Long productId, @PathVariable Long optionId,
@@ -96,6 +98,7 @@ public class ProductController {
         return ResponseEntity.ok(ProductDetailOptionAPIResponse.from(result));
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{productId}/additionalOptions/{optionId}")
     public ResponseEntity<ProductAdditionalOptionAPIResponse> productAdditionalOptionUpdate(
         @PathVariable Long productId, @PathVariable Long optionId,
