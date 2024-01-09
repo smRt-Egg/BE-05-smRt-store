@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.cart.application.dto.res;
+package com.programmers.smrtstore.domain.cart.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.cart.domain.entity.Cart;
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CartResponse {
+public class CreateCartResponse {
 
     private Long id;
     private Long userId;
@@ -17,18 +17,17 @@ public class CartResponse {
     private Integer quantity;
     private Integer price;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public static CartResponse from(Cart cart) {
-        return new CartResponse(
+
+    public static CreateCartResponse from(Cart cart) {
+        return new CreateCartResponse(
             cart.getId(),
             cart.getUser().getId(),
             cart.getProduct().getId(),
             cart.getProductDetailOptionId(),
             cart.getQuantity(),
             cart.getPrice(),
-            cart.getCreatedAt(),
-            cart.getUpdatedAt()
+            cart.getCreatedAt()
         );
     }
 }
