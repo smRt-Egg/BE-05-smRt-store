@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 @Table(name = "coupon_TB")
 public class Coupon {
 
+    private static final Long DISCOUNT_ZERO = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -92,9 +94,9 @@ public class Coupon {
     public Long discountProduct(Integer price) {
         validateMinPrice(price);
         if (couponType.equals(CouponType.DELIVERY)) {
-            return 0L;
+            return DISCOUNT_ZERO;
         }
-        Long discountPrice = 0L;
+        Long discountPrice = DISCOUNT_ZERO;
         switch (benefitUnitType) {
             case AMOUNT:
                 discountPrice = discountAmount(price);
@@ -136,7 +138,7 @@ public class Coupon {
     }
 
     private Long discountPercent(Integer price) {
-        Long discountPrice = couponValue.getBenefitValue() * price / 100;
+        Long discountPrice = calculateDiscountValue(price);
         if (discountPrice < couponValue.getMaxDiscountValue())
             return discountPrice;
         else
@@ -168,6 +170,10 @@ public class Coupon {
         if (user.getRole() != Role.ROLE_ADMIN) {
             throw new CouponException(ErrorCode.SECURITY_ACCESS_DENIED);
         }
+    }
+
+    private Long calculateDiscountValue(Integer price) {
+        return  couponValue.getBenefitValue() * price / 100;
     }
 
 }
