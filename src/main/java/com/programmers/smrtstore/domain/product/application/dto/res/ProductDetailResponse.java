@@ -7,14 +7,13 @@ import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProductResponse {
+public class ProductDetailResponse {
 
     private Long id;
     private String name;
@@ -33,10 +32,8 @@ public class ProductResponse {
     private boolean discountYn;
     private OptionNameTypes optionNameTypes;
 
-    private List<ProductDetailOptionResponse> detailOptionResponses;
-
-    public static ProductResponse from(Product product) {
-        return new ProductResponse(
+    public static ProductDetailResponse from(Product product) {
+        return new ProductDetailResponse(
             product.getId(),
             product.getName(),
             product.getPrice(),
@@ -52,9 +49,7 @@ public class ProductResponse {
             product.getProductStatusType(),
             product.isCombinationYn(),
             product.isDiscountYn(),
-            product.getOptionNameTypes(),
-            product.getProductDetailOptions().stream().map(ProductDetailOptionResponse::from)
-                .toList()
+            product.getOptionNameTypes()
         );
     }
 }

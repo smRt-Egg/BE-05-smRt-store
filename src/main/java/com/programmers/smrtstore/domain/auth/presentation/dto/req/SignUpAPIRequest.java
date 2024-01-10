@@ -58,7 +58,4 @@ public class SignUpAPIRequest {
 
     @NotNull
     private boolean membershipYN;
-
-    @NotNull
-    private boolean repurchaseYN;
 }

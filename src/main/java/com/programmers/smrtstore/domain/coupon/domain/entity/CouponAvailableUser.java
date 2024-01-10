@@ -66,7 +66,7 @@ public class CouponAvailableUser {
     public static void validateCouponWithUser(Coupon coupon, User user) {
         coupon.validateCoupon();
         // validCustomerManageBenefitType(coupon.getCustomerManageBenefitType()
-        validateMembership(coupon.isMembershipCouponYn(), user.isMembershipYn()); //멤버십 쿠폰일때 멤버십 유저인지?
+        validateMembership(coupon.isMembershipCouponYn(), user.getMembershipYn()); //멤버십 쿠폰일때 멤버십 유저인지?
     }
 
     private static void validateMembership(boolean couponMembership, boolean userMembership) {

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
-import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -35,8 +34,7 @@ class ProductServiceTest {
     private static final Integer STOCK_QUANTITY = 100;
     private static final String THUMBNAIL_STR = "https://localhost";
     private static final String CONTENT_IMAGE_STR = "https://localhost:8080";
-    private static final String OPTION_NAME = "option";
-    private static final Integer PRICE = 0;
+
     @Autowired
     private ProductService productService;
     @Autowired
@@ -301,7 +299,7 @@ class ProductServiceTest {
         var actualResult = productService.updateProduct(updateRequest);
         // Assert
         assertThat(actualResult)
-            .isNotNull().isOfAnyClassIn(ProductResponse.class)
+            .isNotNull()
             .hasFieldOrPropertyWithValue("id", expectedId)
             .hasFieldOrPropertyWithValue("name", updateRequest.getName())
             .hasFieldOrPropertyWithValue("category", updateRequest.getCategory())
