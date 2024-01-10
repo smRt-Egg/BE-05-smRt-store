@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-@ActiveProfiles("test")
 class UserServiceTest {
 
     @Autowired
