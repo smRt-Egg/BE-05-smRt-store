@@ -37,6 +37,8 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     //SMTP
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+    //REDIS
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // SpringBoot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -45,6 +47,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mysql'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
 }
 
 tasks.named('test') {
