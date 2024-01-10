@@ -9,8 +9,8 @@ import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewR
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.res.CreateReviewResponse;
-import com.programmers.smrtstore.domain.review.application.dto.res.ReviewDetailResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.ReviewStatisticsResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
 import com.programmers.smrtstore.domain.review.exception.ReviewException;
@@ -71,9 +71,9 @@ public class ReviewService {
 
 
     @Transactional(readOnly = true)
-    public ReviewDetailResponse getReviewsSizeAndAvgScoreByProductId(Long productId) {
+    public ReviewStatisticsResponse getReviewStatisticsFromProduct(Long productId) {
         Product product = getProduct(productId);
-        return ReviewDetailResponse.from(reviewJPARepository.findByProduct(product));
+        return ReviewStatisticsResponse.from(reviewJPARepository.findByProduct(product));
     }
 
     @Transactional(readOnly = true)
