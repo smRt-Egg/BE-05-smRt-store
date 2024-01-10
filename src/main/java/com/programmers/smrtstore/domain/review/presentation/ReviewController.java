@@ -21,13 +21,13 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<CreateReviewResponse> createReview(@UserId Long securityUserId, @RequestBody CreateReviewRequest createReviewRequest) {
-        CreateReviewResponse response = reviewService.createReview(createReviewRequest);
+        CreateReviewResponse response = reviewService.createReview(securityUserId, createReviewRequest);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponse> getReviewById(@UserId Long securityUserId, @PathVariable Long reviewId) {
-        ReviewResponse response = reviewService.getReviewById(reviewId);
+        ReviewResponse response = reviewService.getReviewById(securityUserId, reviewId);
         return ResponseEntity.ok(response);
     }
 
@@ -38,10 +38,10 @@ public class ReviewController {
             @RequestParam(value = "userId", required = false) Long userId) {
 
         if (productId != null) {
-            List<ReviewResponse> response = reviewService.getReviewsByProductId(productId);
+            List<ReviewResponse> response = reviewService.getReviewsByProductId(securityUserId, productId);
             return ResponseEntity.ok(response);
         } else if (userId != null) {
-            List<ReviewResponse> response = reviewService.getReviewsByUserId(userId);
+            List<ReviewResponse> response = reviewService.getReviewsByUserId(securityUserId, userId);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().build();
@@ -50,25 +50,25 @@ public class ReviewController {
 
     @PutMapping
     public ResponseEntity<ReviewResponse> updateReview(@UserId Long userId, @RequestBody UpdateReviewRequest updateReviewRequest) {
-        ReviewResponse response = reviewService.updateReview(updateReviewRequest);
+        ReviewResponse response = reviewService.updateReview(userId, updateReviewRequest);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<Long> deleteReview(@UserId Long userId, @PathVariable Long reviewId) {
-        Long response = reviewService.deleteReview(reviewId);
+        Long response = reviewService.deleteReview(userId, reviewId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/like")
     public ResponseEntity<Long> likeReview(@UserId Long userId, @RequestBody ReviewLikeRequest request) {
-        Long response = reviewService.likeReview(request);
+        Long response = reviewService.likeReview(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/like")
     public ResponseEntity<Long> dislikeReview(@UserId Long userId, @RequestBody ReviewLikeRequest request) {
-        Long response = reviewService.dislikeReview(request);
+        Long response = reviewService.dislikeReview(userId, request);
         return ResponseEntity.ok(response);
     }
 }
