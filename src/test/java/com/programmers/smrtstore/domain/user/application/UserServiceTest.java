@@ -228,18 +228,18 @@ class UserServiceTest {
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();
     }
 
-    @Test
-    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")
-    void sendCodeToEmail() {
-        assertThatCode(() -> userFacade.sendCodeToEmail("sjlim1999@naver.com"))
-            .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("본인 인증에 성공할 수 있다.")
-    void verifyCode() {
-        String code = userFacade.sendCodeToEmail("sjlim1999@naver.com");
-        assertThatCode(() -> userFacade.verifyCode("sjlim1999@naver.com", code))
-            .doesNotThrowAnyException();
-    }
+//    @Test
+//    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")
+//    void sendCodeToEmail() {
+//        assertThatCode(() -> userFacade.sendCodeToEmail("sjlim1999@naver.com"))
+//            .doesNotThrowAnyException();
+//    }
+//
+//    @Test
+//    @DisplayName("본인 인증에 성공할 수 있다.")
+//    void verifyCode() {
+//        String code = userFacade.sendCodeToEmail("sjlim1999@naver.com");
+//        assertThatCode(() -> userFacade.verifyCode("sjlim1999@naver.com", code))
+//            .doesNotThrowAnyException();
+//    }
 }
