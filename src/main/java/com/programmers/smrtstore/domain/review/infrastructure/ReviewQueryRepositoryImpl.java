@@ -5,9 +5,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import static com.programmers.smrtstore.domain.order.domain.entity.QOrderedProduct.orderedProduct;
-import static com.programmers.smrtstore.domain.order.orderSheet.domain.entity.QOrderSheet.orderSheet;
-import static com.programmers.smrtstore.domain.review.domain.entity.QReview.review;
+import com.programmers.smrtstore.domain.order.domain.entity.QOrderedProduct;
+import com.programmers.smrtstore.domain.order.orderSheet.domain.entity.QOrderSheet;
+import com.programmers.smrtstore.domain.review.domain.entity.QReview;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,8 +19,8 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     public Boolean validateReviewExist(Long userId, Long productId) {
         Integer result = queryFactory
                 .selectOne()
-                .from(review)
-                .where(review.user.id.eq(userId).and(review.product.id.eq(productId)))
+                .from(QReview.review)
+                .where(QReview.review.user.id.eq(userId).and(QReview.review.product.id.eq(productId)))
                 .fetchFirst();
 
         return result != null;
@@ -29,12 +29,12 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     @Override
     public Long getUnWrittenReviewCount(Long userId) {
         Long count = queryFactory
-                .select(orderSheet.id.count())
-                .from(orderSheet)
-                .leftJoin(orderSheet.orderedProducts, orderedProduct)
-                .leftJoin(review).on(review.product.id.eq(orderedProduct.product.id))
-                .where(orderSheet.user.id.eq(userId)
-                        .and(review.isNull()))
+                .select(QOrderSheet.orderSheet.id.count())
+                .from(QOrderSheet.orderSheet)
+                .leftJoin(QOrderSheet.orderSheet.orderedProducts, QOrderedProduct.orderedProduct)
+                .leftJoin(QReview.review).on(QReview.review.product.id.eq(QOrderedProduct.orderedProduct.product.id))
+                .where(QOrderSheet.orderSheet.user.id.eq(userId)
+                        .and(QReview.review.isNull()))
                 .fetchOne();
         return count != null ? count : 0;
     }
