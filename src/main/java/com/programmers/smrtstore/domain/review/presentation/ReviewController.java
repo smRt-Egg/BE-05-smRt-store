@@ -32,15 +32,20 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewResponse>> getReviewsByProductId(@UserId Long securityUserId, @RequestParam("productId") Long productId) {
-        List<ReviewResponse> response = reviewService.getReviewsByProductId(productId);
-        return ResponseEntity.ok(response);
-    }
+    public ResponseEntity<List<ReviewResponse>> getReviews(
+            @UserId Long securityUserId,
+            @RequestParam(value = "productId", required = false) Long productId,
+            @RequestParam(value = "userId", required = false) Long userId) {
 
-    @GetMapping
-    public ResponseEntity<List<ReviewResponse>> getReviewsByUserId(@UserId Long securityUserId, @RequestParam("userId") Long userId) {
-        List<ReviewResponse> response = reviewService.getReviewsByUserId(userId);
-        return ResponseEntity.ok(response);
+        if (productId != null) {
+            List<ReviewResponse> response = reviewService.getReviewsByProductId(productId);
+            return ResponseEntity.ok(response);
+        } else if (userId != null) {
+            List<ReviewResponse> response = reviewService.getReviewsByUserId(userId);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping
