@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;

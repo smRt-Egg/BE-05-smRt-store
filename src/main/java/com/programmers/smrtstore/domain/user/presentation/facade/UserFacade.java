@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.user.presentation.controller;
+package com.programmers.smrtstore.domain.user.presentation.facade;
 
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;

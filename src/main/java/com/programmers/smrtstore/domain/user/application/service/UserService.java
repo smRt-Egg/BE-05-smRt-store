@@ -1,16 +1,10 @@
-package com.programmers.smrtstore.domain.user.application;
+package com.programmers.smrtstore.domain.user.application.service;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.ALGORITHM_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.VERIFICATION_CODE_ERROR;
 
-import com.programmers.smrtstore.domain.cart.application.CartService;
-import com.programmers.smrtstore.domain.coupon.application.CouponService;
-import com.programmers.smrtstore.domain.keep.application.KeepService;
-import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
-import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
-import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
@@ -19,7 +13,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserRes
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,9 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserJpaRepository userJpaRepository;
-    private final CartService cartService;
-    private final CouponService couponService;
-    private final KeepService keepService;
     private final RedisService redisService;
     private final MailService mailService;
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
@@ -73,6 +63,15 @@ public class UserService {
         return certificationCode;
     }
 
+    @Transactional(readOnly = true)
+    public void verifyCode(String userEmail, String code) {
+        String savedCode = redisService.getValues(VERIFICATION_CODE_PRIFIX + userEmail);
+        boolean verifyResult = redisService.checkExistsValue(savedCode) && savedCode.equals(code);
+        if (!verifyResult) {
+            throw new UserException(VERIFICATION_CODE_ERROR, code);
+        }
+    }
+
     private void checkDuplicatedEmail(String userEmail) {
         userJpaRepository.findByEmail(userEmail).ifPresent(e -> {
             throw new UserException(DUPLICATE_EMAIL, userEmail);
@@ -91,20 +90,5 @@ public class UserService {
         } catch (NoSuchAlgorithmException e) {
             throw new UserException(ALGORITHM_NOT_FOUND);
         }
-    }
-
-    public void verifyCode(String userEmail, String code) {
-        String savedCode = redisService.getValues(VERIFICATION_CODE_PRIFIX + userEmail);
-        boolean verifyResult = redisService.checkExistsValue(savedCode) && savedCode.equals(code);
-        if(!verifyResult) throw new UserException(VERIFICATION_CODE_ERROR, code);
-    }
-
-    private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {
-        FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
-            .userId(userId)
-            .category(category)
-            .build();
-
-        return keepService.findKeepByUserAndCategory(userId, request);
     }
 }
