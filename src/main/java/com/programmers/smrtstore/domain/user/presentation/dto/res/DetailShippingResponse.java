@@ -24,7 +24,7 @@ public class DetailShippingResponse {
 
     private String phoneNum2;
 
-    private boolean isDefaultYn;
+    private Boolean isDefaultYn;
 
     public static DetailShippingResponse from(ShippingAddress address) {
         return DetailShippingResponse.builder()
@@ -36,7 +36,7 @@ public class DetailShippingResponse {
             .zipCode(address.getZipCode())
             .phoneNum1(address.getPhoneNum1())
             .phoneNum2(address.getPhoneNum2())
-            .isDefaultYn(address.isDefaultYn())
+            .isDefaultYn(address.getDefaultYn())
             .build();
     }
 }
