@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.domain.auth.application.AuthService;
@@ -21,12 +22,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@ActiveProfiles("test")
 class UserServiceTest {
 
     @Autowired
@@ -221,5 +232,20 @@ class UserServiceTest {
 
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();
+    }
+
+    @Test
+    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")
+    void sendCodeToEmail() {
+        assertThatCode(() -> userFacade.sendCodeToEmail("sjlim1999@naver.com"))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("본인 인증에 성공할 수 있다.")
+    void verifyCode() {
+        String code = userFacade.sendCodeToEmail("sjlim1999@naver.com");
+        assertThatCode(() -> userFacade.verifyCode("sjlim1999@naver.com", code))
+            .doesNotThrowAnyException();
     }
 }
