@@ -121,6 +121,10 @@ public class ReviewService {
         return review.getId();
     }
 
+    public Long getUnWrittenReviewCount(Long userId) {
+        return reviewJPARepository.getUnWrittenReviewCount(userId);
+    }
+
     private User getUser(Long userId) {
         return userJpaRepository.findById(userId)
             .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, null));
