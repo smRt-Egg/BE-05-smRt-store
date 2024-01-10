@@ -59,4 +59,14 @@ public class UserFacadeImpl implements UserFacade {
     public void deleteShippingAddress(Long userId, Long shippingId) {
         shippingAddressService.deleteShippingAddress(userId, shippingId);
     }
+
+    @Override
+    public String sendCodeToEmail(String userEmail) {
+        return userService.sendCodeToEmail(userEmail);
+    }
+
+    @Override
+    public void verifyCode(String userEmail, String code) {
+        userService.verifyCode(userEmail, code);
+    }
 }

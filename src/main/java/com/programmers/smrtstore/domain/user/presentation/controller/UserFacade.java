@@ -25,4 +25,8 @@ public interface UserFacade {
     DetailShippingResponse findByShippingId(Long shippingId);
 
     void deleteShippingAddress(Long userId, Long shippingId);
+
+    String sendCodeToEmail(String userEmail);
+
+    void verifyCode(String userEmail, String code);
 }
