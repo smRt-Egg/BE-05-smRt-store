@@ -207,9 +207,8 @@ public class PointService {
     private int calculateAdditionalPointByRate(int available, int totalPrice, int rate, int nextRate) {
         if (available > totalPrice) {
             return totalPrice * rate / 100;
-        } else {
-            return available * rate / 100 + (totalPrice - available) * nextRate / 100;
         }
+        return available * rate / 100 + (totalPrice - available) * nextRate / 100;
     }
 
     private boolean isHigherThanMaxAvailablePoint(int pointAmount) {
