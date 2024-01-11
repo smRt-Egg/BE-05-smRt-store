@@ -1,9 +1,8 @@
 package com.programmers.smrtstore.domain.user.application.service;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.ALGORITHM_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_EMAIL;
-import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_VERIFICATION_CODE_ERROR;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -27,7 +26,7 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final RedisService redisService;
     private final MailService mailService;
-    private final static String MESSAGE_TITLE = "smRt store 인증 번호";
+    private static final String MESSAGE_TITLE = "smRt store 인증 번호";
 
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
     @Value("${spring.mail.auth-code-expiration-millis}")

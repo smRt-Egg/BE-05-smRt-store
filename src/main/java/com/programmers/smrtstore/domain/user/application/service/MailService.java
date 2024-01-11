@@ -7,14 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private final static String MESSAGE_BODY = "\n인증번호를 입력해주세요.";
+    private static final String MESSAGE_BODY = "\n인증번호를 입력해주세요.";
 
     public void sendEmail(String userEmail, String title, String certificationCode) {
         SimpleMailMessage message = createEmailMessage(userEmail, title, certificationCode);
