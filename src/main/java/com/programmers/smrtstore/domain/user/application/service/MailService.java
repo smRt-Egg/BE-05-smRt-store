@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
+    private final static String MESSAGE_BODY = "\n인증번호를 입력해주세요.";
 
     public void sendEmail(String userEmail, String title, String certificationCode) {
         SimpleMailMessage message = createEmailMessage(userEmail, title, certificationCode);
@@ -29,7 +30,7 @@ public class MailService {
 
         message.setTo(userEmail);
         message.setSubject(title);
-        message.setText(code + "\n인증번호를 입력해주세요.");
+        message.setText(code + MESSAGE_BODY);
 
         return message;
     }

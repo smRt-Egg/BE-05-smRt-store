@@ -27,6 +27,8 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final RedisService redisService;
     private final MailService mailService;
+    private final static String MESSAGE_TITLE = "smRt store 인증 번호";
+
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
@@ -55,9 +57,8 @@ public class UserService {
 
     public String sendCodeToEmail(String userEmail) {
         this.checkDuplicatedEmail(userEmail);
-        String title = "smRt store 인증 번호";
         String certificationCode = createCode();
-        mailService.sendEmail(userEmail, title, certificationCode);
+        mailService.sendEmail(userEmail, MESSAGE_TITLE, certificationCode);
         redisService.setValues(VERIFICATION_CODE_PRIFIX + userEmail,
             certificationCode, Duration.ofMillis(authCodeExpirationMillis));
         return certificationCode;
