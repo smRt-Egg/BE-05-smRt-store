@@ -165,37 +165,43 @@ public class PointDetailService {
         return ratios;
     }
 
-    public Long saveUseCancelHistory(PointDetailRequest request) {
+    public Integer saveUseCancelHistory(UseCancelPointDetailRequest request) {
 
         validateUserExists(request.getUserId());
 
-        PointResponse point = pointFacade.getPointById(request.getPointId());
-        int canceledPoint = Math.abs(point.getPointValue());
+        int cancelPoint = 0;
+        List<Long> cancelProductIds = request.getOrderedProductIds();
+        for (Long id : cancelProductIds) {
 
-        List<PointDetailResponse> usedDetailHistory = pointFacade.getUsedDetailByOrderId(point.getOrderId());
+            // 사용한 포인트의 상세 내역
+            List<PointDetailResponse> usedDetailHistory = pointFacade
+                .getUsedDetailByPointIdAndOrderedProductId(
+                    request.getPointId(), id
+            );
 
-        Long pointDetailId = null;
-        for (PointDetailResponse pointDetail : usedDetailHistory) {
-            while (canceledPoint != 0) {
-                PointDetail canceledDetail = request.toEntity(
-                    Math.abs(pointDetail.getPointValue()),
-                    pointDetail.getOriginAcmId());
-                pointDetailRepository.save(canceledDetail);
-                if (pointDetailId == null) {
-                    pointDetailId = pointDetail.getId();
-                }
+            for (PointDetailResponse usedDetail : usedDetailHistory) {
+                int pointValue = usedDetail.getPointValue();
+                PointDetail pointDetail = request.toEntity(
+                    id,
+                    pointValue,
+                    usedDetail.getOriginAcmId()
+                );
+                pointDetailRepository.save(pointDetail);
+                cancelPoint += pointValue;
 
-                PointResponse originAcmPoint = pointFacade.getPointById(request.getPointId());
+                PointResponse originAcmPoint = pointFacade.getPointById(pointDetail.getOriginAcmId());
                 if (pointFacade.validateExpiredAt(originAcmPoint)) {
+                    int pointAmount = pointDetail.getPointAmount();
                     PointDetail expiredDetail = request.toEntity(
-                        pointDetail.getPointValue(),
+                        null,
+                        pointAmount,
                         pointDetail.getOriginAcmId());
                     pointDetailRepository.save(expiredDetail);
+                    cancelPoint -= pointAmount;
                 }
-                canceledPoint += pointDetail.getPointValue();
             }
         }
-        return pointDetailId;
+        return cancelPoint;
     }
 
     public Long saveExpirationHistory() {
