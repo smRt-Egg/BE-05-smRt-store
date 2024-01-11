@@ -88,8 +88,8 @@ public class UserService {
                 sb.append(random.nextInt(10));
             }
             return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new UserException(ALGORITHM_NOT_FOUND);
+        } catch (NoSuchAlgorithmException ignore) {
+            return null;
         }
     }
 }
