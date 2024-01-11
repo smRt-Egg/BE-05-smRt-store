@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Table(name = "coupon_TB")
 public class Coupon {
 
-    private static final Long DISCOUNT_ZERO = 0L;
+    private static final Integer DISCOUNT_ZERO = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,8 +68,8 @@ public class Coupon {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn(name = "coupon_quantity_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coupon_quantity_id")
     private CouponQuantity couponQuantity;
 
     @Builder
@@ -91,12 +91,11 @@ public class Coupon {
 
     //TODO: 오직 Product 단일 페이지에서 사용될 Product 할인 메서드
     // 주문페이지 쿠폰 계산은 아예 따로 -> 여러개 쿠폰과 여러개 product를 복합적으로 계산해야함
-    public Long discountProduct(Integer price) {
-        validateMinPrice(price);
+    public Integer discountProduct(Integer price) {
         if (couponType.equals(CouponType.DELIVERY)) {
             return DISCOUNT_ZERO;
         }
-        Long discountPrice = DISCOUNT_ZERO;
+        Integer discountPrice = DISCOUNT_ZERO;
         switch (benefitUnitType) {
             case AMOUNT:
                 discountPrice = discountAmount(price);
@@ -125,6 +124,11 @@ public class Coupon {
         validateAvailable();
     }
 
+    public boolean validateMinPrice(Integer price) {
+        return price < couponValue.getMinOrderPrice() ? false : true;
+    }
+
+
     private void validateAvailable() {
         if (!availableYn) {
             throw new CouponException(ErrorCode.COUPON_NOT_AVAILABLE);
@@ -137,8 +141,8 @@ public class Coupon {
         }
     }
 
-    private Long discountPercent(Integer price) {
-        Long discountPrice = calculateDiscountValue(price);
+    private Integer discountPercent(Integer price) {
+        Integer discountPrice = calculateDiscountValue(price);
         if (discountPrice < couponValue.getMaxDiscountValue())
             return discountPrice;
         else
@@ -146,21 +150,15 @@ public class Coupon {
 
     }
 
-    private Long discountAmount(Integer price) {
+    private Integer discountAmount(Integer price) {
         if (couponValue.getBenefitValue() > price) {
-            return price.longValue();
+            return price;
         } else
             return couponValue.getBenefitValue();
 
     }
 
-    private void validateMinPrice(Integer price) {
-        if (price < couponValue.getMinOrderPrice()) {
-            throw new CouponException(ErrorCode.ORDER_PRICE_NOT_ENOUGH);
-        }
-    }
-
-    private void validatePercentValue(BenefitUnitType benefitUnitType, Long value) {
+    private void validatePercentValue(BenefitUnitType benefitUnitType, Integer value) {
         if (benefitUnitType == BenefitUnitType.PERCENT && value > 100) {
             throw new CouponException(ErrorCode.COUPON_PERCENT_EXCEED);
         }
@@ -172,8 +170,8 @@ public class Coupon {
         }
     }
 
-    private Long calculateDiscountValue(Integer price) {
-        return  couponValue.getBenefitValue() * price / 100;
+    private Integer calculateDiscountValue(Integer price) {
+        return couponValue.getBenefitValue() * price / 100;
     }
 
 }
