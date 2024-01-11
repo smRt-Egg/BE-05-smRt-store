@@ -25,7 +25,7 @@ public class ProfileUserResponse {
 
     private String thumbnail;
 
-    private boolean marketingAgree;
+    private Boolean marketingAgree;
 
     public static ProfileUserResponse from(User user) {
         return new ProfileUserResponse(
@@ -37,7 +37,7 @@ public class ProfileUserResponse {
             user.getBirth(),
             user.getGender(),
             user.getThumbnail(),
-            user.isMarketingAgree()
+            user.getMarketingAgree()
         );
     }
 }

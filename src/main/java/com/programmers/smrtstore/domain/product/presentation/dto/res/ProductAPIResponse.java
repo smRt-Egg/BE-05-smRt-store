@@ -33,7 +33,6 @@ public class ProductAPIResponse {
     private Integer optionSize;
 
     private List<ProductDetailOptionAPIResponse> detailOptionAPIResponses;
-    private List<ProductAdditionalOptionAPIResponse> additionalOptionAPIResponses;
 
     public static ProductAPIResponse from(ProductResponse productResponse) {
         return new ProductAPIResponse(
@@ -57,9 +56,7 @@ public class ProductAPIResponse {
             productResponse.getOptionNameTypes().getOptionNameType3(),
             productResponse.getOptionNameTypes().getSize(),
             productResponse.getDetailOptionResponses().stream()
-                .map(ProductDetailOptionAPIResponse::from).toList(),
-            productResponse.getAdditionalOptionResponses().stream()
-                .map(ProductAdditionalOptionAPIResponse::from).toList()
+                .map(ProductDetailOptionAPIResponse::from).toList()
         );
     }
 

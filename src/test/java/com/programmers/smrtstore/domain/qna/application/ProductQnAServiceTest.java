@@ -64,31 +64,33 @@ class ProductQnAServiceTest {
     void init() throws Exception {
         // 유저가 등록되어 있어야 한다.
         user = User.builder()
-                .age(27)
-                .birth("1998-07-05")
-                .email("test@email.com")
-                .role(Role.ROLE_USER)
-                .gender(Gender.MALE)
-                .phone("010-1111-1111")
-                .nickName("nickName")
-                .thumbnail("lsfsdfds")
-                .point(0)
-                .build();
+            .age(27)
+            .birth("1998-07-05")
+            .email("test@email.com")
+            .role(Role.ROLE_USER)
+            .gender(Gender.MALE)
+            .phone("010-1111-1111")
+            .nickName("nickName")
+            .thumbnail("lsfsdfds")
+            .point(0)
+            .marketingAgree(true)
+            .membershipYn(true)
+            .build();
         User saveUser = userJpaRepository.save(user);
         userId = saveUser.getId();
         // 상품이 등록되어 있어야 한다.
         product1 = Product.builder()
-                .name("productName")
-                .price(1000)
-                .category(Category.IT)
-                .thumbnail(new URL("https://www.naver.com"))
-                .build();
+            .name("productName")
+            .price(1000)
+            .category(Category.IT)
+            .thumbnail(new URL("https://www.naver.com"))
+            .build();
         product2 = Product.builder()
-                .name("productName2")
-                .price(10000)
-                .category(Category.IT)
-                .thumbnail(new URL("https://www.google.com"))
-                .build();
+            .name("productName2")
+            .price(10000)
+            .category(Category.IT)
+            .thumbnail(new URL("https://www.google.com"))
+            .build();
         Product saveProduct1 = productRepository.save(product1);
         Product saveProduct2 = productRepository.save(product2);
         product1Id = saveProduct1.getId();
@@ -101,10 +103,10 @@ class ProductQnAServiceTest {
         //Given
         String content = "question1 content";
         CreateQuestionRequest request = CreateQuestionRequest.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content(content)
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content(content)
+            .build();
         //When
         CreateQuestionResponse response = productQnAService.createQuestion(userId, request);
         //Then
@@ -122,19 +124,20 @@ class ProductQnAServiceTest {
         String content1 = "content1";
         String content2 = "content2";
         ProductQuestion question1 = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content(content1)
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content(content1)
+            .build();
         ProductQuestion question2 = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product2Id)
-                .content(content2)
-                .build();
+            .userId(userId)
+            .productId(product2Id)
+            .content(content2)
+            .build();
         questionRepository.save(question1);
         questionRepository.save(question2);
         //When
-        List<QuestionResponse> questionResponseList = productQnAService.findByUserId(userId, request);
+        List<QuestionResponse> questionResponseList = productQnAService.findByUserId(userId,
+            request);
         questionResponseList.sort(Comparator.comparing(QuestionResponse::getId));
         //Then
         assertThat(questionResponseList).hasSize(2);
@@ -150,16 +153,16 @@ class ProductQnAServiceTest {
         //Given
         String content = "pre_content";
         ProductQuestion question1 = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content(content)
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content(content)
+            .build();
         questionRepository.save(question1);
         String updateContent = "update_content";
         UpdateQuestionRequest request = UpdateQuestionRequest.builder()
-                .id(question1.getId())
-                .content(updateContent)
-                .build();
+            .id(question1.getId())
+            .content(updateContent)
+            .build();
         //When
         UpdateQuestionResponse response = productQnAService.updateQuestion(userId, request);
         //Then
@@ -175,13 +178,14 @@ class ProductQnAServiceTest {
     void deleteQuestion() {
         //Given
         ProductQuestion question = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content("content")
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content("content")
+            .build();
         questionRepository.save(question);
         //When
-        DeleteQuestionResponse response = productQnAService.deleteQuestion(userId, question.getId());
+        DeleteQuestionResponse response = productQnAService.deleteQuestion(userId,
+            question.getId());
         //Then
         assertThat(response.getId()).isEqualTo(question.getId());
     }
@@ -191,15 +195,15 @@ class ProductQnAServiceTest {
     void getQuestionsByProduct() {
         //Given
         ProductQuestion question1 = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content("content1")
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content("content1")
+            .build();
         ProductQuestion question2 = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content("content2")
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content("content2")
+            .build();
         questionRepository.save(question1);
         questionRepository.save(question2);
         //When
@@ -216,16 +220,16 @@ class ProductQnAServiceTest {
     void addAnswerToQuestion() {
         //Given
         ProductQuestion question = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content("content1")
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content("content1")
+            .build();
         questionRepository.save(question);
         String answerContent = "answerContent";
         CreateAnswerRequest request = CreateAnswerRequest.builder()
-                .questionId(question.getId())
-                .content(answerContent)
-                .build();
+            .questionId(question.getId())
+            .content(answerContent)
+            .build();
         //When
         AnswerResponse response = productQnAService.addAnswer(userId, request);
         //Then
@@ -241,26 +245,27 @@ class ProductQnAServiceTest {
         //Given
         String questionContent = "questionContent";
         ProductQuestion question = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content(questionContent)
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content(questionContent)
+            .build();
         questionRepository.save(question);
 
         String answerContent1 = "answerContent1";
         String answerContent2 = "answerContent2";
         ProductAnswer answer1 = ProductAnswer.builder()
-                .productQuestion(question)
-                .content(answerContent1)
-                .build();
+            .productQuestion(question)
+            .content(answerContent1)
+            .build();
         ProductAnswer answer2 = ProductAnswer.builder()
-                .productQuestion(question)
-                .content(answerContent2)
-                .build();
+            .productQuestion(question)
+            .content(answerContent2)
+            .build();
         answerRepository.save(answer1);
         answerRepository.save(answer2);
         //When
-        List<AnswerResponse> answerResponseList = productQnAService.getAnswersByQuestionId(userId, question.getId());
+        List<AnswerResponse> answerResponseList = productQnAService.getAnswersByQuestionId(userId,
+            question.getId());
         //Then
         assertThat(answerResponseList).hasSize(2);
         assertThat(answerResponseList.get(0).getContent()).isEqualTo(answerContent1);
@@ -270,32 +275,32 @@ class ProductQnAServiceTest {
 
     @DisplayName("답변을 수정할 수 있다.")
     @Test
-    void updateAnswerTest(){
+    void updateAnswerTest() {
         //Given
         String questionContent = "questionContent";
         ProductQuestion question = ProductQuestion.builder()
-                .userId(userId)
-                .productId(product1Id)
-                .content(questionContent)
-                .build();
+            .userId(userId)
+            .productId(product1Id)
+            .content(questionContent)
+            .build();
         questionRepository.save(question);
         String answerContent = "answerContent";
         ProductAnswer answer = ProductAnswer.builder()
-                .productQuestion(question)
-                .content(answerContent)
-                .build();
+            .productQuestion(question)
+            .content(answerContent)
+            .build();
         answerRepository.save(answer);
 
         String updateAnswerContent = "updateContent";
         UpdateAnswerRequest request = UpdateAnswerRequest.builder()
-                .id(answer.getId())
-                .content(updateAnswerContent)
-                .build();
+            .id(answer.getId())
+            .content(updateAnswerContent)
+            .build();
         //When
         UpdateAnswerResponse updateAnswerResponse = productQnAService.updateAnswer(userId, request);
         //Then
         assertThat(answer.getContent()).isNotEqualTo(answerContent);
         assertThat(answer.getContent()).isEqualTo(updateAnswerContent);
-     }
+    }
 
 }

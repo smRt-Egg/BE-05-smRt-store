@@ -1,14 +1,15 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.order.application.OrderService;
-import com.programmers.smrtstore.domain.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
+import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
-import com.programmers.smrtstore.domain.point.exception.PointException;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
@@ -41,24 +42,68 @@ public class PointService {
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
     private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
 
-    @Transactional(readOnly = true)
-    public PointResponse getPointById(Long pointId) {
-        Point point = pointRepository.findById(pointId)
-            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
-        return PointResponse.from(point);
-    }
-
-    public PointResponse accumulatePoint(PointRequest request) {
+    public Long accumulatePoint(PointRequest request) {
 
         Long userId = request.getUserId();
         Long orderId = request.getOrderId();
 
         User user = validateUserExists(userId);
 
-        OrderExpectedPointDto expectedPoint = calculateAcmPoint(orderId, user);
-        Point point = request.toEntity(PointStatus.ACCUMULATED, expectedPoint.getTotalPoint(), user.isMembershipYn());
-        pointRepository.save(point);
-        return PointResponse.from(point);
+        // 사용자의 월별 쇼핑 금액
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
+        boolean isMembershipYn = user.getMembershipYn();
+
+        Long pointId = null;
+
+        // 주문상품 리스트와 상품별 결제가격 조회
+        List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
+        for (OrderedProductResponse product : orderedProducts) {
+            // 상품별 (1개당) 실제 적립되는 적립금 (기본 1% 적립 + 추가 4% 적립)
+            int totalAcmPoint = calculateAcmPointPerProduct(product, userMonthlyTotalSpending);
+            Long id = saveAcmPointPerProduct(product, totalAcmPoint, isMembershipYn, request);
+            userMonthlyTotalSpending += product.getTotalPrice();
+            if (pointId == null) {
+                pointId = id;
+            }
+        }
+        return pointId;
+    }
+
+    private Long saveAcmPointPerProduct(OrderedProductResponse product,
+        int totalAcmPointPerProduct, boolean isMembershipYn, PointRequest request) {
+
+        Long pointId = null;
+        int count = product.getQuantity();
+        while (count != 0) {
+            Point point = request.toEntity(
+                PointStatus.ACCUMULATED,
+                totalAcmPointPerProduct / product.getQuantity(),
+                isMembershipYn
+            );
+            pointRepository.save(point);
+            count -= 1;
+            if (pointId == null) {
+                pointId = point.getId();
+            }
+        }
+        return pointId;
+    }
+
+    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, User user) {
+
+        int totalPrice = productPrices.stream()
+            .reduce(0, Integer::sum);
+
+        int defaultPoint = totalPrice / 100; // 기본 1% 예상 적립금액
+        int additionalPoint = 0;
+        if (user.getMembershipYn()) {
+            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, user.getId());
+        }
+        return OrderExpectedPointDto.of(
+            defaultPoint,
+            additionalPoint,
+            defaultPoint + additionalPoint
+        );
     }
 
     public OrderExpectedPointDto calculateAcmPoint(Long orderId, User user) {
@@ -67,7 +112,7 @@ public class PointService {
         int defaultPoint = calculateDefaultPoint(orderId);
 
         int additionalPoint = 0;
-        if (user.isMembershipYn()) {
+        if (user.getMembershipYn()) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
             // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
             additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
@@ -79,17 +124,23 @@ public class PointService {
         );
     }
 
-    public ProductEstimatedPointDto calculateEstimatedAcmPoint(Long productId, User user) {
+    private int calculateDefaultPoint(Long orderId) {
+        return orderService.getTotalPriceByOrderId(orderId) / 100;
+    }
+
+    public ProductEstimatedPointDto calculateEstimatedAcmPoint(Long productId, Long userId) {
 
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        User user = validateUserExists(userId);
+
         // 상품 원가에 대한 기본 1% 적립 (=기본적립)
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = 0;
-        if (user.isMembershipYn()) {
+        if (user.getMembershipYn()) {
             // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
-            additionalPoint = calculateAdditionalAcmPoint(product, user.getId());
+            additionalPoint = calculateAdditionalAcmPoint(product, userId);
         }
         return ProductEstimatedPointDto.of(
             defaultPoint,
@@ -98,23 +149,53 @@ public class PointService {
         );
     }
 
-    public int calculateDefaultPoint(Long orderId) {
-        return orderService.getTotalPriceByOrderId(orderId) / 100;
+    public ProductEstimatedPointDto calculateEstimatedAcmPointWithoutUserId(Long productId) {
+
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        int defaultPoint = product.getPrice() / 100;
+        int additionalPoint = calculateAdditionalAcmPoint(product, null);
+        return ProductEstimatedPointDto.of(
+            defaultPoint,
+            additionalPoint,
+            defaultPoint + additionalPoint
+        );
     }
 
-    public int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
+    private int calculateAdditionalAcmPoint(Product product, Long userId) {
 
-        int userMonthlyTotalSpending = getUserMonthlyTotalSpeding(userId);
+        if (userId != null) {
+            int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
+            return calculateAdditionalPointPerProduct(product.getPrice(), userMonthlyTotalSpending);
+        }
+        return calculateAdditionalPointPerProduct(product.getPrice(), 0);
+    }
+
+    private int calculateAcmPointPerProduct(OrderedProductResponse product, int userMonthlyTotalSpending) {
+
+        int defaultPoint = product.getTotalPrice() / 100; // 상품별 기본 1% 적립금
+        int additionalPoint = calculateAdditionalAcmPoint(product, userMonthlyTotalSpending); // 상품별 추가 4% 적립금
+        return (defaultPoint + additionalPoint) / product.getQuantity(); // 구매한 상품 1개에 대한 최종 적립금
+    }
+
+    private int calculateAdditionalAcmPoint(OrderedProductResponse product, int userMonthlyTotalSpending) {
+        return calculateAdditionalPointPerProduct(product.getTotalPrice(), userMonthlyTotalSpending);
+    }
+
+    private int calculateAdditionalAcmPoint(List<OrderedProductResponse> orderedProducts, Long userId) {
+
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
         return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
-    public int calculateAdditionalAcmPoint(Product product, Long userId) {
+    private int calculateEstimatedAdditionalAcmPoint(List<Integer> productPrices, Long userId) {
 
-        int userMonthlyTotalSpending = getUserMonthlyTotalSpeding(userId);
-        return calculateAdditionalPointPerProduct(product.getPrice(), userMonthlyTotalSpending);
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
+        return calculateEstimatedAdditionalPoint(productPrices, userMonthlyTotalSpending);
     }
 
-    private int getUserMonthlyTotalSpeding(Long userId) {
+    private int getUserMonthlyTotalSpending(Long userId) {
 
         LocalDate now = LocalDate.now();
         int year = now.getYear();
@@ -123,13 +204,23 @@ public class PointService {
         return orderService.calculateUserMonthlyTotalSpending(userId, month, year);
     }
 
-    public int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
+    private int calculateAdditionalPoint(List<OrderedProductResponse> orderedProducts, int userMonthlyTotalSpending) {
 
         int point = 0;
         for (OrderedProductResponse productResponse : orderedProducts) {
             int totalPricePerProduct = productResponse.getTotalPrice();
             point += calculateAdditionalPointPerProduct(totalPricePerProduct, userMonthlyTotalSpending);
             userMonthlyTotalSpending += totalPricePerProduct;
+        }
+        return point;
+    }
+
+    private int calculateEstimatedAdditionalPoint(List<Integer> productPrices, int userMonthlytotalSpending) {
+
+        int point = 0;
+        for (Integer price : productPrices) {
+            point += calculateAdditionalPointPerProduct(price, userMonthlytotalSpending);
+            userMonthlytotalSpending += price;
         }
         return point;
     }
@@ -151,58 +242,39 @@ public class PointService {
     private int calculateAdditionalPointByRate(int available, int totalPrice, int rate, int nextRate) {
         if (available > totalPrice) {
             return totalPrice * rate / 100;
-        } else {
-            return available * rate / 100 + (totalPrice - available) * nextRate / 100;
         }
+        return available * rate / 100 + (totalPrice - available) * nextRate / 100;
     }
 
     private boolean isHigherThanMaxAvailablePoint(int pointAmount) {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
-    private PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
-            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
-        return PointResponse.from(point);
+
+    public Long usePoint(UsePointRequest request) {
+
+        User user = validateUserExists(request.getUserId());
+
+        Point point = request.toEntity(user.getMembershipYn());
+        pointRepository.save(point);
+        return point.getId();
     }
 
-    public PointResponse cancelAccumulatedPoint(PointRequest request) {
+    public Long cancelUsedPoint(PointRequest request) {
 
         validateUserExists(request.getUserId());
 
         Long orderId = request.getOrderId();
-        PointResponse pointResponse = getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
 
-        Point point = request.toEntity(
-            PointStatus.ACCUMULATE_CANCELED,
-            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
-            pointResponse.getMembershipApplyYn());
-        pointRepository.save(point);
-        return PointResponse.from(point);
-    }
-
-    public PointResponse usePoint(UsePointRequest request) {
-
-        User user = validateUserExists(request.getUserId());
-
-        Point point = request.toEntity(user.isMembershipYn());
-        pointRepository.save(point);
-        return PointResponse.from(point);
-    }
-
-    public PointResponse cancelUsedPoint(PointRequest request) {
-
-        validateUserExists(request.getUserId());
-
-        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(
-            request.getOrderId(),
-            PointStatus.USED
-        );
+        // 차감된 포인트 이력 가져오기
+        PointResponse pointResponse = pointFacade.getUsedPointByOrderId(orderId);
 
         Point point = request.toEntity(
             PointStatus.USE_CANCELED,
-            pointResponse.getPointValue(),
-            pointResponse.getMembershipApplyYn());
+            // 음수 값에 대해 음수 처리 -> 양수
+            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
+            pointResponse.getMembershipApplyYn()
+        );
         pointRepository.save(point);
 
         int expiredPoint = calculateExpiredPoint(pointResponse.getOrderId());
@@ -213,7 +285,7 @@ public class PointService {
                 pointResponse.getMembershipApplyYn());
             pointRepository.save(expiredpoint);
         }
-        return PointResponse.from(point);
+        return point.getId();
     }
 
     private int calculateExpiredPoint(Long orderId) {
@@ -230,12 +302,13 @@ public class PointService {
         return expiredPoint;
     }
 
-    public PointResponse expirePoint(Long userId) {
-        return null;
-    }
+    public List<PointResponse> getPointHistory(PointHistoryRequest request) {
 
-    public PointResponse getPointHistory(Long userId) {
-        return null;
+        Long userId = request.getUserId();
+        PointStatus pointStatus = request.getPointStatus();
+        TradeDateRange tradeDateRange = request.getTradeDateRange();
+
+        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, pointStatus, tradeDateRange);
     }
 
     private User validateUserExists(Long userId) {

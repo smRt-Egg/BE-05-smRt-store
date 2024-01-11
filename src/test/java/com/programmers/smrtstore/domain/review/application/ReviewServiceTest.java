@@ -61,7 +61,6 @@ class ReviewServiceTest {
                 .point(0)
                 .marketingAgree(false)
                 .membershipYn(false)
-                .repurchaseYn(false)
                 .build());
         product = productJpaRepository.save(Product.builder()
                 .name("productName")
@@ -88,7 +87,7 @@ class ReviewServiceTest {
                 .productId(product.getId())
                 .build();
         //When //Then
-        assertThatThrownBy(() -> reviewService.createReview(request))
+        assertThatThrownBy(() -> reviewService.createReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
 
@@ -108,7 +107,7 @@ class ReviewServiceTest {
                 .reviewScore(score)
                 .build());
         //When
-        ReviewResponse response = reviewService.getReviewById(review.getId());
+        ReviewResponse response = reviewService.getReviewById(user.getId(), review.getId());
         //Then
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContent()).isEqualTo(content);
@@ -136,7 +135,7 @@ class ReviewServiceTest {
         }
         reviewRepository.saveAll(reviewList);
         //When
-        List<ReviewResponse> reviewListByProductId = reviewService.getReviewsByProductId(product.getId());
+        List<ReviewResponse> reviewListByProductId = reviewService.getReviewsByProductId(user.getId(), product.getId());
         //Then
         assertThat(reviewListByProductId).hasSize(testSize);
     }
@@ -159,7 +158,7 @@ class ReviewServiceTest {
         }
         reviewRepository.saveAll(reviewList);
         //When
-        List<ReviewResponse> reviewListByUserId = reviewService.getReviewsByUserId(user.getId());
+        List<ReviewResponse> reviewListByUserId = reviewService.getReviewsByUserId(user.getId(), user.getId());
         //Then
         assertThat(reviewListByUserId).hasSize(testSize);
     }
@@ -190,7 +189,7 @@ class ReviewServiceTest {
                 .reviewScore(updateScore)
                 .build();
         //When
-        ReviewResponse updateReviewResponse = reviewService.updateReview(request);
+        ReviewResponse updateReviewResponse = reviewService.updateReview(user.getId(), request);
         //Then
         assertThat(updateReviewResponse.getUserId()).isEqualTo(user.getId());
         assertThat(updateReviewResponse.getTitle()).isEqualTo(updateTitle);
@@ -213,7 +212,7 @@ class ReviewServiceTest {
                 .reviewScore(score)
                 .build());
         //When
-        Long deleteId = reviewService.deleteReview(review.getId());
+        Long deleteId = reviewService.deleteReview(user.getId(), review.getId());
         //Then
         assertThat(deleteId).isEqualTo(review.getId());
     }
@@ -237,7 +236,7 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When
-        reviewService.likeReview(request);
+        reviewService.likeReview(user.getId(), request);
         //Then
         assertThat(review.getReviewLikeCount()).isOne();
     }
@@ -261,8 +260,8 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When //Then
-        reviewService.likeReview(request);
-        assertThatThrownBy(() -> reviewService.likeReview(request))
+        reviewService.likeReview(user.getId(), request);
+        assertThatThrownBy(() -> reviewService.likeReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
 
@@ -284,9 +283,9 @@ class ReviewServiceTest {
                 .userId(user.getId())
                 .reviewId(review.getId())
                 .build();
-        reviewService.likeReview(request);
+        reviewService.likeReview(user.getId(), request);
         //When
-        Long dislikeReviewId = reviewService.dislikeReview(request);
+        Long dislikeReviewId = reviewService.dislikeReview(user.getId(), request);
         //Then
         assertThat(dislikeReviewId).isEqualTo(review.getId());
         assertThat(review.getReviewLikeCount()).isZero();
@@ -311,7 +310,7 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When //Then
-        assertThatThrownBy(() -> reviewService.dislikeReview(request))
+        assertThatThrownBy(() -> reviewService.dislikeReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
 }

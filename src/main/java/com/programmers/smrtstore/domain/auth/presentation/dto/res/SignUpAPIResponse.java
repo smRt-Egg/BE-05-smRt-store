@@ -20,7 +20,6 @@ public class SignUpAPIResponse {
     String thumbnail;
     boolean marketingAgree;
     boolean membershipYN;
-    boolean repurchaseYN;
     Integer point;
     String createdTime;
 
@@ -37,7 +36,6 @@ public class SignUpAPIResponse {
             response.getThumbnail(),
             response.isMarketingAgree(),
             response.isMembershipYn(),
-            response.isRepurchaseYn(),
             response.getPoint(),
             response.getCreatedTime().toString());
     }

@@ -4,6 +4,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,6 +36,7 @@ public class OptionNames {
 
     private static int getOptionSize(String optionName1, String optionName2, String optionName3) {
         return Stream.of(optionName1, optionName2, optionName3)
+            .filter(Objects::nonNull)
             .filter(option -> !option.isBlank())
             .mapToInt(option -> 1)
             .sum();

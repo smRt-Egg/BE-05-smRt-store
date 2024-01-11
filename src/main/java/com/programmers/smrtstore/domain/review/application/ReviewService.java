@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.review.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.order.infrastructure.OrderJpaRepository;
+import com.programmers.smrtstore.domain.orderManagement.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -19,10 +19,11 @@ import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJpaRepos
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +36,14 @@ public class ReviewService {
     private final ReviewLikeJpaRepository reviewLikeJPARepository;
     private final OrderJpaRepository orderJpaRepository;
 
-    public CreateReviewResponse createReview(CreateReviewRequest request) {
+    public CreateReviewResponse createReview(Long tokenUserId, CreateReviewRequest request) {
         if (!orderJpaRepository.existsOrderPurchaseConfirmed(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_NOT_EXIST_WHEN_NOT_ORDER_PRODUCT);
         }
         if (reviewJPARepository.validateReviewExist(request.getUserId(), request.getProductId())) {
             throw new ReviewException(ErrorCode.REVIEW_ALREADY_EXIST);
         }
+        checkUserValid(tokenUserId, request.getUserId());
         User user = getUser(request.getUserId());
         Product product = getProduct(request.getProductId());
         Review review = reviewJPARepository.save(Review.builder()
@@ -55,13 +57,15 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewResponse getReviewById(Long reviewId) {
+    public ReviewResponse getReviewById(Long tokenUserId, Long reviewId) {
+        User user = getUser(tokenUserId);
         Review review = getReview(reviewId);
         return ReviewResponse.from(review);
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getReviewsByProductId(Long productId) {
+    public List<ReviewResponse> getReviewsByProductId(Long tokenUserId, Long productId) {
+        User user = getUser(tokenUserId);
         Product product = getProduct(productId);
         return reviewJPARepository.findByProduct(product)
             .stream()
@@ -77,30 +81,34 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewResponse> getReviewsByUserId(Long userId) {
+    public List<ReviewResponse> getReviewsByUserId(Long tokenUserId, Long userId) {
         User user = getUser(userId);
+        checkUserValid(tokenUserId, userId);
         return reviewJPARepository.findByUser(user)
             .stream()
             .map(ReviewResponse::from)
             .toList();
     }
 
-    public ReviewResponse updateReview(UpdateReviewRequest request) {
+    public ReviewResponse updateReview(Long tokenUserId, UpdateReviewRequest request) {
         User user = getUser(request.getUserId());
+        checkUserValid(tokenUserId, request.getUserId());
         Review review = reviewJPARepository.findByIdAndUser(request.getReviewId(), user)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
         review.updateValues(request.getTitle(), request.getContent(), request.getReviewScore());
         return ReviewResponse.from(review);
     }
 
-    public Long deleteReview(Long reviewId) {
+    public Long deleteReview(Long tokenUserId, Long reviewId) {
+        User user = getUser(tokenUserId);
         Review review = getReview(reviewId);
         reviewJPARepository.delete(review);
         return review.getId();
     }
 
-    public Long likeReview(ReviewLikeRequest request) {
+    public Long likeReview(Long tokenUserId, ReviewLikeRequest request) {
         User user = getUser(request.getUserId());
+        checkUserValid(tokenUserId, request.getUserId());
         Review review = getReview(request.getReviewId());
         reviewLikeJPARepository.findByUserAndReview(user, review).ifPresent(reviewLike -> {
             throw new ReviewException(ErrorCode.REVIEW_LIKE_ALREADY_EXIST);
@@ -112,13 +120,18 @@ public class ReviewService {
         return review.getId();
     }
 
-    public Long dislikeReview(ReviewLikeRequest request) {
+    public Long dislikeReview(Long tokenUserId, ReviewLikeRequest request) {
         User user = getUser(request.getUserId());
+        checkUserValid(tokenUserId, request.getUserId());
         Review review = getReview(request.getReviewId());
         ReviewLike reviewLike = reviewLikeJPARepository.findByUserAndReview(user, review)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_LIKE_NOT_FOUND));
         review.removeReviewLike(reviewLike);
         return review.getId();
+    }
+
+    public Long getUnWrittenReviewCount(Long userId) {
+        return reviewJPARepository.getUnWrittenReviewCount(userId);
     }
 
     private User getUser(Long userId) {
@@ -134,5 +147,11 @@ public class ReviewService {
     private Review getReview(Long reviewId) {
         return reviewJPARepository.findById(reviewId)
             .orElseThrow(() -> new ReviewException(ErrorCode.REVIEW_NOT_FOUND));
+    }
+
+    private void checkUserValid(Long tokenUserId, Long requestUserId) {
+        if(!tokenUserId.equals(requestUserId)) {
+            throw new ReviewException(ErrorCode.USER_NOT_FOUND);
+        }
     }
 }
