@@ -28,7 +28,7 @@ public class RedisService {
         return (String) values.get(key);
     }
 
-    public boolean checkExistsValue(String value) {
+    protected boolean checkExistsValue(String value) {
         return !value.equals("false");
     }
 }
