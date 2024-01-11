@@ -10,6 +10,7 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,32 +23,20 @@ public class CouponQuantityFacade {
     private final CouponJpaRepository couponJpaRepository;
 
     public void decrease(Long couponId) {
+        int size = couponJpaRepository.findAll().size();
+        CouponQuantity couponQuantity = couponJpaRepository.findCouponQuantity(couponId)
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
-        while (true) {
-            try {
-                CouponQuantity couponQuantity = couponJpaRepository.findCouponQuantity(couponId)
-                                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, "false"));
-
-                couponQuantity.decrease(1);
-                break;
-            } catch (OptimisticLockException e) {
-                log.info("다운로드 시도중입니다.");
-            }
-        }
+        couponQuantity.decrease(1);
     }
 
     public Integer update(Long couponId, Integer value) {
-        while (true) {
-            try {
-                CouponQuantity couponQuantity = couponJpaRepository.findCouponQuantity(couponId)
-                                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, "false"));
+        CouponQuantity couponQuantity = couponJpaRepository.findCouponQuantity(couponId)
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
-                couponQuantity.update(value);
-                return value;
+        couponQuantity.update(value);
+        return value;
 
-            } catch (OptimisticLockException e) {
-                log.info("쿠폰 수량 업데이트 시도중입니다.");
-            }
-        }
     }
+
 }
