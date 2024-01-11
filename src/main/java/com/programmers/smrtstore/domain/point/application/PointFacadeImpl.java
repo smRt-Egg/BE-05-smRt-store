@@ -8,12 +8,13 @@ import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDe
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
+import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
-import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,33 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public PointResponse getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
-        Point point = pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+    public PointDetailResponse getAcmDetailByPointIdAndOriginAcmId(Long pointId) {
+        PointDetail pointDetail = pointDetailRepository.findAcmDetailByPointIdAndOriginAcmId(pointId)
+            .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
+        return PointDetailResponse.from(pointDetail);
+    }
+
+    @Override
+    public PointResponse getUsedPointByOrderId(Long orderId) {
+        Point point = pointRepository.findUsedPointByOrderId(orderId)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
         return PointResponse.from(point);
+    }
+
+    @Override
+    public List<PointResponse> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus) {
+        return pointRepository.findByPointIdAndPointStatus(pointId, pointStatus)
+            .stream()
+            .map(PointResponse::from)
+            .toList();
+    }
+
+    @Override
+    public List<PointResponse> getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+        return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
+            .stream()
+            .map(PointResponse::from)
+            .toList();
     }
 
     @Override
@@ -53,6 +77,17 @@ public class PointFacadeImpl implements PointFacade {
     @Override
     public List<PointDetailResponse> getUsedDetailByOrderId(Long orderId) {
         return pointDetailRepository.findUsedDetailsByOrderId(orderId)
+            .stream()
+            .map(PointDetailResponse::from)
+            .toList();
+    }
+
+    @Override
+    public List<PointDetailResponse> getUsedDetailByPointIdAndOrderedProductId(Long pointId, Long orderedProductId) {
+        return pointDetailRepository.getUsedDetailByPointIdAndOrderedProductId(
+                pointId,
+                orderedProductId
+            )
             .stream()
             .map(PointDetailResponse::from)
             .toList();
@@ -100,6 +135,24 @@ public class PointFacadeImpl implements PointFacade {
                     tuple.get(aliasIdxForSumOfPoint, Integer.class))
             )
             .toList();
+    }
+
+    @Override
+    public Integer getAcmPointByOrderId(Long orderId) {
+        return pointRepository.getAcmPointByOrderId(orderId);
+    }
+
+    @Override
+    public Integer getCancelPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductId) {
+        return pointDetailRepository.getPriceByPointIdAndOrderedProductId(
+            pointId,
+            orderedProductId
+        );
+    }
+
+    @Override
+    public Boolean getUserMembershipApplyYnByOrderId(Long orderId) {
+        return pointRepository.findUserMembershipApplyYnByOrderId(orderId);
     }
 
     @Override
