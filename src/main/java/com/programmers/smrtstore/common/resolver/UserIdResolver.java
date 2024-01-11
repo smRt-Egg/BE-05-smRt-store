@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.common.resolver;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.MISSING_CREDENTIALS;
+import static com.programmers.smrtstore.core.properties.ErrorCode.AUTH_MISSING_CREDENTIALS;
 
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.auth.exception.AuthException;
@@ -25,7 +25,7 @@ public class UserIdResolver implements HandlerMethodArgumentResolver {
     ) {
         Long userId = (Long) webRequest.getAttribute("userId", RequestAttributes.SCOPE_REQUEST);
         if (userId == null) {
-            throw new AuthException(MISSING_CREDENTIALS);
+            throw new AuthException(AUTH_MISSING_CREDENTIALS);
         }
         return userId;
     }

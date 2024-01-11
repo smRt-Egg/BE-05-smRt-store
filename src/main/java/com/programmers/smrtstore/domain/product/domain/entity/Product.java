@@ -132,14 +132,14 @@ public class Product {
 
     public void addOption(ProductDetailOption detailOption) {
         if (!this.combinationYn && productDetailOptions.size() == 1) {
-            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
         productDetailOptions.add(detailOption);
     }
 
     public void increaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_USE_COMBINATION_OPTION);
         }
         var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
@@ -157,7 +157,7 @@ public class Product {
 
     public void decreaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_USE_COMBINATION_OPTION);
         }
         var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
@@ -176,7 +176,7 @@ public class Product {
 
     public void removeDetailOption(Long productOptionId) {
         if (!this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_SINGLE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
         var productOption = productDetailOptions.stream()
             .filter(option -> option.getId().equals(productOptionId)).findAny()

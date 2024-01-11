@@ -1,12 +1,8 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_SHIPPING_ADDRESS;
-import static com.programmers.smrtstore.core.properties.ErrorCode.EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_AGE;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_BIRTH_FORM;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_EMAIL_FORM;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_NICKNAME_LENGTH;
-import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_PHONE_NUM_FORM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NUMBER_EXCEEDED_MAXIMUM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_SHIPPING_ADDRESS;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_INPUT_INVALID;
 
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -167,7 +163,7 @@ public class User {
 
     public void checkShippingAddressesSize() {
         if (shippingAddresses.size() >= MAXIMUM_SHIPPING_SIZE) {
-            throw new UserException(EXCEEDED_MAXIMUM_NUMBER_OF_SHIPPING_ADDRESS,
+            throw new UserException(SHIPPING_ADDRESS_NUMBER_EXCEEDED_MAXIMUM,
                 String.valueOf(MAXIMUM_SHIPPING_SIZE));
         }
     }
@@ -182,7 +178,7 @@ public class User {
                     && address.getAddress2Depth().equals(requestAddress.getAddress2Depth())
                     && address.getZipCode().equals(requestAddress.getZipCode())
                     && address.getPhoneNum1().equals(requestAddress.getPhoneNum1())) {
-                    throw new UserException(DUPLICATE_SHIPPING_ADDRESS,
+                    throw new UserException(USER_DUPLICATE_SHIPPING_ADDRESS,
                         String.valueOf(address.getId()));
                 }
             }
@@ -191,14 +187,14 @@ public class User {
 
     private void updateAge(int age) {
         if (age < 7 || age > 200) {
-            throw new UserException(INVALID_AGE, String.valueOf(age));
+            throw new UserException(USER_INPUT_INVALID, String.valueOf(age));
         }
         this.age = age;
     }
 
     private void updateNickName(String nickName) {
         if (nickName.isEmpty() || nickName.length() > 10) {
-            throw new UserException(INVALID_NICKNAME_LENGTH, nickName);
+            throw new UserException(USER_INPUT_INVALID, nickName);
         }
         this.nickName = nickName;
     }
@@ -206,7 +202,7 @@ public class User {
     private void updateEmail(String email) {
         Matcher matcher = emailPattern.matcher(email);
         if (!matcher.matches()) {
-            throw new UserException(INVALID_EMAIL_FORM, email);
+            throw new UserException(USER_INPUT_INVALID, email);
         }
 
         this.email = email;
@@ -215,7 +211,7 @@ public class User {
     private void updateBirth(String birth) {
         Matcher matcher = birthPattern.matcher(birth);
         if (!matcher.matches()) {
-            throw new UserException(INVALID_BIRTH_FORM, birth);
+            throw new UserException(USER_INPUT_INVALID, birth);
         }
 
         this.birth = birth;
@@ -225,7 +221,7 @@ public class User {
         Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])[0-9]{7,8}$");
         Matcher matcher = phonePattern.matcher(phone);
         if (!matcher.matches()) {
-            throw new UserException(INVALID_PHONE_NUM_FORM, phone);
+            throw new UserException(USER_INPUT_INVALID, phone);
         }
 
         this.phone = phone;
