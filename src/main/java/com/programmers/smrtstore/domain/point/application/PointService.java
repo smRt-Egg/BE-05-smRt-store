@@ -57,9 +57,28 @@ public class PointService {
         for (OrderedProductResponse product : orderedProducts) {
             // 상품별 (1개당) 실제 적립되는 적립금 (기본 1% 적립 + 추가 4% 적립)
             int totalAcmPoint = calculateAcmPointPerProduct(product, userMonthlyTotalSpending);
+            Long id = saveAcmPointPerProduct(product, totalAcmPoint, user.getMembershipYn(), request);
             userMonthlyTotalSpending += product.getTotalPrice();
-            Point point = request.toEntity(PointStatus.ACCUMULATED, totalAcmPoint, user.getMembershipYn());
+            if (pointId == null) {
+                pointId = id;
+            }
+        }
+        return pointId;
+    }
+
+    private Long saveAcmPointPerProduct(OrderedProductResponse product,
+        int totalAcmPointPerProduct, boolean membershipYn, PointRequest request) {
+
+        Long pointId = null;
+        int count = product.getQuantity();
+        while (count != 0) {
+            Point point = request.toEntity(
+                PointStatus.ACCUMULATED,
+                totalAcmPointPerProduct / product.getQuantity(),
+                membershipYn
+            );
             pointRepository.save(point);
+            count -= 1;
             if (pointId == null) {
                 pointId = point.getId();
             }
