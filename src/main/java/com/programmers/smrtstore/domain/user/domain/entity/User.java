@@ -189,6 +189,10 @@ public class User {
         });
     }
 
+    public void updatePoint(int pointValue) {
+        point += pointValue;
+    }
+
     private void updateAge(int age) {
         if (age < 7 || age > 200) {
             throw new UserException(INVALID_AGE, String.valueOf(age));

@@ -39,4 +39,9 @@ public class UserService {
         User user = findByUserId(userId);
         user.saveDeleteDate();
     }
+
+    public void updatePoint(Long userId, int pointValue) {
+        User user = findByUserId(userId);
+        user.updatePoint(pointValue);
+    }
 }
