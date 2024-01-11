@@ -10,6 +10,7 @@ import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
@@ -152,5 +153,19 @@ public class PointFacadeImpl implements PointFacade {
     @Override
     public Boolean getUserMembershipApplyYnByOrderId(Long orderId) {
         return pointRepository.findUserMembershipApplyYnByOrderId(orderId);
+    }
+
+    @Override
+    public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
+        PointStatus pointStatus, TradeDateRange tradeDateRange) {
+        return pointRepository.findPointByPointStatusAndIssuedAt(
+                userId,
+                pointStatus,
+                tradeDateRange.getYear(),
+                tradeDateRange.getMonth()
+            )
+            .stream()
+            .map(PointResponse::from)
+            .toList();
     }
 }

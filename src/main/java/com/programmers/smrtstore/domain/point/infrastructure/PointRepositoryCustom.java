@@ -12,4 +12,6 @@ public interface PointRepositoryCustom {
     List<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus);
     Integer getAcmPointByOrderId(Long orderId);
     Boolean findUserMembershipApplyYnByOrderId(Long orderId);
+    List<Point> findPointByPointStatusAndIssuedAt(Long userId,
+        PointStatus pointStatus, int month, int year);
 }
