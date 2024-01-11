@@ -37,6 +37,8 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     //SMTP
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
     // SpringBoot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
