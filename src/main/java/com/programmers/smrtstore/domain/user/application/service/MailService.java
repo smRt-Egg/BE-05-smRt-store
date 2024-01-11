@@ -29,7 +29,7 @@ public class MailService {
 
         message.setTo(userEmail);
         message.setSubject(title);
-        message.setText(code + "\n해윙 ㅋㅋㅋㅋㅋㅋ 인증 문자 보내기 성공 ㅋㅅㅋ");
+        message.setText(code + "\n인증번호를 입력해주세요.");
 
         return message;
     }
