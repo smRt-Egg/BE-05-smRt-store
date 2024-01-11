@@ -3,11 +3,13 @@ package com.programmers.smrtstore.domain.coupon.infrastructure;
 import com.programmers.smrtstore.domain.coupon.domain.entity.*;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,15 +23,17 @@ import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponQuant
 public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     @Override
     @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-    public CouponQuantity findCouponQuantity(Long couponId) {
-        return queryFactory
+    public Optional<CouponQuantity> findCouponQuantity(Long couponId) {
+        return Optional.ofNullable(
+                queryFactory
                 .select(couponQuantity)
                 .from(couponQuantity)
                 .where(couponQuantity.id.eq(couponId))
-                .fetchOne();
+                .fetchOne());
     }
 
     @Override
@@ -81,4 +85,14 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public void updateExpiredCoupons() {
+        queryFactory
+                .update(coupon)
+                .set(coupon.availableYn, false)
+                .where(coupon.availableYn.isTrue().and(coupon.validPeriodEndDate.after(LocalDateTime.now())))
+                .execute();
+        em.flush();
+        em.clear();
+    }
 }
