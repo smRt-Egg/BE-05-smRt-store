@@ -2,16 +2,24 @@ package com.programmers.smrtstore.domain.point.application;
 
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
+import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.AcmPointDetailRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,30 +31,51 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointDetailService {
 
     private final PointFacade pointFacade;
+    private final OrderService orderService;
     private final UserJpaRepository userJpaRepository;
     private final PointDetailJpaRepository pointDetailRepository;
 
-    public Long saveAccumulationHistory(PointDetailRequest request) {
+    public Integer saveAccumulationHistory(AcmPointDetailRequest request) {
 
         validateUserExists(request.getUserId());
 
-        Long pointId = request.getPointId();
-        PointResponse point = pointFacade.getPointById(pointId);
-        PointDetail pointDetail = request.toEntity(point.getPointValue(), pointId);
-        pointDetailRepository.save(pointDetail);
-        return pointDetail.getId();
+        Long orderId = request.getOrderId();
+        List<PointResponse> acmHistory = pointFacade.getByOrderIdAndStatus(
+            orderId, PointStatus.ACCUMULATED
+        );
+
+        // 주문에 대한 상품별 결제금액
+        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+
+        int idx = 0;
+        int totalAcmPoint = 0;
+        for (OrderedProductResponse product : products) {
+            totalAcmPoint += saveAcmPointDetailPerProduct(product, acmHistory, idx, request);
+            idx += product.getQuantity();
+        }
+        return totalAcmPoint;
     }
 
-    public Long saveAccumulationCancelHistory(PointDetailRequest request) {
+    private Integer saveAcmPointDetailPerProduct(OrderedProductResponse product,
+        List<PointResponse> acmHistory, int idx, AcmPointDetailRequest request) {
 
-        validateUserExists(request.getUserId());
-
-        Long pointId = request.getPointId();
-        PointResponse pointResponse = pointFacade.getPointById(pointId);
-
-        PointDetail pointDetail = request.toEntity(pointResponse.getPointValue(), pointResponse.getId());
-        pointDetailRepository.save(pointDetail);
-        return pointDetail.getPointId();
+        int totalAcmPoint = 0;
+        int count = product.getQuantity();
+        while (count != 0) {
+            PointResponse point = acmHistory.get(idx);
+            int pointValue = point.getPointValue();
+            PointDetail pointDetail = request.toEntity(
+                point.getId(),
+                product.getOrderedProductId(),
+                pointValue,
+                point.getId()
+            );
+            count -= 1;
+            idx++;
+            totalAcmPoint += pointValue;
+            pointDetailRepository.save(pointDetail);
+        }
+        return totalAcmPoint;
     }
 
     public Long saveUseHistory(PointDetailRequest request) {
