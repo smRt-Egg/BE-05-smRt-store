@@ -49,6 +49,7 @@ public class PointService {
 
         // 사용자의 월별 쇼핑 금액
         int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
+        boolean isMembershipYn = user.getMembershipYn();
 
         Long pointId = null;
 
@@ -57,7 +58,7 @@ public class PointService {
         for (OrderedProductResponse product : orderedProducts) {
             // 상품별 (1개당) 실제 적립되는 적립금 (기본 1% 적립 + 추가 4% 적립)
             int totalAcmPoint = calculateAcmPointPerProduct(product, userMonthlyTotalSpending);
-            Long id = saveAcmPointPerProduct(product, totalAcmPoint, user.getMembershipYn(), request);
+            Long id = saveAcmPointPerProduct(product, totalAcmPoint, isMembershipYn, request);
             userMonthlyTotalSpending += product.getTotalPrice();
             if (pointId == null) {
                 pointId = id;
@@ -67,7 +68,7 @@ public class PointService {
     }
 
     private Long saveAcmPointPerProduct(OrderedProductResponse product,
-        int totalAcmPointPerProduct, boolean membershipYn, PointRequest request) {
+        int totalAcmPointPerProduct, boolean isMembershipYn, PointRequest request) {
 
         Long pointId = null;
         int count = product.getQuantity();
@@ -75,7 +76,7 @@ public class PointService {
             Point point = request.toEntity(
                 PointStatus.ACCUMULATED,
                 totalAcmPointPerProduct / product.getQuantity(),
-                membershipYn
+                isMembershipYn
             );
             pointRepository.save(point);
             count -= 1;
@@ -230,11 +231,14 @@ public class PointService {
         validateUserExists(request.getUserId());
 
         Long orderId = request.getOrderId();
+
+        // 차감된 포인트 이력 가져오기
         PointResponse pointResponse = pointFacade.getUsedPointByOrderId(orderId);
 
         Point point = request.toEntity(
             PointStatus.USE_CANCELED,
-            pointResponse.getPointValue(),
+            // 음수 값에 대해 음수 처리 -> 양수
+            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
             pointResponse.getMembershipApplyYn()
         );
         pointRepository.save(point);
