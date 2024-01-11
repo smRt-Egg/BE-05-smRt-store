@@ -78,38 +78,91 @@ public class PointDetailService {
         return totalAcmPoint;
     }
 
-    public Long saveUseHistory(PointDetailRequest request) {
+    public Integer saveUseHistory(PointDetailRequest request) {
 
         validateUserExists(request.getUserId());
 
         Long pointId = request.getPointId();
         Long userId = request.getUserId();
 
-        List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
-
         PointResponse point = pointFacade.getPointById(pointId);
+        Long orderId = point.getOrderId();
         int usedPoint = Math.abs(point.getPointValue());
 
-        Long pointDetailId = null;
-        for (PointDetailCustomResponse response : history) {
-            while (usedPoint != 0) {
-                int pointAmount = calculateDeductedPoint(response.getPointAmount(), usedPoint);
-                PointDetail pointDetail = request.toEntity(
-                    pointFacade.makeNegativeNumber(pointAmount),
-                    response.getOriginAcmId()
-                );
-                pointDetailRepository.save(pointDetail);
-                usedPoint -= pointAmount;
-                if (pointDetailId == null) {
-                    pointDetailId = pointDetail.getId();
-                }
+        // 주문에 대한 상품별 결제금액
+        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+
+        // 상품별 결제금액에 대한 비율
+        List<Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
+
+        // 포인트 차감을 위한 사용 가능한 포인트 상세 적립 이력
+        List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
+
+        int idx = 0;
+        for (int piece : pointPieces) {
+            saveUsedPointDetailPerPiece(piece, history, idx, products, request);
+            if (idx < history.size() - 1) {
+                idx++;
             }
         }
-        return pointDetailId;
+        return usedPoint;
+    }
+
+    private void saveUsedPointDetailPerPiece(int piece, List<PointDetailCustomResponse> history,
+        int idx, List<OrderedProductResponse> products, PointDetailRequest request) {
+
+        while (piece != 0) {
+            PointDetailCustomResponse acmHistory = history.get(idx);
+            int pointAmount = calculateDeductedPoint(acmHistory.getPointAmount(), piece);
+            PointDetail pointDetail = request.toEntity(
+                products.get(idx).getOrderedProductId(),
+                pointFacade.makeNegativeNumber(pointAmount),
+                acmHistory.getOriginAcmId()
+            );
+            pointDetailRepository.save(pointDetail);
+            piece -= pointAmount;
+        }
     }
 
     private int calculateDeductedPoint(int pointAmount, int usedPoint) {
         return Math.min(usedPoint, pointAmount);
+    }
+
+    private List<Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
+
+        List<Double> productRatio = getOrderedProductRatio(products);
+        List<Integer> pointPieces = new ArrayList<>();
+
+        // 상품별 비율에 따른 사용할 포인트의 비율 계산
+        for (int idx = 0; idx < productRatio.size() - 1; idx++) {
+            int price = (int) (usePoint * productRatio.get(idx));
+            pointPieces.add(price);
+            usePoint -= price;
+        }
+        pointPieces.add(usePoint);
+        return pointPieces;
+    }
+
+    private List<Double> getOrderedProductRatio(List<OrderedProductResponse> products) {
+
+        List<Double> ratios = new ArrayList<>();
+
+        int totalPrice = products.stream()
+            .mapToInt(OrderedProductResponse::getTotalPrice)
+            .sum();
+
+        double remain = 1.0;
+        for (int idx = 0; idx < products.size() - 1; idx++) {
+            Integer originPrice = products.get(idx).getTotalPrice();
+            double ratio = originPrice.doubleValue() / totalPrice;
+
+            BigDecimal ratioBigDecimal = new BigDecimal(Double.toString(ratio));
+            double roundedRatio = ratioBigDecimal.setScale(2, RoundingMode.DOWN).doubleValue();
+            ratios.add(roundedRatio);
+            remain -= roundedRatio;
+        }
+        ratios.add(remain);
+        return ratios;
     }
 
     public Long saveUseCancelHistory(PointDetailRequest request) {
