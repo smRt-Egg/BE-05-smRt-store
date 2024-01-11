@@ -6,7 +6,6 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +13,6 @@ public class ProductCommonService {
 
     private final ProductJpaRepository productRepository;
 
-    @Transactional(readOnly = true)
     public Product getProduct(Long productId)
         throws ProductException {
         return productRepository.findById(productId)
