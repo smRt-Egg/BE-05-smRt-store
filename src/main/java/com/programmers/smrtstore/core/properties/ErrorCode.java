@@ -78,7 +78,7 @@ public enum ErrorCode {
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
     SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
-    VERIFICATION_CODE_ERROR(UNAUTHORIZED, "인증 코드가 올바르지 않습니다."),
+    EMAIL_VERIFICATION_CODE_ERROR(UNAUTHORIZED, "인증 코드가 올바르지 않습니다."),
     // 403
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404

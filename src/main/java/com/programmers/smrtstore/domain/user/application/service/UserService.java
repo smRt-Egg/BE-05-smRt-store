@@ -3,7 +3,7 @@ package com.programmers.smrtstore.domain.user.application.service;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ALGORITHM_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
-import static com.programmers.smrtstore.core.properties.ErrorCode.VERIFICATION_CODE_ERROR;
+import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_VERIFICATION_CODE_ERROR;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -68,7 +68,7 @@ public class UserService {
         String savedCode = redisService.getValues(VERIFICATION_CODE_PRIFIX + userEmail);
         boolean verifyResult = redisService.checkExistsValue(savedCode) && savedCode.equals(code);
         if (!verifyResult) {
-            throw new UserException(VERIFICATION_CODE_ERROR, code);
+            throw new UserException(EMAIL_VERIFICATION_CODE_ERROR, code);
         }
     }
 
