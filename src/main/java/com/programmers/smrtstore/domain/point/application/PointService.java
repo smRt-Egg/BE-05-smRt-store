@@ -132,6 +132,10 @@ public class PointService {
 
         validateUserExists(userId);
         Long unWritteReviewCount = reviewRepository.getUnWrittenReviewCount(userId);
+        return calculateTotalReviewPoint(unWritteReviewCount);
+    }
+
+    private Integer calculateTotalReviewPoint(Long unWritteReviewCount) {
         return unWritteReviewCount == 0 ? 0 : unWritteReviewCount.intValue() * REVIEW_POINT;
     }
 
