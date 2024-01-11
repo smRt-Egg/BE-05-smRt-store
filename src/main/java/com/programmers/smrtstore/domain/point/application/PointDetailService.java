@@ -49,6 +49,8 @@ public class PointDetailService {
 
         int idx = 0;
         int totalAcmPoint = 0;
+
+        // 주문상품별로 적립 이력을 저장
         for (OrderedProductResponse product : products) {
             totalAcmPoint += saveAcmPointDetailPerProduct(product, acmHistory, idx, request);
             idx += product.getQuantity();
@@ -60,6 +62,8 @@ public class PointDetailService {
         List<PointResponse> acmHistory, int idx, AcmPointDetailRequest request) {
 
         int totalAcmPoint = 0;
+
+        // 동일한 주문상품의 수량에 대한 적립 이력을 개당 분리해서 저장
         int count = product.getQuantity();
         while (count != 0) {
             PointResponse point = acmHistory.get(idx);
@@ -71,7 +75,7 @@ public class PointDetailService {
                 point.getId()
             );
             count -= 1;
-            idx++;
+            idx += 1;
             totalAcmPoint += pointValue;
             pointDetailRepository.save(pointDetail);
         }
@@ -111,7 +115,9 @@ public class PointDetailService {
     private void saveUsedPointDetailPerPiece(int piece, List<PointDetailCustomResponse> history,
         int idx, List<OrderedProductResponse> products, PointDetailRequest request) {
 
+        // 차감되어야 하는 포인트 금액 (주문상품 비율별로 계산된) 에 대해 적립 이력을 통해 순차적으로 포인트 차감 이력 저장
         while (piece != 0) {
+            // 주문 상품에 대한 포인트 적립 이력 저장 순서는 조회한 주문 상품의 순서와 동일! (idx로 동일하게 처리한 이유)
             PointDetailCustomResponse acmHistory = history.get(idx);
             int pointAmount = calculateDeductedPoint(acmHistory.getPointAmount(), piece);
             PointDetail pointDetail = request.toEntity(
@@ -137,6 +143,7 @@ public class PointDetailService {
         for (int idx = 0; idx < productRatio.size() - 1; idx++) {
             int price = (int) (usePoint * productRatio.get(idx));
             pointPieces.add(price);
+            // 마지막 차감포인트는 액수를 맞추기 위해 소거법 적용
             usePoint -= price;
         }
         pointPieces.add(usePoint);
@@ -156,11 +163,13 @@ public class PointDetailService {
             Integer originPrice = products.get(idx).getTotalPrice();
             double ratio = originPrice.doubleValue() / totalPrice;
 
+            // 주문상품별 비율은 소수점 둘째자리까지만 계산
             BigDecimal ratioBigDecimal = new BigDecimal(Double.toString(ratio));
             double roundedRatio = ratioBigDecimal.setScale(2, RoundingMode.DOWN).doubleValue();
             ratios.add(roundedRatio);
             remain -= roundedRatio;
         }
+        // 마지막 주문상품에 대한 비율은 합 (=1)을 맞추기 위해 소거법 적용
         ratios.add(remain);
         return ratios;
     }
@@ -171,13 +180,13 @@ public class PointDetailService {
 
         int cancelPoint = 0;
         List<Long> cancelProductIds = request.getOrderedProductIds();
+
+        // 주문 취소해야 하는 주문상품 아이디별로 취소 이력을 저장
         for (Long id : cancelProductIds) {
 
-            // 사용한 포인트의 상세 내역
+            // 주문상품 아이디에 대한 차감된 포인트 상세 내역
             List<PointDetailResponse> usedDetailHistory = pointFacade
-                .getUsedDetailByPointIdAndOrderedProductId(
-                    request.getPointId(), id
-            );
+                .getUsedDetailByPointIdAndOrderedProductId(request.getPointId(), id);
 
             for (PointDetailResponse usedDetail : usedDetailHistory) {
                 int pointValue = usedDetail.getPointValue();
