@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderSheetCouponResponse {
+public class CouponAppliedProductHistoryRes {
     private Integer baseAmount;
     private Integer discountAmount;
     private CouponType couponType;
