@@ -206,19 +206,18 @@ public class PointService {
         return point.getId();
     }
 
-    public PointResponse cancelUsedPoint(PointRequest request) {
+    public Long cancelUsedPoint(PointRequest request) {
 
         validateUserExists(request.getUserId());
 
-        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(
-            request.getOrderId(),
-            PointStatus.USED
-        );
+        Long orderId = request.getOrderId();
+        PointResponse pointResponse = pointFacade.getUsedPointByOrderId(orderId);
 
         Point point = request.toEntity(
             PointStatus.USE_CANCELED,
             pointResponse.getPointValue(),
-            pointResponse.getMembershipApplyYn());
+            pointResponse.getMembershipApplyYn()
+        );
         pointRepository.save(point);
 
         int expiredPoint = calculateExpiredPoint(pointResponse.getOrderId());
@@ -229,7 +228,7 @@ public class PointService {
                 pointResponse.getMembershipApplyYn());
             pointRepository.save(expiredpoint);
         }
-        return PointResponse.from(point);
+        return point.getId();
     }
 
     private int calculateExpiredPoint(Long orderId) {
