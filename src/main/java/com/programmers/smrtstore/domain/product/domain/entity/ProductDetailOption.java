@@ -58,6 +58,9 @@ public class ProductDetailOption {
     @Column(name = "register_date", nullable = false, updatable = false)
     private LocalDateTime registerDate;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Builder
     private ProductDetailOption(Integer stockQuantity, Integer price, Product product,
         OptionType optionType, OptionNames optionNames) {
@@ -95,5 +98,13 @@ public class ProductDetailOption {
         if (price >= 0) {
             this.price = price;
         }
+    }
+
+    public void deleteOption() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    protected boolean isDeleted() {
+        return deletedAt != null;
     }
 }
