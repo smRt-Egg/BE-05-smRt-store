@@ -87,6 +87,23 @@ public class PointService {
         return pointId;
     }
 
+    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, User user) {
+
+        int totalPrice = productPrices.stream()
+            .reduce(0, Integer::sum);
+
+        int defaultPoint = totalPrice / 100; // 기본 1% 예상 적립금액
+        int additionalPoint = 0;
+        if (user.getMembershipYn()) {
+            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, user.getId());
+        }
+        return OrderExpectedPointDto.of(
+            defaultPoint,
+            additionalPoint,
+            defaultPoint + additionalPoint
+        );
+    }
+
     public OrderExpectedPointDto calculateAcmPoint(Long orderId, User user) {
 
         // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
@@ -170,6 +187,12 @@ public class PointService {
         return calculateAdditionalPoint(orderedProducts, userMonthlyTotalSpending);
     }
 
+    private int calculateEstimatedAdditionalAcmPoint(List<Integer> productPrices, Long userId) {
+
+        int userMonthlyTotalSpending = getUserMonthlyTotalSpending(userId);
+        return calculateEstimatedAdditionalPoint(productPrices, userMonthlyTotalSpending);
+    }
+
     private int getUserMonthlyTotalSpending(Long userId) {
 
         LocalDate now = LocalDate.now();
@@ -186,6 +209,16 @@ public class PointService {
             int totalPricePerProduct = productResponse.getTotalPrice();
             point += calculateAdditionalPointPerProduct(totalPricePerProduct, userMonthlyTotalSpending);
             userMonthlyTotalSpending += totalPricePerProduct;
+        }
+        return point;
+    }
+
+    private int calculateEstimatedAdditionalPoint(List<Integer> productPrices, int userMonthlytotalSpending) {
+
+        int point = 0;
+        for (Integer price : productPrices) {
+            point += calculateAdditionalPointPerProduct(price, userMonthlytotalSpending);
+            userMonthlytotalSpending += price;
         }
         return point;
     }
