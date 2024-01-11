@@ -196,28 +196,14 @@ public class PointService {
         return pointAmount >= MAX_AVAILABLE_POINT;
     }
 
-    public PointResponse cancelAccumulatedPoint(PointRequest request) {
 
-        validateUserExists(request.getUserId());
-
-        Long orderId = request.getOrderId();
-        PointResponse pointResponse = pointFacade.getByOrderIdAndStatus(orderId, PointStatus.ACCUMULATED);
-
-        Point point = request.toEntity(
-            PointStatus.ACCUMULATE_CANCELED,
-            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
-            pointResponse.getMembershipApplyYn());
-        pointRepository.save(point);
-        return PointResponse.from(point);
-    }
-
-    public PointResponse usePoint(UsePointRequest request) {
+    public Long usePoint(UsePointRequest request) {
 
         User user = validateUserExists(request.getUserId());
 
         Point point = request.toEntity(user.getMembershipYn());
         pointRepository.save(point);
-        return PointResponse.from(point);
+        return point.getId();
     }
 
     public PointResponse cancelUsedPoint(PointRequest request) {
