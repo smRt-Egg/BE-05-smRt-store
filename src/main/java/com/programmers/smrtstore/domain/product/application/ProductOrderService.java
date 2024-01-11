@@ -2,7 +2,6 @@ package com.programmers.smrtstore.domain.product.application;
 
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
-import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductOrderService {
 
-    private final ProductJpaRepository productRepository;
     private final ProductCommonService commonService;
 
     public ProductResponse increaseProductStockQuantity(Long productId, Integer quantityValue) {
@@ -29,13 +27,6 @@ public class ProductOrderService {
         return ProductResponse.from(product);
     }
 
-    public ProductResponse increaseAdditionalOptionStockQuantity(Long productId,
-        Long additionalOptionId, Integer quantityValue) {
-        Product product = commonService.getProduct(productId);
-        product.increaseAdditionalStockQuantity(quantityValue, additionalOptionId);
-        return ProductResponse.from(product);
-    }
-
     public ProductResponse decreaseProductStockQuantity(Long productId, Integer quantityValue) {
         Product product = commonService.getProduct(productId);
         product.decreaseStockQuantity(quantityValue);
@@ -49,13 +40,5 @@ public class ProductOrderService {
         product.decreaseDetailStockQuantity(quantityValue, productOptionId);
         return ProductResponse.from(product);
     }
-
-    public ProductResponse decreaseAdditionalOptionStockQuantity(Long productId,
-        Long additionalOptionId, Integer quantityValue) {
-        Product product = commonService.getProduct(productId);
-        product.decreaseAdditionalStockQuantity(quantityValue, additionalOptionId);
-        return ProductResponse.from(product);
-    }
-
 
 }
