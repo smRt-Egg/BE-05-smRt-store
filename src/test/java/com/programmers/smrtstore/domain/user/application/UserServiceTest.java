@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
@@ -25,13 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@ActiveProfiles("test")
+@Import(RedisTestConfig.class)
 class UserServiceTest {
 
     @Autowired

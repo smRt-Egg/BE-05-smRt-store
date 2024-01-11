@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.product.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductDetailOptionRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,7 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DisplayName("Test Product Detail Option Service")
 @Testcontainers
 @Transactional
-@ActiveProfiles("test")
+@Import(RedisTestConfig.class)
 class ProductDetailServiceTest {
 
     private static final String NAME = "test";

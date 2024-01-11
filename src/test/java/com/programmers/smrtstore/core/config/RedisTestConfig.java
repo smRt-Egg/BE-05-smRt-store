@@ -14,8 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@Configuration
-@Profile("test")
+@TestConfiguration
 public class RedisTestConfig {
     private static final String REDIS_DOCKER_IMAGE = "redis:latest";
 
