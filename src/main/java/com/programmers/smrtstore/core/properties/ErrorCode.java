@@ -75,6 +75,7 @@ public enum ErrorCode {
     ORDERED_PRODUCT_ORG_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 원가격이 유효하지 않습니다."),
     ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 즉시 할인율이 유효하지 않습니다."),
     ORDERED_PRODUCT_COUPON_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 쿠폰 할인율이 유효하지 않습니다."),
+    UPDATED_POINT_VALUE_INVALID(BAD_REQUEST, "갱신할 포인트의 값이 유효하지 않습니다."),
     // 401
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
