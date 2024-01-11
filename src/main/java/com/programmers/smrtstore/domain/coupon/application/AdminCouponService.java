@@ -9,6 +9,8 @@ import com.programmers.smrtstore.domain.coupon.infrastructure.CouponAvailableUse
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponCommonTransactionJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.facade.CouponQuantityFacade;
+import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponAvailableProductRequest;
+import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponAvailableUserRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.req.CreateCouponRequest;
 import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
@@ -63,8 +65,8 @@ public class AdminCouponService {
     }
 
     //상품에 쿠폰 추가
-    public void addCouponToProduct(Long couponId, Long productId) {
-
+    public Long addCouponToProduct(Long couponId, CreateCouponAvailableProductRequest request) {
+        Long productId = request.getProductId();
         Product product = getProduct(productId);
 
         Coupon coupon = getCoupon(couponId);
@@ -73,24 +75,32 @@ public class AdminCouponService {
                 e -> {throw new CouponException(ErrorCode.COUPON_ALREADY_APPLIED_PRODUCT);}
         );
 
-        couponAvailableProductJpaRepository.save(CouponAvailableProduct.of(coupon, product));
+        return couponAvailableProductJpaRepository.save(
+                CouponAvailableProduct.of(coupon, product)).getId();
     }
 
     //유저에게 쿠폰 지급(ALLOCATE)
-    public void addCouponToUser(Long couponId, Long userId) {
+    public Long addCouponToUser(Long couponId, CreateCouponAvailableUserRequest request) {
+        Long userId = request.getUserId();
         couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId).ifPresent(
                 e ->   {throw new CouponException(ErrorCode.COUPON_EXIST_BY_USER);});
         User user = getUser(userId);
 
         Coupon coupon = getCoupon(couponId);
 
-        couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
-        couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.ALLOCATED));
 
+        CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
+
+        couponCommonTransactionJpaRepository.save(
+                CouponCommonTransaction.of(user, coupon, CouponStatus.ALLOCATED));
+
+        return savedCouponAvailableUser.getId();
     }
-
+    public Long makeAvailableYesOrNo(Long userId,Long id,boolean availableYn) {
+        return availableYn ? makeAvailableYesCouponById(userId, id) : makeAvailableNoCouponById(userId, id);
+    }
     //쿠폰 무효화
-    public Long makeAvailableNoCouponById(Long userId, Long id) {
+    private Long makeAvailableNoCouponById(Long userId, Long id) {
 
         Coupon coupon = getCoupon(id);
         coupon.makeAvailableYes(getUser(userId));
@@ -98,7 +108,7 @@ public class AdminCouponService {
     }
 
     //쿠폰 유효화
-    public Long makeUnavailableYesCouponById(Long userId, Long id) {
+    private Long makeAvailableYesCouponById(Long userId, Long id) {
         Coupon coupon = getCoupon(id);
         coupon.makeAvailableNo(getUser(userId));
         return id;
