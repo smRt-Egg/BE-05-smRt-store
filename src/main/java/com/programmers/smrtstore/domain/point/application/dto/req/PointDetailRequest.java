@@ -16,9 +16,10 @@ public class PointDetailRequest {
     private Long userId;
     private Long pointId;
 
-    public PointDetail toEntity(Integer pointAmount, Long originAcmId) {
+    public PointDetail toEntity(Long orderedProductId, Integer pointAmount, Long originAcmId) {
         return PointDetail.builder()
             .pointId(pointId)
+            .orderedProductId(orderedProductId)
             .userId(userId)
             .pointAmount(pointAmount)
             .originAcmId(originAcmId)
