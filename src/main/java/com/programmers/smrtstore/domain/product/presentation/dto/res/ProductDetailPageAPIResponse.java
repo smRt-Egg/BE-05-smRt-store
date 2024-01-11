@@ -26,7 +26,6 @@ public class ProductDetailPageAPIResponse {
     private List<ProductOptionTypeResponse> options;
     private List<ProductDetailOptionAPIResponse> optionCombinations;
     private String releaseDate;
-    // discountedSalePrice, managerPurchasePoint, managerPurchaseExtraPoint
     private PointBenefitsAPIResponse benefitsView;
     private ProductCouponAPIResponse benefitsPolicy;
     private ReviewStatisticsResponse reviewAmount;
@@ -48,7 +47,11 @@ public class ProductDetailPageAPIResponse {
                 .map(ProductDetailOptionAPIResponse::from).toList(),
             productResponse.getReleaseDate().toString(),
             // benefitsView
-            null,
+            PointBenefitsAPIResponse.builder()
+                .discountSalePrice(productResponse.getSalePrice())
+                .managerPurchasePoint(pointResponse.getDefaultPoint())
+                .managerPurchaseExtraPoint(pointResponse.getAdditionalPoint())
+                .build(),
             // 쿠폰
             getBenefitsPolicy(couponResponse, productResponse),
             //review

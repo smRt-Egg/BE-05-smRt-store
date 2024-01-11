@@ -34,7 +34,8 @@ public class ProductServiceFacadeImpl implements ProductServiceFacade {
         var couponDetail =
             userId == null ? null : couponService.getCouponByProductIdAndUserId(productId, userId);
         var pointDetail =
-            userId == null ? null : pointService.calculateEstimatedAcmPoint(productId, null);
+            userId == null ? pointService.calculateEstimatedAcmPointWithoutUserId(productId)
+                : pointService.calculateEstimatedAcmPoint(productId, userId);
         var reviewDetail = reviewService.getReviewStatisticsFromProduct(productId);
         return ProductDetailPageAPIResponse.of(productDetail, pointDetail, couponDetail,
             reviewDetail);
