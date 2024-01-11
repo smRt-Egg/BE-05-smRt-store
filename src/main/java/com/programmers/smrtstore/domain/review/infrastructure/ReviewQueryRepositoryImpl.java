@@ -5,8 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import static com.programmers.smrtstore.domain.order.domain.entity.QOrderedProduct.orderedProduct;
-import static com.programmers.smrtstore.domain.order.orderSheet.domain.entity.QOrderSheet.orderSheet;
+import static com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.QOrderSheet.orderSheet;
+import static com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.QOrderedProduct.orderedProduct;
 import static com.programmers.smrtstore.domain.review.domain.entity.QReview.review;
 
 @Repository
