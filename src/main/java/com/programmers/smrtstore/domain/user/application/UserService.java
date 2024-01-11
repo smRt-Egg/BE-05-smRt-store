@@ -40,8 +40,8 @@ public class UserService {
         user.saveDeleteDate();
     }
 
-    public void updatePoint(Long userId, int pointValue) {
+    public int updatePoint(Long userId, int pointValue) {
         User user = findByUserId(userId);
-        user.updatePoint(pointValue);
+        return user.updatePoint(pointValue);
     }
 }
