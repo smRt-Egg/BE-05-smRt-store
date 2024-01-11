@@ -6,6 +6,7 @@ import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,8 +18,8 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Optional<Point> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus) {
-        return Optional.ofNullable(jpaQueryFactory
+    public List<Point> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus) {
+        return jpaQueryFactory
             .selectFrom(point)
             .where(
                 point.orderId.in(
@@ -29,19 +30,54 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
                 ),
                 point.pointStatus.eq(pointStatus)
             )
+            .fetch();
+    }
+
+    @Override
+    public Optional<Point> findUsedPointByOrderId(Long orderId) {
+        return Optional.ofNullable(jpaQueryFactory
+            .selectFrom(point)
+            .where(
+                point.orderId.eq(orderId),
+                point.pointStatus.eq(PointStatus.USED)
+            )
             .fetchOne()
         );
     }
 
     @Override
-    public Optional<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus) {
-        return Optional.ofNullable(jpaQueryFactory
+    public List<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus) {
+        return jpaQueryFactory
             .selectFrom(point)
             .where(
                 point.orderId.eq(orderId),
                 point.pointStatus.eq(pointStatus)
             )
-            .fetchOne()
-        );
+            .fetch();
+    }
+
+    @Override
+    public Integer getAcmPointByOrderId(Long orderId) {
+        return jpaQueryFactory
+            .select(point.pointValue.sum().as("totalAcmPoint"))
+            .from(point)
+            .where(
+                point.orderId.eq(orderId),
+                point.pointStatus.eq(PointStatus.ACCUMULATED)
+            )
+            .fetchOne();
+
+    }
+
+    @Override
+    public Boolean findUserMembershipApplyYnByOrderId(Long orderId) {
+        return jpaQueryFactory
+            .select(point.membershipApplyYn)
+            .from(point)
+            .where(
+                point.orderId.eq(orderId),
+                point.pointStatus.eq(PointStatus.ACCUMULATED)
+            )
+            .fetchOne();
     }
 }
