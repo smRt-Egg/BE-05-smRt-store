@@ -13,6 +13,7 @@ import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +99,20 @@ public class PointFacadeImpl implements PointFacade {
                     tuple.get(pointDetail.originAcmId),
                     tuple.get(aliasIdxForSumOfPoint, Integer.class))
             )
+            .toList();
+    }
+
+    @Override
+    public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
+        PointStatus pointStatus, TradeDateRange tradeDateRange) {
+        return pointRepository.findPointByPointStatusAndIssuedAt(
+                userId,
+                pointStatus,
+                tradeDateRange.getYear(),
+                tradeDateRange.getMonth()
+            )
+            .stream()
+            .map(PointResponse::from)
             .toList();
     }
 }

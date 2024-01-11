@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
@@ -8,6 +9,7 @@ import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
@@ -216,8 +218,17 @@ public class PointService {
         return expiredPoint;
     }
 
-    public PointResponse getPointHistory(Long userId) {
+    public PointResponse expirePoint(Long userId) {
         return null;
+    }
+
+    public List<PointResponse> getPointHistory(PointHistoryRequest request) {
+
+        Long userId = request.getUserId();
+        PointStatus pointStatus = request.getPointStatus();
+        TradeDateRange tradeDateRange = request.getTradeDateRange();
+
+        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, pointStatus, tradeDateRange);
     }
 
     private User validateUserExists(Long userId) {
