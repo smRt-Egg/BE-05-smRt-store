@@ -204,19 +204,17 @@ public class PointDetailService {
         return cancelPoint;
     }
 
-    public Long saveExpirationHistory() {
+    public Integer saveExpirationHistory() {
 
         List<ExpiredPointDetailResponse> expireHistory = pointFacade.getExpiredSumGroupByOriginAcmId();
 
-        Long pointDetailId = null;
+        int expiredPoint = 0;
         for (ExpiredPointDetailResponse expireDetail : expireHistory) {
             PointDetail pointDetail = PointDetail.makeExpirationHistory(expireDetail);
             pointDetailRepository.save(pointDetail);
-            if (pointDetailId == null) {
-                pointDetailId = pointDetail.getId();
-            }
+            expiredPoint += pointDetail.getPointAmount();
         }
-        return pointDetailId;
+        return expiredPoint;
     }
 
     private User validateUserExists(Long userId) {
