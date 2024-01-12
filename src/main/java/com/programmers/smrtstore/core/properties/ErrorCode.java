@@ -87,7 +87,7 @@ public enum ErrorCode {
     // 409
     USER_DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     USER_DUPLICATE_SHIPPING_ADDRESS(CONFLICT, "동일한 배송지가 존재합니다. 수정 후 다시 시도해주세요."),
-    DUPLICATE_EMAIL(CONFLICT, "이미 가입되어 있는 이메일입니다."),
+    USER_DUPLICATE_EMAIL(CONFLICT, "이미 가입되어 있는 이메일입니다."),
     // 500
     EMAIL_SENDING_ERROR(INTERNAL_SERVER_ERROR, "본인 인증을 위한 이메일 전송에 실패하였습니다."),
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다.");

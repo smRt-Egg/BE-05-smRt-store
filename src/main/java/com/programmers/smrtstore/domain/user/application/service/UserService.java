@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.user.application.service;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_VERIFICATION_CODE_ERROR;
+import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -79,7 +79,7 @@ public class UserService {
 
     private void checkDuplicatedEmail(String userEmail) {
         userJpaRepository.findByEmail(userEmail).ifPresent(e -> {
-            throw new UserException(DUPLICATE_EMAIL, userEmail);
+            throw new UserException(USER_DUPLICATE_EMAIL, userEmail);
         });
     }
 
