@@ -2,9 +2,9 @@ package com.programmers.smrtstore.domain.orderManagement.orderedProduct.applicat
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_MISMATCH_ERROR;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_OPTION_MISMATCH_ERROR;
+import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_DETAIL_OPTION_NOT_MATCH;
 import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_OPTION_NOT_FOUND;
-import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_OPTION_NOT_MATCH;
 
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.exception.OrderSheetException;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req.OrderSheetProductOptionReq;
@@ -62,7 +62,7 @@ public class OrderedProductService {
 
         // product option 과 product 가 올바르게 매핑 되어 있는지 검증
         if (!dbOption.getProduct().getId().equals(request.getProductId())) {
-            throw new OrderSheetException(PRODUCT_OPTION_NOT_MATCH);
+            throw new OrderSheetException(PRODUCT_DETAIL_OPTION_NOT_MATCH);
         }
 
         // totalPrice 가 올바르게 계산 되었는지 검증

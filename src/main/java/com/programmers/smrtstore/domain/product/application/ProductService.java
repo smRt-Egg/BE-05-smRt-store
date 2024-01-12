@@ -69,7 +69,7 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         Product product = commonService.getProduct(productId);
-        productRepository.delete(product);
+        product.deleteProduct();
     }
 
     public ProductDetailResponse updateProduct(ProductRequest request) {

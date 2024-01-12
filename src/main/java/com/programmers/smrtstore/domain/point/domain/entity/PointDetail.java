@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "point_detail_TB")
+@Table(name = "point_detail_transaction_TB")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointDetail {
@@ -26,6 +26,9 @@ public class PointDetail {
     @Column(name = "point_id")
     private Long pointId;
 
+    @Column(name = "ordered_product_id")
+    private Long orderedProductId;
+
     @Column(name = "user_id")
     private Long userId;
 
@@ -36,8 +39,9 @@ public class PointDetail {
     private Long originAcmId;
 
     @Builder
-    private PointDetail(Long pointId, Long userId, Integer pointAmount, Long originAcmId) {
+    private PointDetail(Long pointId, Long orderedProductId, Long userId, Integer pointAmount, Long originAcmId) {
         this.pointId = pointId;
+        this.orderedProductId = orderedProductId;
         this.userId = userId;
         this.pointAmount = pointAmount;
         this.originAcmId = originAcmId;
@@ -46,6 +50,7 @@ public class PointDetail {
     public static PointDetail makeExpirationHistory(ExpiredPointDetailResponse expireDetail) {
         return PointDetail.builder()
             .pointId(null)
+            .orderedProductId(null)
             .userId(expireDetail.getUserId())
             .pointAmount(expireDetail.getPointAmount() * -1)
             .originAcmId(expireDetail.getOriginAcmId())

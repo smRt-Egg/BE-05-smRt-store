@@ -87,4 +87,27 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
             .orderBy(pointDetail.originAcmId.asc())
             .fetch();
     }
+
+    @Override
+    public List<PointDetail> getUsedDetailByPointIdAndOrderedProductId(Long pointId, Long orderedProductid) {
+        return jpaQueryFactory
+            .selectFrom(pointDetail)
+            .where(
+                pointDetail.pointId.eq(pointId),
+                pointDetail.orderedProductId.eq(orderedProductid)
+            )
+            .fetch();
+    }
+
+    @Override
+    public Integer getPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductid) {
+        return jpaQueryFactory
+            .select(pointDetail.pointAmount.sum())
+            .from(pointDetail)
+            .where(
+                pointDetail.pointId.eq(pointId),
+                pointDetail.orderedProductId.eq(orderedProductid)
+            )
+            .fetchOne();
+    }
 }
