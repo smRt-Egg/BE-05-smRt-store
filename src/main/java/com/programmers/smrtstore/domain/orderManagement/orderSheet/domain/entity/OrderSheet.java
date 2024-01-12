@@ -40,7 +40,7 @@ public class OrderSheet {
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
-    // TODO: 연관관계 매핑
+    // TODO: orderedProduct 를 먼저 생성하고 orderSheet 에 넣어주는 것에 대한 고민. (setter 를 사용하기 싫음)
     @OneToMany(mappedBy = "orderSheet", cascade = CascadeType.ALL)
     private List<OrderedProduct> orderedProducts = new ArrayList<>();
 
