@@ -7,7 +7,9 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,6 +48,19 @@ public class UserController {
     public ResponseEntity<Void> withdraw(@UserId Long userId) {
         userFacade.withdraw(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/verification-request")
+    public ResponseEntity<Void> sendMail(@RequestParam("email") @Valid @Email String email) {
+        userFacade.sendCodeToEmail(email);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/verification")
+    public ResponseEntity<String> verify(@RequestParam("email") @Valid @Email String userEmail,
+        @RequestParam("code") String code) {
+        userFacade.verifyCode(userEmail, code);
+        return ResponseEntity.ok("인증에 성공했습니다.");
     }
 
     @PostMapping("/shipping")

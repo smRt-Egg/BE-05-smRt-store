@@ -1,8 +1,10 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
@@ -11,7 +13,7 @@ import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
-import com.programmers.smrtstore.domain.user.presentation.controller.UserFacade;
+import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
@@ -21,11 +23,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@Import(RedisTestConfig.class)
 class UserServiceTest {
 
     @Autowired
@@ -221,4 +229,19 @@ class UserServiceTest {
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();
     }
+
+//    @Test
+//    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")
+//    void sendCodeToEmail() {
+//        assertThatCode(() -> userFacade.sendCodeToEmail("sjlim1999@naver.com"))
+//            .doesNotThrowAnyException();
+//    }
+//
+//    @Test
+//    @DisplayName("본인 인증에 성공할 수 있다.")
+//    void verifyCode() {
+//        String code = userFacade.sendCodeToEmail("sjlim1999@naver.com");
+//        assertThatCode(() -> userFacade.verifyCode("sjlim1999@naver.com", code))
+//            .doesNotThrowAnyException();
+//    }
 }
