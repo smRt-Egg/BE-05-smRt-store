@@ -3,7 +3,10 @@ package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation
 import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
 import java.util.List;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
+// TODO: NoArgsConstructor 쿠폰 완성 후 삭제 예정
+@NoArgsConstructor
 public class OrderSheetCouponInfo {
 
     private Map<Long, List<CouponApplyResult>> discountsByOptionId;
