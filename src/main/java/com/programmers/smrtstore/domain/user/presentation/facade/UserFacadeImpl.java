@@ -1,7 +1,7 @@
-package com.programmers.smrtstore.domain.user.presentation.controller;
+package com.programmers.smrtstore.domain.user.presentation.facade;
 
-import com.programmers.smrtstore.domain.user.application.ShippingAddressService;
-import com.programmers.smrtstore.domain.user.application.UserService;
+import com.programmers.smrtstore.domain.user.application.service.ShippingAddressService;
+import com.programmers.smrtstore.domain.user.application.service.UserService;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
@@ -58,5 +58,15 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public void deleteShippingAddress(Long userId, Long shippingId) {
         shippingAddressService.deleteShippingAddress(userId, shippingId);
+    }
+
+    @Override
+    public String sendCodeToEmail(String userEmail) {
+        return userService.sendCodeToEmail(userEmail);
+    }
+
+    @Override
+    public void verifyCode(String userEmail, String code) {
+        userService.verifyCode(userEmail, code);
     }
 }
