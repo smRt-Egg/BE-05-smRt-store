@@ -54,6 +54,11 @@ public class UserService {
         user.saveDeleteDate();
     }
 
+    public int updatePoint(Long userId, int pointValue) {
+        User user = findByUserId(userId);
+        return user.updatePoint(pointValue);
+    }
+
     public String sendCodeToEmail(String userEmail) {
         this.checkDuplicatedEmail(userEmail);
         String certificationCode = createCode();
