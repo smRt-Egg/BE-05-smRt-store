@@ -72,6 +72,9 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private final List<ProductDetailOption> productDetailOptions = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(name = "product_status_type", nullable = false)
     private ProductStatusType productStatusType;
@@ -79,9 +82,8 @@ public class Product {
     @Column(name = "discount_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean discountYn;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private final List<ProductDetailOption> productDetailOptions = new ArrayList<>();
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Column(name = "combination_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
@@ -148,8 +150,9 @@ public class Product {
     }
 
     public void increaseDetailStockQuantity(Integer quantity, Long productOptionId) {
-        productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
-            .findFirst()
+        productDetailOptions.stream()
+            .filter(option -> option.getId().equals(productOptionId))
+            .filter(option -> !option.isDeleted()).findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
@@ -179,14 +182,18 @@ public class Product {
             throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
         var productOption = productDetailOptions.stream()
-            .filter(option -> option.getId().equals(productOptionId)).findAny()
+            .filter(option -> option.getId().equals(productOptionId))
+            .filter(option -> !option.isDeleted())
+            .findAny()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        productOption.deleteOption();
         productDetailOptions.remove(productOption);
     }
 
     public Integer getStockQuantity() {
         if (combinationYn) {
             return productDetailOptions.stream()
+                .filter(option -> !option.isDeleted())
                 .map(ProductDetailOption::getStockQuantity)
                 .reduce(0, Integer::sum);
         }
@@ -275,6 +282,12 @@ public class Product {
         }
         this.discountRatio = discountRatio;
         this.discountYn = discountRatio != 0;
+    }
+
+    public void deleteProduct() {
+        this.deletedAt = LocalDateTime.now();
+        productDetailOptions.forEach(ProductDetailOption::deleteOption);
+        productDetailOptions.clear();
     }
 
 }

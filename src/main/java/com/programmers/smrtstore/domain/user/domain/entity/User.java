@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.user.domain.entity;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NUMBER_EXCEEDED_MAXIMUM;
+import static com.programmers.smrtstore.core.properties.ErrorCode.UPDATED_POINT_VALUE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_INPUT_INVALID;
 
@@ -98,6 +99,7 @@ public class User {
     private static final Pattern emailPattern = Pattern.compile(
         "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$");
     private static final Pattern birthPattern = Pattern.compile("^\\d{8}$");
+    private static final int DEFAULT_ACCUMULATE = 100000;
 
     public List<GrantedAuthority> getAuthorities() {
         return Stream.of(new SimpleGrantedAuthority(role.name()))
@@ -183,6 +185,17 @@ public class User {
                 }
             }
         });
+    }
+
+    public int updatePoint(int pointValue) {
+        validatePointValue(pointValue);
+        return point += pointValue;
+    }
+
+    private void validatePointValue(int pointValue) {
+        if(pointValue == 0 || (!membershipYn && (pointValue > DEFAULT_ACCUMULATE))) {
+            throw new UserException(UPDATED_POINT_VALUE_INVALID, String.valueOf(pointValue));
+        }
     }
 
     private void updateAge(int age) {

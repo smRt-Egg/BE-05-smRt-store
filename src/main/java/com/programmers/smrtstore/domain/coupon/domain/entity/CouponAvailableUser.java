@@ -89,7 +89,7 @@ public class CouponAvailableUser {
 
     private void validateExistCoupon() {
         if (!useYn) {
-            throw new CouponException(ErrorCode.COUPON_EXIST);
+            throw new CouponException(ErrorCode.COUPON_EXIST_BY_USER);
         }
     }
 
