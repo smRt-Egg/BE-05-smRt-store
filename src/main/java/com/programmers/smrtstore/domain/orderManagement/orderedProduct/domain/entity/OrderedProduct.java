@@ -4,6 +4,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUC
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_ORG_PRICE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_QUANTITY_INVALID;
+import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_TOTAL_PRICE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_DETAIL_OPTION_NOT_MATCH;
 
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
@@ -76,7 +77,7 @@ public class OrderedProduct {
     public OrderedProduct(
         Long id, OrderSheet orderSheet, Product product,
         ProductDetailOption productOption, Integer quantity, Integer extraPrice, Integer orgPrice,
-        Integer immediateDiscount, Integer couponDiscount, Integer pointDiscount
+        Integer immediateDiscount
     ) {
         this.id = id;
         this.orderSheet = orderSheet;
@@ -87,15 +88,11 @@ public class OrderedProduct {
         this.orgPrice = orgPrice;
         this.immediateDiscount = immediateDiscount;
         this.totalPrice = getCalculatedTotalPrice();
-        this.couponDiscount = couponDiscount;
-        this.pointDiscount = pointDiscount;
         validateMatchingProductAndOption(product.getId(), productOption.getProduct().getId());
         validateQuantity(quantity);
         validateExtraPrice(extraPrice);
         validateOrgPrice(orgPrice);
         validateImmediateDiscount(immediateDiscount);
-        validateCouponDiscount(couponDiscount);
-        validatePointDiscount(pointDiscount);
     }
 
     public static OrderedProduct createBeforeOrder(
@@ -109,8 +106,6 @@ public class OrderedProduct {
             .quantity(quantity)
             .orgPrice(orgPrice)
             .immediateDiscount(immediateDiscount)
-            .couponDiscount(null)
-            .pointDiscount(null)
             .build();
     }
 
@@ -139,15 +134,16 @@ public class OrderedProduct {
         }
     }
 
-//    private void validateTotalPrice(Integer totalPrice) {
-//        if (totalPrice < 0) {
-//            throw new OrderedProductException(ORDERED_PRODUCT_TOTAL_PRICE_INVALID);
-//        }
-//        Integer calTotalPrice = getCalculatedTotalPrice();
-//        if (!calTotalPrice.equals(this.totalPrice)) {
-//            throw new OrderedProductException(ORDERED_PRODUCT_TOTAL_PRICE_INVALID);
-//        }
-//    }
+    // TODO: 다른 price 값이 변경되면 totalPrice 도 변경되어야 함. 해당 부분은 외부에서 넣어줄지 내부적으로 변경할지 고민
+    private void validateTotalPrice(Integer totalPrice) {
+        if (totalPrice < 0) {
+            throw new OrderedProductException(ORDERED_PRODUCT_TOTAL_PRICE_INVALID);
+        }
+        Integer calTotalPrice = getCalculatedTotalPrice();
+        if (!calTotalPrice.equals(this.totalPrice)) {
+            throw new OrderedProductException(ORDERED_PRODUCT_TOTAL_PRICE_INVALID);
+        }
+    }
 
     private void validateOrgPrice(Integer orgPrice) {
         if (orgPrice < 0) {
@@ -161,20 +157,14 @@ public class OrderedProduct {
         }
     }
 
-    // TODO: 생성자에서 null 만 받고 Update 고려 안할지 생각
+    // TODO: 생성자에서는 couponDiscount, pointDiscount 를 무조건 null 로 받아 검증하지 않음.
     private void validateCouponDiscount(Integer couponDiscount) {
-        if (couponDiscount == null) {
-            return;
-        }
         if (couponDiscount < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
         }
     }
 
     private void validatePointDiscount(Integer pointDiscount) {
-        if (pointDiscount == null) {
-            return;
-        }
         if (pointDiscount < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
         }
