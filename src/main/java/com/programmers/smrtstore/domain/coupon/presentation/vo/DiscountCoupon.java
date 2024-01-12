@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.coupon.presentation.res;
+package com.programmers.smrtstore.domain.coupon.presentation.vo;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
 import lombok.AllArgsConstructor;

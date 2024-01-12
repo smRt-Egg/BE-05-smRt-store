@@ -174,4 +174,9 @@ public class OrderedProduct {
         return this.orgPrice * (this.immediateDiscountRatio / 100);
     }
 
+    // 정가 총합(  (상품가+옵션가)*수량 ) - 즉시할인 총합
+    public Integer getProductSalePriceWithQuantity() {
+        return getProductSalePrice() * quantity;
+    }
+
 }

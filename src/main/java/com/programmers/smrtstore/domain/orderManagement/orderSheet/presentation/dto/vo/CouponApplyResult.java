@@ -2,7 +2,9 @@ package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class CouponApplyResult {
 

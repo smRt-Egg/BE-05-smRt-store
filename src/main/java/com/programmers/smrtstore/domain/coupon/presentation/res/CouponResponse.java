@@ -23,9 +23,9 @@ public class CouponResponse {
     private final Integer maxDiscountValue;
     private final Integer minOrderPrice;
     private final Integer idPerIssuableCount;
-    private final Boolean membershipCouponYn;
-    private final Boolean duplicationYn;
-    private final Boolean availableYn;
+    private final boolean membershipCouponYn;
+    private final boolean duplicationYn;
+    private final boolean availableYn;
     private final CouponType couponType;
     private final BenefitUnitType benefitUnitType;
     private final CustomerManageBenefitType customerManageBenefitType;

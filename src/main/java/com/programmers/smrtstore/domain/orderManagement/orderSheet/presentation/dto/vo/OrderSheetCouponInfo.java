@@ -8,7 +8,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class OrderSheetCouponInfo {
     //여기서 Long은 OrderedProduct Id
-    private Map<Long, List<CouponApplyResult>> discountsByOptionId; // Orderedproduct에 대한 Long, 쿠폰 적용 결과 리스트
+    private Map<Long, List<CouponApplyResult>> discountsByOrderedProductId; // OrderedProduct 에 대한 Long, 쿠폰 적용 결과 리스트
     private SelectedCoupons selectedCoupons; //선택된 쿠폰에 대한 정보
     private ApplicableProductCoupons productCoupons;
     private ApplicableDeliveryFeeCoupons deliveryFeeCoupons;

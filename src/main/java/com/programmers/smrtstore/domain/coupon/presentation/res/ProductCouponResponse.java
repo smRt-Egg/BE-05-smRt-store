@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.coupon.presentation.res;
 
+import com.programmers.smrtstore.domain.coupon.presentation.vo.DiscountCoupon;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
