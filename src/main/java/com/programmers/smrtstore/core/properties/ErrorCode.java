@@ -56,7 +56,7 @@ public enum ErrorCode {
     ORDERED_PRODUCT_OPTION_MISMATCH_ERROR(BAD_REQUEST,
         "주문한 물건의 옵션 정보가 데이터베이스 물건 옵션 정보와 일치하지 않습니다."),
     //TODO: CART_PRODUCT_DETAIL_OPTION_NOT_MATCH 과 통합 필요.
-    PRODUCT_OPTION_NOT_MATCH(BAD_REQUEST, "유효하지 않은 품목과 옵션 매칭입니다."),
+    PRODUCT_DETAIL_OPTION_NOT_MATCH(BAD_REQUEST, "유효하지 않은 품목과 옵션 매칭입니다."),
     ORDERED_PRODUCT_QUANTITY_INVALID(BAD_REQUEST, "주문한 물건의 수량이 유효하지 않습니다."),
     ORDERED_PRODUCT_TOTAL_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 총 가격이 유효하지 않습니다."),
     ORDERED_PRODUCT_ORG_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 원가격이 유효하지 않습니다."),
