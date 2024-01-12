@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.orderManagement.orderSheet.application;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_USER;
+import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERSHEET_ALREADY_ORDERED;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERSHEET_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
@@ -8,8 +9,8 @@ import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.exception.OrderSheetException;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.infrastructure.OrderSheetJpaRepository;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req.CreateOrderSheetRequest;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.res.OrderSheetDetailViewResponse;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.res.OrderSheetOrdererInfo;
-import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.res.OrderSheetResponse;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetCouponInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetProductInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetUserPointInfo;
@@ -68,7 +69,9 @@ public class OrderSheetService {
         return orderSheet.getId();
     }
 
-    public OrderSheetResponse getOrderSheetById(Long tokenUserId, Long orderSheetId) {
+    public OrderSheetDetailViewResponse getOrderSheetDetailViewById(
+        Long tokenUserId, Long orderSheetId
+    ) {
         User user = checkUserExistence(tokenUserId);
 
         OrderSheet orderSheet = orderSheetJpaRepository.getOrderSheetWithOrderedProductsById(
@@ -76,6 +79,11 @@ public class OrderSheetService {
             () -> new OrderSheetException(ORDERSHEET_NOT_FOUND, String.valueOf(orderSheetId)));
 
         // 유효성 검증
+        // TODO: exception 발생을 도메인 내부에서 할지 고민
+        // 이미 주문이 된 주문서인지 검증
+        if (orderSheet.isAvailableOrder()) {
+            throw new OrderSheetException(ORDERSHEET_ALREADY_ORDERED, String.valueOf(orderSheetId));
+        }
         // 주문서의 유저와 토큰의 유저가 일치하는지 검증
         orderSheet.validateOwnerOfOrderSheet(user);
         // 주문서의 orderedProducts 유효성 검증
@@ -106,7 +114,7 @@ public class OrderSheetService {
             orderedProductPriceAfterCoupon, user.getId(), user.getMembershipYn()
         );
 
-        return OrderSheetResponse.builder()
+        return OrderSheetDetailViewResponse.builder()
             .orderSheetId(orderSheet.getId())
             .deliveryAddressBook(deliveryAddressBook)
             .ordererInfo(ordererInfo)
