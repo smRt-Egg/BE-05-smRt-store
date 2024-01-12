@@ -8,7 +8,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddres
 import java.util.List;
 import lombok.Builder;
 
-public class OrderSheetResponse {
+public class OrderSheetDetailViewResponse {
 
     private Long orderSheetId;
     // 유저 배송지 목록
@@ -28,7 +28,7 @@ public class OrderSheetResponse {
     private OrderExpectedPointDto rewardPoint;
 
     @Builder
-    public OrderSheetResponse(
+    public OrderSheetDetailViewResponse(
         Long orderSheetId, DeliveryAddressBook deliveryAddressBook,
         OrderSheetOrdererInfo ordererInfo,
         List<OrderSheetProductInfo> productInfo, OrderSheetCouponInfo couponInfo,
