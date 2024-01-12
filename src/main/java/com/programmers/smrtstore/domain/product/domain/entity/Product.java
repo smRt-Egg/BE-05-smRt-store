@@ -284,6 +284,14 @@ public class Product {
         this.discountYn = discountRatio != 0;
     }
 
+    public boolean isAvailableOrder() {
+        return this.productStatusType.equals(ProductStatusType.SALE);
+    }
+
+    public Integer getImmediateDiscount() {
+        return getPrice() - getSalePrice();
+    }
+
     public void deleteProduct() {
         this.deletedAt = LocalDateTime.now();
         productDetailOptions.forEach(ProductDetailOption::deleteOption);
