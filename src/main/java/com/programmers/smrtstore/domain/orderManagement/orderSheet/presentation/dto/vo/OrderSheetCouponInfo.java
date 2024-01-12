@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class OrderSheetCouponInfo {
-
+    //여기서 Long은 Order Id
     private Map<Long, List<CouponApplyResult>> discountsByOptionId;
     private SelectedCoupons selectedCoupons;
     private ApplicableProductCoupons productCoupons;
