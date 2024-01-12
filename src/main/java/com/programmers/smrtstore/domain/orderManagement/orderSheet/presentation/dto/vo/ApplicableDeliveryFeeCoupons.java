@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class ApplicableDeliveryFeeCoupons {
 
     private Long selectedCouponId;
