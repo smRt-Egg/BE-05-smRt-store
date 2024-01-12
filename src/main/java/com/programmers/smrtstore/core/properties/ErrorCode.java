@@ -37,11 +37,12 @@ public enum ErrorCode {
     NON_MEMBERSHIP(BAD_REQUEST, "멤버쉽 유저 전용 쿠폰입니다"),
     COUPON_NOT_ENOUGH(BAD_REQUEST, "쿠폰 재고가 부족합니다."),
     COUPON_DATE_INVALID(BAD_REQUEST, "쿠폰 유효 기간이 끝났습니다."),
-    COUPON_EXIST(BAD_REQUEST, "사용 하지 않은 쿠폰이 존재합니다."),
+    COUPON_EXIST_BY_USER(BAD_REQUEST, "유저에게 사용 하지 않은 쿠폰이 존재합니다."),
     ISSUE_COUNT_EXCEED(BAD_REQUEST, "인당 쿠폰 발급 횟수를 초과했습니다."),
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     COUPON_STOCK_INVALID(BAD_REQUEST,"쿠폰 수량은 0개 이상이어야 합니다."),
+    COUPON_ALREADY_APPLIED_PRODUCT(BAD_REQUEST,"이미 쿠폰이 적용된 상품입니다"),
     ORDER_PRICE_NOT_ENOUGH(BAD_REQUEST, "쿠폰의 최소 주문 금액 미만입니다."),
     REVIEW_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
     REVIEW_LIKE_ALREADY_EXIST(BAD_REQUEST, "이미 리뷰를 좋아요 하였습니다."),
@@ -74,10 +75,12 @@ public enum ErrorCode {
     ORDERED_PRODUCT_ORG_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 원가격이 유효하지 않습니다."),
     ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 즉시 할인율이 유효하지 않습니다."),
     ORDERED_PRODUCT_COUPON_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 쿠폰 할인율이 유효하지 않습니다."),
+    UPDATED_POINT_VALUE_INVALID(BAD_REQUEST, "갱신할 포인트의 값이 유효하지 않습니다."),
     // 401
     MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
     SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
+    EMAIL_VERIFICATION_CODE_ERROR(UNAUTHORIZED, "인증 코드가 올바르지 않습니다."),
     // 403
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
@@ -95,10 +98,13 @@ public enum ErrorCode {
     REVIEW_LIKE_NOT_FOUND(NOT_FOUND, "리뷰 좋아요를 찾을 수 없습니다."),
     CART_NOT_FOUND(NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     SHIPPING_ADDRESS_NOT_FOUND(NOT_FOUND, "배송지를 찾을수 없습니다."),
+
     // 409
     DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     DUPLICATE_SHIPPING_ADDRESS(CONFLICT, "동일한 배송지가 존재합니다. 수정 후 다시 시도해주세요."),
+    DUPLICATE_EMAIL(CONFLICT, "이미 가입되어 있는 이메일입니다."),
     // 500
+    EMAIL_SENDING_ERROR(INTERNAL_SERVER_ERROR, "본인 인증을 위한 이메일 전송에 실패하였습니다."),
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 서버 에러가 발생하였습니다.");
 
     private final HttpStatus httpStatus;

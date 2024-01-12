@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.user.presentation.controller;
+package com.programmers.smrtstore.domain.user.presentation.facade;
 
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
@@ -25,4 +25,8 @@ public interface UserFacade {
     DetailShippingResponse findByShippingId(Long shippingId);
 
     void deleteShippingAddress(Long userId, Long shippingId);
+
+    String sendCodeToEmail(String userEmail);
+
+    void verifyCode(String userEmail, String code);
 }

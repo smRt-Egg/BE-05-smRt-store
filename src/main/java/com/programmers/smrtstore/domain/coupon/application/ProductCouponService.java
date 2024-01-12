@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CouponService {
+public class ProductCouponService {
 
     private final CouponAvailableUserJpaRepository couponAvailableUserJpaRepository;
     private final UserJpaRepository userJpaRepository;
@@ -41,9 +41,7 @@ public class CouponService {
     public Long download(SaveCouponRequest request, Long userId) {
         Long couponId = request.getCouponId();
         User user = getUser(userId);
-
-        Coupon coupon = couponJpaRepository.findById(couponId)
-                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
+        Coupon coupon = getCoupon(couponId);
 
         Optional<CouponAvailableUser> couponAvailableUser = checkUserHasCoupon(userId, couponId);
 
@@ -56,31 +54,12 @@ public class CouponService {
                 });
     }
 
-    @Transactional(readOnly = true)
-    public List<UserCouponResponse> getCouponsByUserId(Long userId) {   //쿠폰 리스트 (마이페이지)
-
-        getUser(userId);
-
-        return couponJpaRepository.findUserCoupons(userId).stream()
-                .map(coupon -> UserCouponResponse.from(coupon))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public Long getUserCouponQuantity(Long userId) { //유저의쿠폰 잔여개수
-
-        getUser(userId);
-
-        return couponJpaRepository.findUserCouponCount(userId);
-    }
-
     //Todo: product detail 페이지에서 사용될 메서드
     @Transactional(readOnly = true)
     public ProductCouponResponse getCouponByProductIdAndUserId(Long productId, Long userId) {
 
         User user = getUser(userId);
-        Product product = productJpaRepository.findById(productId)
-                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(productId);
 
         List<Coupon> coupons = couponJpaRepository.findCouponByProductId(productId);//product에 해당되는 모든 쿠폰
 
@@ -111,12 +90,6 @@ public class CouponService {
         return ProductCouponResponse.of(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
     }
 
-    private User getUser(Long userId) {
-        User user = userJpaRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "false"));
-        return user;
-    }
-
     // TODO: 유저가 쿠폰을 발급받은적 있는지
     private Optional<CouponAvailableUser> checkUserHasCoupon(Long userId, Long couponId) {
         Optional<CouponAvailableUser> couponAvailableUser = couponAvailableUserJpaRepository.findByCouponIdAndUserId(couponId, userId);
@@ -135,6 +108,25 @@ public class CouponService {
         couponQuantityFacade.decrease(couponId);
         couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.DOWNLOAD));
         return savedCouponAvailableUser.getId();
+    }
+
+    private Product getProduct(Long productId) {
+        Product product = productJpaRepository.findById(productId)
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+        return product;
+    }
+
+    private Coupon getCoupon(Long couponId) {
+
+        Coupon coupon = couponJpaRepository.findById(couponId)
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
+        return coupon;
+    }
+
+    private User getUser(Long userId) {
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        return user;
     }
 
 }

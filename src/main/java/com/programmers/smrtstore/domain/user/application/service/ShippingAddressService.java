@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.user.application;
+package com.programmers.smrtstore.domain.user.application.service;
 
 import static com.programmers.smrtstore.core.properties.ErrorCode.SHIPPING_ADDRESS_NOT_FOUND;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
