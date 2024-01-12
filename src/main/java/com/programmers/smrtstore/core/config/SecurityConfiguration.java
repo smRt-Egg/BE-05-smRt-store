@@ -51,7 +51,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/**").permitAll()) // TODO: 개발 완료시 .authenticated()로 변경
+                .requestMatchers("/api/v1/**").permitAll())
             .addFilterBefore(jwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exceptionHandling -> {
@@ -66,6 +66,7 @@ public class SecurityConfiguration {
         return web -> web.ignoring()
             .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"))
             .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
+            .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html"))
             .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**"));
     }
 

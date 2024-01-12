@@ -4,7 +4,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUC
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_ORG_PRICE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_QUANTITY_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_TOTAL_PRICE_INVALID;
-import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_OPTION_NOT_MATCH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_DETAIL_OPTION_NOT_MATCH;
 
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.exception.OrderedProductException;
@@ -107,7 +107,7 @@ public class OrderedProduct {
         var productIdInOption = productOption.getProduct().getId();
 
         if (!productId.equals(productIdInOption)) {
-            throw new OrderedProductException(PRODUCT_OPTION_NOT_MATCH);
+            throw new OrderedProductException(PRODUCT_DETAIL_OPTION_NOT_MATCH);
         }
     }
 
