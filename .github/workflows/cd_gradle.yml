@@ -88,5 +88,11 @@ jobs:
             -p 8080:8080 \
             -e TZ=Asia/Seoul \
             ${{ secrets.DOCKER_ID }}/smrt_store
+            
+            docker pull redis
+            docker run -d \
+              --name smrt-redis \
+              -p 6379:6379 \
+              redis
+            
             docker system prune -f
-
