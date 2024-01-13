@@ -96,7 +96,7 @@ public class AdminCouponService {
 
         return savedCouponAvailableUser.getId();
     }
-    public Long makeAvailableYesOrNo(Long userId,Long id,boolean availableYn) {
+    public Long makeAvailableYn(Long userId, Long id, boolean availableYn) {
         return availableYn ? makeAvailableYesCouponById(userId, id) : makeAvailableNoCouponById(userId, id);
     }
     //쿠폰 무효화

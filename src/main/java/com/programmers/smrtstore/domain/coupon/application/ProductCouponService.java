@@ -85,9 +85,8 @@ public class ProductCouponService {
             }
         }
         //TODO: 메모리 관리 뭐가 좋을지?
-        ProductDiscountCalculator productDiscountCalculator = new ProductDiscountCalculator();
         List<Coupon> cartCoupons = couponJpaRepository.getCartCoupons();
-        DiscountCoupon maxDiscountCoupons = productDiscountCalculator.discount(applicableCoupons,cartCoupons, product);
+        DiscountCoupon maxDiscountCoupons = ProductDiscountCalculator.discount(applicableCoupons,cartCoupons, product);
 
         return ProductCouponResponse.of(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
     }
