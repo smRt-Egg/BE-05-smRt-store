@@ -10,6 +10,7 @@ import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPoint
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
+import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
