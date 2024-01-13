@@ -40,7 +40,7 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
     public List<Coupon> findCouponByUserIdAndProductId(Long userId, Long productId) {
 
         return queryFactory
-                        .select(coupon)
+                        .select(couponAvailableUser.coupon)
                         .from(couponAvailableUser)
                         .join(couponAvailableProduct)
                         .on(couponAvailableUser.coupon.id.eq(couponAvailableProduct.coupon.id))
