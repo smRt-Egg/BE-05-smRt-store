@@ -6,11 +6,14 @@ import com.programmers.smrtstore.domain.orderManagement.order.application.OrderS
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
+import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
@@ -93,15 +96,15 @@ public class PointService {
         return pointId;
     }
 
-    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, User user) {
+    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, Long userId, boolean membershipYn) {
 
         int totalPrice = productPrices.stream()
             .reduce(0, Integer::sum);
 
         int defaultPoint = totalPrice / 100; // 기본 1% 예상 적립금액
         int additionalPoint = 0;
-        if (user.getMembershipYn()) {
-            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, user.getId());
+        if (membershipYn) {
+            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, userId);
         }
         return OrderExpectedPointDto.of(
             defaultPoint,
@@ -116,10 +119,10 @@ public class PointService {
         int defaultPoint = calculateDefaultPoint(orderId);
 
         int additionalPoint = 0;
-        if (user.getMembershipYn()) {
+        if (membershipYn) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
             // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
-            additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
+            additionalPoint = calculateAdditionalAcmPoint(orderedProducts, userId);
         }
         return OrderExpectedPointDto.of(
             defaultPoint,
@@ -327,13 +330,19 @@ public class PointService {
         return expiredPoint;
     }
 
-    public List<PointResponse> getPointHistory(PointHistoryRequest request) {
+    public List<PointHistoryResponse> getPointHistory(Long securityuserId, PointHistoryRequest request) {
 
-        Long userId = request.getUserId();
-        PointStatus pointStatus = request.getPointStatus();
+        Long userId = validateTokenWithUserId(securityuserId, request.getUserId());
+        TradeType tradeType = request.getTradeType();
         TradeDateRange tradeDateRange = request.getTradeDateRange();
+        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, tradeType, tradeDateRange);
+    }
 
-        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, pointStatus, tradeDateRange);
+    private Long validateTokenWithUserId(Long securityUserId, Long userId) {
+        if (!securityUserId.equals(userId)) {
+            throw new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId));
+        }
+        return userId;
     }
 
     private User validateUserExists(Long userId) {

@@ -67,7 +67,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     @Override
     public Integer getAcmPointByOrderId(String orderId) {
         return jpaQueryFactory
-            .select(point.pointValue.sum().as("totalAcmPoint"))
+            .select(point.pointValue.sum())
             .from(point)
             .where(
                 point.orderId.eq(orderId),
