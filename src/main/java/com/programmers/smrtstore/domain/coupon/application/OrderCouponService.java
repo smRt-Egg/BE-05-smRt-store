@@ -32,26 +32,26 @@ public class OrderCouponService {
 
     /**
      * 구분 필요한 메서드
-     *
+     * <p>
      * 1. getOrderSheetCouponInfoWithSelectedCoupons()
-     *  - OrderDiscountCalculator.getCouponApplyResult() 사용
-     *  - select 된 쿠폰이 필요하고, 그 기반으로 반환
-     *
+     * - OrderDiscountCalculator.getCouponApplyResult() 사용
+     * - select 된 쿠폰이 필요하고, 그 기반으로 반환
+     * <p>
      * 2. getOrderSheetCouponInfo()
-     *  - OrderDiscountCalculator.getMaxDiscountCouponApplyResult() 사용
-     *  - 자동으로 최고 할인케이스를 반환
+     * - OrderDiscountCalculator.getMaxDiscountCouponApplyResult() 사용
+     * - 자동으로 최고 할인케이스를 반환
      */
     //  1. 쿠폰을 선택해서 파라미터(selectedCoupons)로 주는 메서드 -->여기선 selectedCoupons 그대로 반환하고
-    public OrderSheetCouponInfo getOrderSheetCouponInfoWithSelectedCoupons(Long userId, List<OrderedProduct>orderedProducts, SelectedCouponsRequest selectedCouponsRequest) {
+    public OrderSheetCouponInfo getOrderSheetCouponInfoWithSelectedCoupons(Long userId, List<OrderedProduct> orderedProducts, SelectedCouponsRequest selectedCouponsRequest) {
 
         ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId, orderedProducts);
         ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
         List<Coupon> cartCoupons = getCartCoupons();
         SelectedCoupons selectedCoupons = getSelectedCoupons(selectedCouponsRequest);
-        Map<Long, List<CouponApplyResult>> couponApplyResult = OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts, selectedCouponsRequest);
+        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts, selectedCouponsRequest);
+        List<CouponResponse> cartCouponResponses = cartCoupons.stream().map(cartCoupon -> CouponResponse.from(cartCoupon)).toList();
 
-//        return new OrderSheetCouponInfo();
-        return null;
+        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCouponResponses);
     }
 
     //2. 쿠폰 선택X, 쿠폰 서비스에서 자체적으로 최적의 쿠폰 조합을 제공해야함. -> 여기선 selectedCoupons 을 최적 알고리즘으로 반환
@@ -64,16 +64,17 @@ public class OrderCouponService {
             List<Coupon> productCoupons = getProductCouponsByUserIdAndProductId(userId, orderedProduct.getProduct().getId());
             orderedProductCouponMap.put(orderedProduct.getId(), productCoupons);
         }
+
         List<Coupon> cartCoupons = getCartCoupons();
         SelectedCouponsWithCouponApplyResult selectedCouponsWithCouponApplyResult = OrderCouponDiscountCalculator.getMaxDiscountCouponApplyResult(orderedProducts, orderedProductCouponMap, cartCoupons);
+        List<CouponResponse> cartCouponResponses = cartCoupons.stream().map(cartCoupon -> CouponResponse.from(cartCoupon)).toList();
 
         ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId, orderedProducts);
         ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
         SelectedCoupons selectedCoupons = selectedCouponsWithCouponApplyResult.getSelectedCoupons();
-        Map<Long, List<CouponApplyResult>> couponApplyResult = selectedCouponsWithCouponApplyResult.getCouponApplyResult();
+        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = selectedCouponsWithCouponApplyResult.getCouponApplyResult();
 
-//        return new OrderSheetCouponInfo();
-        return null;
+        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCouponResponses);
     }
 
     private SelectedCoupons getSelectedCoupons(SelectedCouponsRequest selectedCoupons) {
