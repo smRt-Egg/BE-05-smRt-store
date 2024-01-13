@@ -1,16 +1,19 @@
-package com.programmers.smrtstore.domain.point.application;
+package com.programmers.smrtstore.domain.point.application.facade;
 
 import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
 import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
+import static com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.QOrderedProduct.orderedProduct;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
@@ -156,16 +159,20 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public List<PointResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
-        PointStatus pointStatus, TradeDateRange tradeDateRange) {
-        return pointRepository.findPointByPointStatusAndIssuedAt(
+    public List<PointHistoryResponse> getPointHistoryByIssuedAtAndStatus(Long userId,
+        TradeType tradeType, TradeDateRange tradeDateRange) {
+        return pointRepository.findPointHisoryByPointStatusAndIssuedAt(
                 userId,
-                pointStatus,
+                tradeType,
                 tradeDateRange.getYear(),
                 tradeDateRange.getMonth()
             )
             .stream()
-            .map(PointResponse::from)
+            .map(tuple ->
+                PointHistoryResponse.of(
+                    tuple.get(point),
+                    tuple.get(orderedProduct.product.name)
+                ))
             .toList();
     }
 }

@@ -1,11 +1,13 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import java.util.List;
 
 public interface PointFacade {
@@ -25,8 +27,8 @@ public interface PointFacade {
     Integer getAcmPointByOrderId(String orderId);
     Integer getCancelPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductId);
     Boolean getUserMembershipApplyYnByOrderId(String orderId);
-    List<PointResponse> getPointHistoryByIssuedAtAndStatus(
+    List<PointHistoryResponse> getPointHistoryByIssuedAtAndStatus(
         Long userId,
-        PointStatus pointStatus,
+        TradeType tradeType,
         TradeDateRange tradeDateRange);
 }
