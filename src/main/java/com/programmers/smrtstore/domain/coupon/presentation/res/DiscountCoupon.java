@@ -8,11 +8,14 @@ import lombok.Getter;
 @Getter
 public class DiscountCoupon implements Comparable<DiscountCoupon> {
 
-    private final Coupon coupon;
-    private final Long discount;
+    private final Coupon productCoupon;
+    private final Coupon cartCoupon;
+    private final Integer productCouponDiscount;
+    private final Integer orderCouponDiscount;
+    private final Integer totalDiscountAmount;
 
     @Override
     public int compareTo(DiscountCoupon c) {
-        return (int)(this.discount-c.discount);
+        return (this.totalDiscountAmount-c.totalDiscountAmount);
     }
 }

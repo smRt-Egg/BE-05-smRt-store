@@ -2,10 +2,10 @@ package com.programmers.smrtstore.domain.orderManagement.order.infrastructure;
 
 
 import static com.programmers.smrtstore.domain.orderManagement.order.domain.entity.QOrder.order;
+import static com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus.PAYMENT_COMPLETED;
 import static com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus.PURCHASE_CONFIRMED;
 import static com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.QOrderSheet.orderSheet;
 
-import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.util.DateTimeUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
@@ -30,7 +30,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             .join(order.orderSheet, orderSheet)
             .where(orderSheet.user.id.eq(userId)
                 .and(order.orderDate.between(startDateTime, endDateTime))
-                .and(order.orderStatus.eq(OrderStatus.PAYMENT_COMPLETED))
+                .and(order.orderStatus.eq(PAYMENT_COMPLETED))
             )
             .fetchOne();
 

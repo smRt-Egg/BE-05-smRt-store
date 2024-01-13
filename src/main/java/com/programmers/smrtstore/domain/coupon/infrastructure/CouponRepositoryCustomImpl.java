@@ -2,11 +2,11 @@ package com.programmers.smrtstore.domain.coupon.infrastructure;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.*;
 
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Lock;
+
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,6 @@ import java.util.Optional;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCoupon.coupon;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableProduct.couponAvailableProduct;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser.couponAvailableUser;
-import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponQuantity.couponQuantity;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,17 +23,6 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
-
-    @Override
-    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-    public Optional<CouponQuantity> findCouponQuantity(Long couponId) {
-        return Optional.ofNullable(
-                queryFactory
-                .select(couponQuantity)
-                .from(couponQuantity)
-                .where(couponQuantity.id.eq(couponId))
-                .fetchOne());
-    }
 
     @Override
     public List<Coupon> findUserCoupons(Long userId) {
@@ -94,5 +82,13 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
                 .execute();
         em.flush();
         em.clear();
+    }
+
+    @Override
+    public List<Coupon> getCartCoupons() {
+        return queryFactory
+                .selectFrom(coupon)
+                .where(coupon.couponType.eq(CouponType.CART))
+                .fetch();
     }
 }

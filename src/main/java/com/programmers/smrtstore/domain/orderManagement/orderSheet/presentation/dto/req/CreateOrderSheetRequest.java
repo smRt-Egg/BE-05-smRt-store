@@ -17,5 +17,7 @@ public class CreateOrderSheetRequest {
     private List<CreateOrderedProductRequest> orderedProducts;
     @NotNull
     private DeliveryMethodType deliveryMethod;
+    @NotNull
+    private Integer deliveryFee;
 
 }

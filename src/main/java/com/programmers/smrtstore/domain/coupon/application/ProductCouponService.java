@@ -84,8 +84,8 @@ public class ProductCouponService {
             }
         }
         //TODO: 메모리 관리 뭐가 좋을지?
-        ProductDiscountCalculator productDiscountCalculator = new ProductDiscountCalculator();
-        List<DiscountCoupon> maxDiscountCoupons = productDiscountCalculator.discount(applicableCoupons, product.getSalePrice());
+        List<Coupon> cartCoupons = couponJpaRepository.getCartCoupons();
+        DiscountCoupon maxDiscountCoupons = ProductDiscountCalculator.discount(applicableCoupons,cartCoupons, product);
 
         return ProductCouponResponse.of(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
     }
@@ -100,14 +100,14 @@ public class ProductCouponService {
         cu.reIssueCoupon();
         couponQuantityFacade.decrease(couponId);
         couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.RE_DOWNLOAD));
-        return cu.getId();
+        return coupon.getId();
     }
 
     private Long firstIssueCoupon(Coupon coupon, User user, Long couponId) {
         CouponAvailableUser savedCouponAvailableUser = couponAvailableUserJpaRepository.save(CouponAvailableUser.of(coupon, user));
         couponQuantityFacade.decrease(couponId);
         couponCommonTransactionJpaRepository.save(CouponCommonTransaction.of(user, coupon, CouponStatus.DOWNLOAD));
-        return savedCouponAvailableUser.getId();
+        return coupon.getId();
     }
 
     private Product getProduct(Long productId) {

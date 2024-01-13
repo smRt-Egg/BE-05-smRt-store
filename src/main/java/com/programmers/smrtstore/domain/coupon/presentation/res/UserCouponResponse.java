@@ -17,9 +17,9 @@ public class UserCouponResponse {
     private final String name;
     private final String content;
     private final BenefitUnitType benefitUnitType;
-    private final Long benefitValue;
-    private final Long maxDiscountValue;
-    private final Long minOrderPrice;
+    private final Integer benefitValue;
+    private final Integer maxDiscountValue;
+    private final Integer minOrderPrice;
     private final LocalDateTime validPeriodEndDate;
 
     public static UserCouponResponse from(Coupon coupon) {

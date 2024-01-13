@@ -19,9 +19,9 @@ public class CouponResponse {
 
     private final String name;
     private final String content;
-    private final Long benefitValue;
-    private final Long maxDiscountValue;
-    private final Long minOrderPrice;
+    private final Integer benefitValue;
+    private final Integer maxDiscountValue;
+    private final Integer minOrderPrice;
     private final Integer idPerIssuableCount;
     private final Boolean membershipCouponYn;
     private final Boolean duplicationYn;

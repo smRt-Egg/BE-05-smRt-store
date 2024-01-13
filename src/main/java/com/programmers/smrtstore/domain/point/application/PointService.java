@@ -1,12 +1,15 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
@@ -15,9 +18,6 @@ import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -96,7 +96,9 @@ public class PointService {
         return pointId;
     }
 
-    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, Long userId, boolean membershipYn) {
+    public OrderExpectedPointDto calculateEstimatedAcmPoint(
+        List<Integer> productPrices, Long userId, boolean membershipYn
+    ) {
 
         int totalPrice = productPrices.stream()
             .reduce(0, Integer::sum);
