@@ -36,18 +36,18 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
                 .fetch();
     }
 
+    //유저가 보유하면서 상품에 적용되어있는 쿠폰 리스트 반환
     @Override
-    public Optional<Coupon> findCouponByUserIdAndCouponId(Long userId, Long couponId) {
+    public List<Coupon> findCouponByUserIdAndProductId(Long userId, Long productId) {
 
-        return Optional.ofNullable(
-                queryFactory
+        return queryFactory
                         .select(coupon)
                         .from(couponAvailableUser)
-                        .join(coupon)
-                        .on(couponAvailableUser.coupon.id.eq(coupon.id))
+                        .join(couponAvailableProduct)
+                        .on(couponAvailableUser.coupon.id.eq(couponAvailableProduct.coupon.id))
                         .where(couponAvailableUser.user.id.eq(userId))
-                        .where(couponAvailableUser.coupon.id.eq(couponId))
-                        .fetchOne());
+                        .where(couponAvailableProduct.product.id.eq(productId))
+                        .fetch();
     }
 
     @Override
@@ -89,6 +89,15 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
         return queryFactory
                 .selectFrom(coupon)
                 .where(coupon.couponType.eq(CouponType.CART))
+                .fetch();
+    }
+
+    @Override
+    public List<Coupon> getDeliveryFeeCoupons() {
+        return queryFactory
+                .selectFrom(coupon)
+                .where(coupon.couponType.eq(CouponType.DELIVERY))
+                .orderBy(coupon.validPeriodEndDate.asc())
                 .fetch();
     }
 }

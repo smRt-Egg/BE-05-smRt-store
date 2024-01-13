@@ -10,7 +10,7 @@ public interface CouponRepositoryCustom {
 
     List<Coupon> findUserCoupons(Long userId);
 
-    Optional<Coupon> findCouponByUserIdAndCouponId(Long userId, Long couponId);
+    List<Coupon> findCouponByUserIdAndProductId(Long userId, Long productId);
 
     Long findUserCouponCount(Long userId);
 
@@ -19,5 +19,6 @@ public interface CouponRepositoryCustom {
     void updateExpiredCoupons();
 
     List<Coupon> getCartCoupons();
+    List<Coupon> getDeliveryFeeCoupons();
 
 }
