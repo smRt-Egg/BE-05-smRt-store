@@ -1,11 +1,12 @@
 package com.programmers.smrtstore.domain.product.presentation.dto.res;
 
-import com.programmers.smrtstore.domain.coupon.presentation.res.ProductCouponAPIResponse;
 import com.programmers.smrtstore.domain.coupon.presentation.res.ProductCouponResponse;
+import com.programmers.smrtstore.domain.coupon.presentation.vo.CouponBenefitsPolicy;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
-import com.programmers.smrtstore.domain.point.presentation.dto.res.PointBenefitsAPIResponse;
+import com.programmers.smrtstore.domain.point.presentation.vo.PointBenefits;
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
+import com.programmers.smrtstore.domain.product.presentation.vo.ProductOptionType;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewStatisticsResponse;
 import java.util.List;
 import lombok.AccessLevel;
@@ -23,11 +24,11 @@ public class ProductDetailPageAPIResponse {
     private Integer stockQuantity;
     private String productStatusType;
     private String productImage;
-    private List<ProductOptionTypeResponse> options;
+    private List<ProductOptionType> options;
     private List<ProductDetailOptionAPIResponse> optionCombinations;
     private String releaseDate;
-    private PointBenefitsAPIResponse benefitsView;
-    private ProductCouponAPIResponse benefitsPolicy;
+    private PointBenefits benefitsView;
+    private CouponBenefitsPolicy benefitsPolicy;
     private ReviewStatisticsResponse reviewAmount;
     private Integer discountedSalePrice;
 
@@ -47,7 +48,7 @@ public class ProductDetailPageAPIResponse {
                 .map(ProductDetailOptionAPIResponse::from).toList(),
             productResponse.getReleaseDate().toString(),
             // benefitsView
-            PointBenefitsAPIResponse.builder()
+            PointBenefits.builder()
                 .discountSalePrice(productResponse.getSalePrice())
                 .managerPurchasePoint(pointResponse.getDefaultPoint())
                 .managerPurchaseExtraPoint(pointResponse.getAdditionalPoint())
@@ -60,25 +61,25 @@ public class ProductDetailPageAPIResponse {
         );
     }
 
-    private static List<ProductOptionTypeResponse> getOptionResponses(
+    private static List<ProductOptionType> getOptionResponses(
         OptionNameTypes optionNameTypes) {
         return switch (optionNameTypes.getSize()) {
-            case 1 -> List.of(ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType1()));
-            case 2 -> List.of(ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType1()),
-                ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType2()));
-            case 3 -> List.of(ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType1()),
-                ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType2()),
-                ProductOptionTypeResponse.from(optionNameTypes.getOptionNameType3()));
+            case 1 -> List.of(ProductOptionType.from(optionNameTypes.getOptionNameType1()));
+            case 2 -> List.of(ProductOptionType.from(optionNameTypes.getOptionNameType1()),
+                ProductOptionType.from(optionNameTypes.getOptionNameType2()));
+            case 3 -> List.of(ProductOptionType.from(optionNameTypes.getOptionNameType1()),
+                ProductOptionType.from(optionNameTypes.getOptionNameType2()),
+                ProductOptionType.from(optionNameTypes.getOptionNameType3()));
             default -> List.of();
         };
     }
 
-    private static ProductCouponAPIResponse getBenefitsPolicy(ProductCouponResponse couponResponse,
+    private static CouponBenefitsPolicy getBenefitsPolicy(ProductCouponResponse couponResponse,
         ProductResponse productResponse) {
         if (couponResponse == null) {
             return null;
         }
-        return ProductCouponAPIResponse.of(couponResponse.getIssuableCoupons(),
+        return CouponBenefitsPolicy.of(couponResponse.getIssuableCoupons(),
             couponResponse.getUnIssuableCoupons(), couponResponse.getMaxDiscountCoupons(),
             productResponse.getPrice(), productResponse.getSalePrice());
     }

@@ -1,5 +1,7 @@
-package com.programmers.smrtstore.domain.coupon.presentation.res;
+package com.programmers.smrtstore.domain.coupon.presentation.vo;
 
+import com.programmers.smrtstore.domain.coupon.presentation.res.DiscountCoupon;
+import com.programmers.smrtstore.domain.coupon.presentation.res.UserCouponResponse;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProductCouponAPIResponse {
+public class CouponBenefitsPolicy {
 
     private Integer sellerImmediateDiscountAmount;
     private Integer productDiscountAmount;
@@ -18,7 +20,7 @@ public class ProductCouponAPIResponse {
     private List<UserCouponResponse> issuableCoupons;
     private List<UserCouponResponse> unIssuableCoupons;
 
-    public static ProductCouponAPIResponse of(List<UserCouponResponse> issuableCoupons,
+    public static CouponBenefitsPolicy of(List<UserCouponResponse> issuableCoupons,
         List<UserCouponResponse> unIssuableCoupons, DiscountCoupon maxDiscountCoupon,
         Integer price, Integer salePrice) {
         int sellerImmediateDiscountAmount = price - salePrice;
@@ -26,7 +28,7 @@ public class ProductCouponAPIResponse {
         int storeDiscountAmount = maxDiscountCoupon.getOrderCouponDiscount();
         int totalDiscountAmount =
             sellerImmediateDiscountAmount + productDiscountAmount + storeDiscountAmount;
-        return new ProductCouponAPIResponse(
+        return new CouponBenefitsPolicy(
             sellerImmediateDiscountAmount,
             productDiscountAmount,
             storeDiscountAmount,

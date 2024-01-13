@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.point.presentation.dto.res;
+package com.programmers.smrtstore.domain.point.presentation.vo;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PointBenefitsAPIResponse {
+public class PointBenefits {
 
     private Integer discountSalePrice;
     private Integer managerPurchasePoint;
