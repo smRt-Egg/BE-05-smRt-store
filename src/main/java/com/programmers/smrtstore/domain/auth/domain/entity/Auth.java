@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.auth.domain.entity;
 
-import static com.programmers.smrtstore.core.properties.ErrorCode.INCORRECT_PASSWORD;
+import static com.programmers.smrtstore.core.properties.ErrorCode.AUTH_INCORRECT_PASSWORD;
 
 import com.programmers.smrtstore.domain.auth.exception.AuthException;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -52,7 +52,7 @@ public class Auth {
 
     public void verifyPassword(PasswordEncoder passwordEncoder, String password) {
         if (!passwordEncoder.matches(password, this.password)) {
-            throw new AuthException(INCORRECT_PASSWORD, password);
+            throw new AuthException(AUTH_INCORRECT_PASSWORD, password);
         }
     }
 }

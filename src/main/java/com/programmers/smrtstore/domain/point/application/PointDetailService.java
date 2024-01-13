@@ -5,6 +5,7 @@ import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.AcmPointDetailRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
@@ -80,6 +81,16 @@ public class PointDetailService {
             pointDetailRepository.save(pointDetail);
         }
         return totalAcmPoint;
+    }
+
+    public Integer saveReviewAcmHistory(ReviewPointDetailRequest request) {
+
+        Long userId = request.getUserId();
+        validateUserExists(userId);
+
+        PointDetail pointDetail = request.toEntity();
+        pointDetailRepository.save(pointDetail);
+        return pointDetail.getPointAmount();
     }
 
     public Integer saveUseHistory(PointDetailRequest request) {

@@ -3,7 +3,15 @@ package com.programmers.smrtstore.domain.coupon.domain.entity;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,7 +79,7 @@ public class CouponAvailableUser {
 
     private static void validateMembership(boolean couponMembership, boolean userMembership) {
         if (couponMembership && !userMembership) {
-            throw new CouponException(ErrorCode.NON_MEMBERSHIP);
+            throw new CouponException(ErrorCode.COUPON_MEMBERSHIP_USER_ONLY);
         }
     }
 
@@ -81,13 +89,13 @@ public class CouponAvailableUser {
 
     private void validateExistCoupon() {
         if (!useYn) {
-            throw new CouponException(ErrorCode.COUPON_EXIST);
+            throw new CouponException(ErrorCode.COUPON_EXIST_BY_USER);
         }
     }
 
     private void validateCouponIssueCount() {
         if (coupon.getCouponValue().getIdPerIssuableCount() <= issueCount) {
-            throw new CouponException(ErrorCode.ISSUE_COUNT_EXCEED, String.valueOf(issueCount));
+            throw new CouponException(ErrorCode.COUPON_ISSUE_COUNT_EXCEED, String.valueOf(issueCount));
         }
     }
 

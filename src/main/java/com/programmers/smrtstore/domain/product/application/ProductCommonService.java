@@ -22,7 +22,7 @@ public class ProductCommonService {
 
     public void optionValidate(boolean optionYn) throws ProductException {
         if (!optionYn) {
-            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
     }
 }

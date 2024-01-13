@@ -107,4 +107,8 @@ public class ProductDetailOption {
     protected boolean isDeleted() {
         return deletedAt != null;
     }
+
+    public boolean isAvailableOrder(Integer quantityToPurchase) {
+        return getStockQuantity() >= quantityToPurchase;
+    }
 }

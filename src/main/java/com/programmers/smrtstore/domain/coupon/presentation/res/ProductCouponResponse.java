@@ -11,8 +11,8 @@ import java.util.List;
 public class ProductCouponResponse {
     private List<UserCouponResponse>issuableCoupons;
     private List<UserCouponResponse>unIssuableCoupons;
-    private List<DiscountCoupon> maxDiscountCoupons;
-    public static ProductCouponResponse of(List<UserCouponResponse> issuableCoupons, List<UserCouponResponse> unIssuableCoupons, List<DiscountCoupon> maxDiscountCoupons) {
+    private DiscountCoupon maxDiscountCoupons;
+    public static ProductCouponResponse of(List<UserCouponResponse> issuableCoupons, List<UserCouponResponse> unIssuableCoupons, DiscountCoupon maxDiscountCoupons) {
         return new ProductCouponResponse(issuableCoupons, unIssuableCoupons, maxDiscountCoupons);
     }
 }

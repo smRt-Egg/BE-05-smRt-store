@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.point.domain.entity;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.point.application.PointService;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointLabel;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.exception.PointException;
 import jakarta.persistence.Column;
@@ -41,6 +42,10 @@ public class Point {
     @Column(name = "point_status", nullable = false)
     private PointStatus pointStatus;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "point_label", nullable = false)
+    private PointLabel pointLabel;
+
     @Column(name = "point_value", nullable = false)
     private Integer pointValue;
 
@@ -56,11 +61,13 @@ public class Point {
     private Boolean membershipApplyYn;
 
     @Builder
-    private Point(Long userId, Long orderId, PointStatus pointStatus, Integer pointValue, Boolean membershipApplyYn) {
+    private Point(Long userId, Long orderId, PointStatus pointStatus, PointLabel pointLabel,
+            Integer pointValue, Boolean membershipApplyYn) {
         validatePointValue(pointStatus, pointValue);
         this.userId = userId;
         this.orderId = orderId;
         this.pointStatus = pointStatus;
+        this.pointLabel = pointLabel;
         this.pointValue = pointValue;
         this.issuedAt = LocalDateTime.now();
         this.expiredAt = setExpiredAt(pointStatus);

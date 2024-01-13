@@ -2,35 +2,27 @@ package com.programmers.smrtstore.domain.coupon.infrastructure;
 
 import com.programmers.smrtstore.domain.coupon.domain.entity.*;
 
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Lock;
+
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCoupon.coupon;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableProduct.couponAvailableProduct;
 import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponAvailableUser.couponAvailableUser;
-import static com.programmers.smrtstore.domain.coupon.domain.entity.QCouponQuantity.couponQuantity;
 
 @Repository
 @RequiredArgsConstructor
 public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    @Override
-    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-    public CouponQuantity findCouponQuantity(Long couponId) {
-        return queryFactory
-                .select(couponQuantity)
-                .from(couponQuantity)
-                .where(couponQuantity.id.eq(couponId))
-                .fetchOne();
-    }
+    private final EntityManager em;
 
     @Override
     public List<Coupon> findUserCoupons(Long userId) {
@@ -81,4 +73,22 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public void updateExpiredCoupons() {
+        queryFactory
+                .update(coupon)
+                .set(coupon.availableYn, false)
+                .where(coupon.availableYn.isTrue().and(coupon.validPeriodEndDate.after(LocalDateTime.now())))
+                .execute();
+        em.flush();
+        em.clear();
+    }
+
+    @Override
+    public List<Coupon> getCartCoupons() {
+        return queryFactory
+                .selectFrom(coupon)
+                .where(coupon.couponType.eq(CouponType.CART))
+                .fetch();
+    }
 }
