@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity.vo;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -19,24 +21,31 @@ public class CouponValue {
     private String content;
 
     @Column(nullable = false)
-    private Long benefitValue;
+    private Integer benefitValue;
 
     @Column(nullable = false)
-    private Long maxDiscountValue;
+    private Integer maxDiscountValue;
 
     @Column(nullable = false)
-    private Long minOrderPrice;
+    private Integer minOrderPrice;
 
     @Column(nullable = false)
     private Integer idPerIssuableCount;
 
     @Builder
-    public CouponValue(String name, String content, Long benefitValue, Long maxDiscountValue, Long minOrderPrice, Integer idPerIssuableCount) {
+    private CouponValue(String name, String content, Integer benefitValue, Integer maxDiscountValue, Integer minOrderPrice, Integer idPerIssuableCount) {
+        validateBenefitValueAndMaxDiscountValue(benefitValue, maxDiscountValue);
         this.name = name;
         this.content = content;
         this.benefitValue = benefitValue;
         this.maxDiscountValue = maxDiscountValue;
         this.minOrderPrice = minOrderPrice;
         this.idPerIssuableCount = idPerIssuableCount;
+    }
+
+    private void validateBenefitValueAndMaxDiscountValue(Integer benefitValue, Integer maxDiscountValue) {
+        if (benefitValue > maxDiscountValue) {
+            throw new CouponException(ErrorCode.COUPON_BENEFIT_VALUE_EXCEED);
+        }
     }
 }

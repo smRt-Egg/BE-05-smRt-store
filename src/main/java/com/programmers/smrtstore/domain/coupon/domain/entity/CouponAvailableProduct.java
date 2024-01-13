@@ -1,5 +1,8 @@
 package com.programmers.smrtstore.domain.coupon.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
+import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,7 +32,21 @@ public class CouponAvailableProduct {
     }
 
     public static CouponAvailableProduct of(Coupon coupon, Product product) {
+        validateCouponMinPrice(coupon,product);
+        validateCouponType(coupon);
         return new CouponAvailableProduct(coupon, product);
+    }
+
+    private static void validateCouponMinPrice(Coupon coupon,Product product) {
+        if (coupon.getCouponValue().getMinOrderPrice() > product.getPrice()) {
+            throw new CouponException(ErrorCode.COUPON_PRICE_NOT_ENOUGH);
+        }
+    }
+
+    private static void validateCouponType(Coupon coupon) {
+        if (!coupon.getCouponType().equals(CouponType.PRODUCT)) {
+            throw new CouponException(ErrorCode.COUPON_ONLY_APPLIED_PRODUCT);
+        }
     }
 
 }
