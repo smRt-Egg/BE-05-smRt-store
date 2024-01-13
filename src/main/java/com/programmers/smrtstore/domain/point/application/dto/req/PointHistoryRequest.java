@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.point.application.dto.req;
 
-import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class PointHistoryRequest {
 
     private Long userId;
-    private PointStatus pointStatus;
+    private TradeType tradeType;
     private TradeDateRange tradeDateRange;
 
 }
