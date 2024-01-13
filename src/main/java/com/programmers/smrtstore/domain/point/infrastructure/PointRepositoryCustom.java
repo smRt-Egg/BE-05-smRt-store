@@ -8,10 +8,10 @@ import java.util.Optional;
 public interface PointRepositoryCustom {
 
     List<Point> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus);
-    Optional<Point> findUsedPointByOrderId(Long orderId);
-    List<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus);
-    Integer getAcmPointByOrderId(Long orderId);
-    Boolean findUserMembershipApplyYnByOrderId(Long orderId);
+    Optional<Point> findUsedPointByOrderId(String orderId);
+    List<Point> findByOrderIdAndPointStatus(String orderId, PointStatus pointStatus);
+    Integer getAcmPointByOrderId(String orderId);
+    Boolean findUserMembershipApplyYnByOrderId(String orderId);
     List<Point> findPointByPointStatusAndIssuedAt(Long userId,
         PointStatus pointStatus, int month, int year);
 }

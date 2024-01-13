@@ -49,7 +49,7 @@ public class PointService {
     public Long accumulatePoint(PointRequest request) {
 
         Long userId = request.getUserId();
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
 
         User user = validateUserExists(userId);
 
@@ -110,7 +110,7 @@ public class PointService {
         );
     }
 
-    public OrderExpectedPointDto calculateAcmPoint(Long orderId, User user) {
+    public OrderExpectedPointDto calculateAcmPoint(String orderId, Long userId, boolean membershipYn) {
 
         // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
         int defaultPoint = calculateDefaultPoint(orderId);
@@ -149,7 +149,7 @@ public class PointService {
         return point.getId();
     }
 
-    private int calculateDefaultPoint(Long orderId) {
+    private int calculateDefaultPoint(String orderId) {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
@@ -289,7 +289,7 @@ public class PointService {
 
         validateUserExists(request.getUserId());
 
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
 
         // 차감된 포인트 이력 가져오기
         PointResponse pointResponse = pointFacade.getUsedPointByOrderId(orderId);
@@ -313,7 +313,7 @@ public class PointService {
         return point.getId();
     }
 
-    private int calculateExpiredPoint(Long orderId) {
+    private int calculateExpiredPoint(String orderId) {
 
         List<PointDetailResponse> usedDetailHistory = pointFacade.getUsedDetailByOrderId(orderId);
 

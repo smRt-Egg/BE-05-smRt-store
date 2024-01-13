@@ -40,7 +40,7 @@ public class PointDetailService {
 
         validateUserExists(request.getUserId());
 
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
         List<PointResponse> acmHistory = pointFacade.getByOrderIdAndStatus(
             orderId, PointStatus.ACCUMULATED
         );
@@ -101,7 +101,7 @@ public class PointDetailService {
         Long userId = request.getUserId();
 
         PointResponse point = pointFacade.getPointById(pointId);
-        Long orderId = point.getOrderId();
+        String orderId = point.getOrderId();
         int usedPoint = Math.abs(point.getPointValue());
 
         // 주문에 대한 상품별 결제금액

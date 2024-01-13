@@ -12,19 +12,19 @@ public interface PointFacade {
 
     PointResponse getPointById(Long pointId);
     PointDetailResponse getAcmDetailByPointIdAndOriginAcmId(Long pointId);
-    PointResponse getUsedPointByOrderId(Long orderId);
+    PointResponse getUsedPointByOrderId(String orderId);
     List<PointResponse> findByPointIdAndPointStatus(Long pointId, PointStatus pointStatus);
-    List<PointResponse> getByOrderIdAndStatus(Long orderId, PointStatus pointStatus);
+    List<PointResponse> getByOrderIdAndStatus(String orderId, PointStatus pointStatus);
     List<PointDetailResponse> getUsedDetailByPointId(Long pointId);
-    List<PointDetailResponse> getUsedDetailByOrderId(Long orderId);
+    List<PointDetailResponse> getUsedDetailByOrderId(String orderId);
     List<PointDetailResponse> getUsedDetailByPointIdAndOrderedProductId(Long pointId, Long orderedProductId);
     boolean validateExpiredAt(PointResponse pointResponse);
     Integer makeNegativeNumber(Integer pointAmount);
     List<ExpiredPointDetailResponse> getExpiredSumGroupByOriginAcmId();
     List<PointDetailCustomResponse> getSumGroupByOriginAcmId(Long userId);
-    Integer getAcmPointByOrderId(Long orderId);
+    Integer getAcmPointByOrderId(String orderId);
     Integer getCancelPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductId);
-    Boolean getUserMembershipApplyYnByOrderId(Long orderId);
+    Boolean getUserMembershipApplyYnByOrderId(String orderId);
     List<PointResponse> getPointHistoryByIssuedAtAndStatus(
         Long userId,
         PointStatus pointStatus,

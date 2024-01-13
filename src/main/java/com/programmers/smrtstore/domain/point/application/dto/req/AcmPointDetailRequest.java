@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class AcmPointDetailRequest {
 
     private Long userId;
-    private Long orderId;
+    private String orderId;
     private List<Long> orderedProductIds;
 
     public PointDetail toEntity(Long pointId, Long orderedProductId, Integer pointAmount, Long originAcmId) {

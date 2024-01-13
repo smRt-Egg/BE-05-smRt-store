@@ -12,7 +12,7 @@ public class PointResponse {
 
     private Long id;
     private Long userId;
-    private Long orderId;
+    private String orderId;
     private PointStatus status;
     private PointLabel label;
     private Integer pointValue;

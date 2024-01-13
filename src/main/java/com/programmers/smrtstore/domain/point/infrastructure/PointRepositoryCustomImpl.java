@@ -36,7 +36,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Optional<Point> findUsedPointByOrderId(Long orderId) {
+    public Optional<Point> findUsedPointByOrderId(String orderId) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(point)
             .where(
@@ -48,7 +48,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public List<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus) {
+    public List<Point> findByOrderIdAndPointStatus(String orderId, PointStatus pointStatus) {
         return jpaQueryFactory
             .selectFrom(point)
             .where(
@@ -59,7 +59,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Integer getAcmPointByOrderId(Long orderId) {
+    public Integer getAcmPointByOrderId(String orderId) {
         return jpaQueryFactory
             .select(point.pointValue.sum().as("totalAcmPoint"))
             .from(point)
@@ -72,7 +72,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Boolean findUserMembershipApplyYnByOrderId(Long orderId) {
+    public Boolean findUserMembershipApplyYnByOrderId(String orderId) {
         return jpaQueryFactory
             .select(point.membershipApplyYn)
             .from(point)

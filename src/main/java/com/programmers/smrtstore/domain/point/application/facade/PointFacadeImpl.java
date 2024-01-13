@@ -44,7 +44,7 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public PointResponse getUsedPointByOrderId(Long orderId) {
+    public PointResponse getUsedPointByOrderId(String orderId) {
         Point point = pointRepository.findUsedPointByOrderId(orderId)
             .orElseThrow(() -> new PointException(ErrorCode.POINT_NOT_FOUND));
         return PointResponse.from(point);
@@ -59,7 +59,7 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public List<PointResponse> getByOrderIdAndStatus(Long orderId, PointStatus pointStatus) {
+    public List<PointResponse> getByOrderIdAndStatus(String orderId, PointStatus pointStatus) {
         return pointRepository.findByOrderIdAndPointStatus(orderId, pointStatus)
             .stream()
             .map(PointResponse::from)
@@ -75,7 +75,7 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public List<PointDetailResponse> getUsedDetailByOrderId(Long orderId) {
+    public List<PointDetailResponse> getUsedDetailByOrderId(String orderId) {
         return pointDetailRepository.findUsedDetailsByOrderId(orderId)
             .stream()
             .map(PointDetailResponse::from)
@@ -138,7 +138,7 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public Integer getAcmPointByOrderId(Long orderId) {
+    public Integer getAcmPointByOrderId(String orderId) {
         return pointRepository.getAcmPointByOrderId(orderId);
     }
 
@@ -151,7 +151,7 @@ public class PointFacadeImpl implements PointFacade {
     }
 
     @Override
-    public Boolean getUserMembershipApplyYnByOrderId(Long orderId) {
+    public Boolean getUserMembershipApplyYnByOrderId(String orderId) {
         return pointRepository.findUserMembershipApplyYnByOrderId(orderId);
     }
 
