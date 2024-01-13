@@ -10,5 +10,5 @@ public interface PointDetailRepositoryCustom {
     List<Tuple> getSumGroupByOriginAcmId(Long userId);
     List<Tuple> getExpiredSumGroupByOriginAcmId();
     List<PointDetail> getUsedDetailByPointIdAndOrderedProductId(Long pointId, Long orderedProductid);
-    Integer getPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductid);
+    Integer getTotalPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductid);
 }
