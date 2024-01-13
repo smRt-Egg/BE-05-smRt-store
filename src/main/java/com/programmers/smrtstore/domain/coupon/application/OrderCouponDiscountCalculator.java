@@ -47,12 +47,12 @@ public class OrderCouponDiscountCalculator {
 
 
         Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = new HashMap<>();
-        
+
         int productDiscountSum = 0; //상품의 쿠폰할인 총합 -> 장바구니 쿠폰에서 쓰임
         Map<Long, CouponResponse> selectedProductCouponListsByOrderedProductId = new HashMap<>();
         Map<Long, CouponResponse> selectedProductDuplicateCouponsByOrderedProductId = new HashMap<>();
 
-        
+
         //TODO: 큐에서 하나씩 빼면서 상품쿠폰 최대 할인을 계산함
         while (!pq.isEmpty()) {
             OrderDiscountCoupon poll = pq.poll();
@@ -72,12 +72,13 @@ public class OrderCouponDiscountCalculator {
                     poll.getBaseAmount(),
                     poll.getDiscountAmount()
             ));
-            discountsByOrderedProductId.put(poll.getOrderedProductId(),list);
+            discountsByOrderedProductId.put(poll.getOrderedProductId(), list);
 
-            if(poll.getCoupon().isDuplicationYn())
+            if (poll.getCoupon().isDuplicationYn())
                 selectedProductDuplicateCouponsByOrderedProductId.put(poll.getOrderedProductId(), CouponResponse.from(poll.getCoupon()));
-            else selectedProductCouponListsByOrderedProductId.put(poll.getOrderedProductId(), CouponResponse.from(poll.getCoupon()));
-            
+            else
+                selectedProductCouponListsByOrderedProductId.put(poll.getOrderedProductId(), CouponResponse.from(poll.getCoupon()));
+
         }
 
         //장바구니 쿠폰에서 사용될 즉시할인과 상품할인이 끝난 금액
@@ -97,7 +98,7 @@ public class OrderCouponDiscountCalculator {
         for (OrderedProduct orderedProduct : orderedProducts) {
             List<CouponApplyResult> couponApplyResults = discountsByOrderedProductId.get(orderedProduct.getId());
 
-            Integer cartCouponAppliedPrice = (orderedProduct.getProductSalePriceWithQuantity()* poll.getDiscountValue()) / productCouponAppliedSum ;
+            Integer cartCouponAppliedPrice = (orderedProduct.getProductSalePriceWithQuantity() * poll.getDiscountValue()) / productCouponAppliedSum;
             Integer productSalePriceWithQuantity = orderedProduct.getProductSalePriceWithQuantity();
             if (couponApplyResults.size() == 0) { //상품 쿠폰 없었던 것들
                 couponApplyResults.add(new CouponApplyResult(
@@ -118,7 +119,7 @@ public class OrderCouponDiscountCalculator {
             discountsByOrderedProductId.put(orderedProduct.getId(), couponApplyResults);
         }
         SelectedCoupons selectedCoupons = new SelectedCoupons(selectedProductCouponListsByOrderedProductId, selectedProductDuplicateCouponsByOrderedProductId, selectedCartCoupon);
-        return new SelectedCouponsWithCouponApplyResult(discountsByOrderedProductId,selectedCoupons);
+        return new SelectedCouponsWithCouponApplyResult(discountsByOrderedProductId, selectedCoupons);
     }
 
 
@@ -142,18 +143,14 @@ public class OrderCouponDiscountCalculator {
                 Integer saleAmount = coupon.discountProduct(baseAmount);
 
                 productDiscountSum += saleAmount;
-
-                discountsByOrderedProductId.put(
-                        orderedProduct.getId(),
-                        Arrays.asList(
-                                new CouponApplyResult(
-                                        coupon.getId(),
-                                        coupon.getCouponType(),
-                                        baseAmount,
-                                        saleAmount
-                                )
-                        )
-                );
+                List<CouponApplyResult> list = new ArrayList<>();
+                list.add(new CouponApplyResult(
+                        coupon.getId(),
+                        coupon.getCouponType(),
+                        baseAmount,
+                        saleAmount
+                ));
+                discountsByOrderedProductId.put(orderedProduct.getId(), list);
 
             }
         }
@@ -162,22 +159,22 @@ public class OrderCouponDiscountCalculator {
 
         //TODO: 장바구니 쿠폰을 각 OrderedProduct에 CouponApplyResult를 추가하기
         Coupon selectedCartCoupons = selectedCoupons.getSelectedCartCoupons();
-        int cartCouponApliedSum = selectedCartCoupons.discountProduct(productCouponAppliedSum);
+        int cartCouponDiscount = selectedCartCoupons.discountProduct(productCouponAppliedSum);
 
         for (OrderedProduct orderedProduct : orderedProducts) {
             List<CouponApplyResult> couponApplyResults = discountsByOrderedProductId.get(orderedProduct.getId());
             Integer productSalePriceWithQuantity = orderedProduct.getProductSalePriceWithQuantity();
             System.out.println(productSalePriceWithQuantity);
-            Integer cartCouponAppliedPrice = (orderedProduct.getProductSalePriceWithQuantity() / productCouponAppliedSum) * cartCouponApliedSum;
+            Integer cartCouponAppliedPrice = (orderedProduct.getProductSalePriceWithQuantity() * cartCouponDiscount) / productCouponAppliedSum;
 
             if (couponApplyResults.size() == 0) { //상품 쿠폰 적용 없었던 것들
-                discountsByOrderedProductId.put(
-                        orderedProduct.getId(),
-                        Arrays.asList(new CouponApplyResult(
-                                selectedCartCoupons.getId(),
-                                CouponType.CART,
-                                orderedProduct.getProductSalePriceWithQuantity(), //baseAmount = 상품할인 안한 즉시할인(옵션o,수량o) 총합 가격
-                                cartCouponAppliedPrice)));
+                List<CouponApplyResult> list = new ArrayList<>();
+                list.add(new CouponApplyResult(
+                        selectedCartCoupons.getId(),
+                        CouponType.CART,
+                        orderedProduct.getProductSalePriceWithQuantity(), //baseAmount = 상품할인 안한 즉시할인(옵션o,수량o) 총합 가격
+                        cartCouponAppliedPrice));
+                discountsByOrderedProductId.put(orderedProduct.getId(), list);
 
                 continue;
             }
