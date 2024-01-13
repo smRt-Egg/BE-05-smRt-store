@@ -11,6 +11,6 @@ public class CartDiscountCoupon implements Comparable<CartDiscountCoupon>{
     private Integer discountValue;
     @Override
     public int compareTo(CartDiscountCoupon o) {
-        return this.discountValue-o.discountValue;
+        return o.discountValue-this.discountValue;
     }
 }

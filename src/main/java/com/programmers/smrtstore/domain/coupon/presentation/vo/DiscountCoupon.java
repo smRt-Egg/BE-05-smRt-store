@@ -16,6 +16,6 @@ public class DiscountCoupon implements Comparable<DiscountCoupon> {
 
     @Override
     public int compareTo(DiscountCoupon c) {
-        return (this.totalDiscountAmount-c.totalDiscountAmount);
+        return (c.totalDiscountAmount-this.totalDiscountAmount);
     }
 }
