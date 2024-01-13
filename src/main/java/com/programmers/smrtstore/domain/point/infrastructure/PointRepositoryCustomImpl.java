@@ -95,7 +95,6 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
         LocalDateTime startDateTime = boundaries[0];
         LocalDateTime endDateTime = boundaries[1];
 
-
         JPAQuery<Tuple> query = jpaQueryFactory
             .select(
                 point,

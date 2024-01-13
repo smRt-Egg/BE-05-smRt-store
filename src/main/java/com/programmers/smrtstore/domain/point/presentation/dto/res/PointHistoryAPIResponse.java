@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointLabel;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class PointHistoryAPIResponse {
     private Integer pointAmount;
     private LocalDateTime tradeDateTime;
     private TradeType tradeType;
+    private PointLabel pointLabel;
     private Boolean buyAcmTradeYn;
     private String orderId;
 
@@ -26,7 +28,8 @@ public class PointHistoryAPIResponse {
             response.getName(),
             response.getPointValue(),
             response.getIssuedAt(),
-            setTradeType(response.getStatus()),
+            response.getTradeType(),
+            response.getLabel(),
             setBuyAcmTradeYn(response.getStatus()),
             response.getOrderId()
         );
@@ -34,14 +37,5 @@ public class PointHistoryAPIResponse {
 
     private static Boolean setBuyAcmTradeYn(PointStatus pointStatus) {
         return pointStatus.equals(PointStatus.ACCUMULATED);
-    }
-
-    private static TradeType setTradeType(PointStatus pointStatus) {
-        if (pointStatus == null) {
-            return TradeType.ALL;
-        } else if (pointStatus.equals(PointStatus.ACCUMULATED)) {
-            return TradeType.ACCUMULATED;
-        }
-        return TradeType.USED;
     }
 }

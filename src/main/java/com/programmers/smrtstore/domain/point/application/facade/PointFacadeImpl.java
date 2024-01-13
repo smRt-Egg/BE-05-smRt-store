@@ -122,7 +122,8 @@ public class PointFacadeImpl implements PointFacade {
                     tuple.get(point.orderId),
                     tuple.get(aliasIdxForTotal, Integer.class),
                     Boolean.TRUE.equals(tuple.get(point.membershipApplyYn))
-                ))
+                )
+            )
             .toList();
     }
 
@@ -171,8 +172,10 @@ public class PointFacadeImpl implements PointFacade {
             .map(tuple ->
                 PointHistoryResponse.of(
                     tuple.get(point),
-                    tuple.get(orderedProduct.product.name)
-                ))
+                    tuple.get(orderedProduct.product.name),
+                    tradeType
+                )
+            )
             .toList();
     }
 }

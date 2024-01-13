@@ -30,5 +30,6 @@ public interface PointFacade {
     List<PointHistoryResponse> getPointHistoryByIssuedAtAndStatus(
         Long userId,
         TradeType tradeType,
-        TradeDateRange tradeDateRange);
+        TradeDateRange tradeDateRange
+    );
 }
