@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.coupon.presentation.res;
 
-import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,18 +19,11 @@ public class ProductCouponAPIResponse {
     private List<UserCouponResponse> unIssuableCoupons;
 
     public static ProductCouponAPIResponse of(List<UserCouponResponse> issuableCoupons,
-        List<UserCouponResponse> unIssuableCoupons, List<DiscountCoupon> maxDiscountCoupons,
+        List<UserCouponResponse> unIssuableCoupons, DiscountCoupon maxDiscountCoupon,
         Integer price, Integer salePrice) {
         int sellerImmediateDiscountAmount = price - salePrice;
-        int productDiscountAmount = 0;
-        int storeDiscountAmount = 0;
-        for (DiscountCoupon coupon : maxDiscountCoupons) {
-            if (coupon.getCoupon().getCouponType().equals(CouponType.PRODUCT)) {
-                productDiscountAmount += coupon.getDiscount();
-            } else if (coupon.getCoupon().getCouponType().equals(CouponType.CART)){
-                storeDiscountAmount += coupon.getDiscount();
-            }
-        }
+        int productDiscountAmount = maxDiscountCoupon.getProductCouponDiscount();
+        int storeDiscountAmount = maxDiscountCoupon.getOrderCouponDiscount();
         int totalDiscountAmount =
             sellerImmediateDiscountAmount + productDiscountAmount + storeDiscountAmount;
         return new ProductCouponAPIResponse(

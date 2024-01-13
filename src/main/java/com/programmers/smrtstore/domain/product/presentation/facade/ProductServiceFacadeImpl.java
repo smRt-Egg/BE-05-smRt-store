@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.product.presentation.facade;
 
-import com.programmers.smrtstore.domain.coupon.application.CouponService;
+import com.programmers.smrtstore.domain.coupon.application.ProductCouponService;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailPageAPIResponse;
@@ -16,7 +16,7 @@ public class ProductServiceFacadeImpl implements ProductServiceFacade {
 
     private final ProductService productService;
     private final ReviewService reviewService;
-    private final CouponService couponService;
+    private final ProductCouponService couponService;
     private final PointService pointService;
 
     public List<ProductThumbnailAPIResponse> findAllProductThumbnail() {
