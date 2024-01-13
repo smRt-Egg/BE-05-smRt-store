@@ -62,14 +62,19 @@ public enum ErrorCode {
     ORDERED_PRODUCT_TOTAL_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 총 가격이 유효하지 않습니다."),
     ORDERED_PRODUCT_ORG_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 원가격이 유효하지 않습니다."),
     ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 즉시 할인율이 유효하지 않습니다."),
-    ORDERED_PRODUCT_COUPON_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 쿠폰 할인율이 유효하지 않습니다."),
+    ORDERED_PRODUCT_COUPON_DISCOUNT_INVALID(BAD_REQUEST, "주문한 물건의 쿠폰 할인 금액이 유효하지 않습니다."),
+    ORDERED_PRODUCT_EXTRA_PRICE_INVALID(BAD_REQUEST, "주문한 물건의 추가 금액이 유효하지 않습니다."),
+    DELIVERY_FEE_INVALID(BAD_REQUEST, "배송비가 유효하지 않습니다."),
+    PRODUCT_NOT_AVAILABLE_ORDER(BAD_REQUEST, "주문할 수 없는 상품입니다."),
     UPDATED_POINT_VALUE_INVALID(BAD_REQUEST, "갱신할 포인트의 값이 유효하지 않습니다."),
+    ORDERSHEET_ALREADY_ORDERED(BAD_REQUEST, "이미 주문이 완료된 주문서입니다."),
     // 401
     AUTH_MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
     SECURITY_TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
     EMAIL_VERIFICATION_CODE_ERROR(UNAUTHORIZED, "인증 코드가 올바르지 않습니다."),
     // 403
+    INVALID_USER(FORBIDDEN, "유효하지 않은 사용자입니다."),
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
@@ -86,6 +91,7 @@ public enum ErrorCode {
     REVIEW_LIKE_NOT_FOUND(NOT_FOUND, "리뷰 좋아요를 찾을 수 없습니다."),
     CART_NOT_FOUND(NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     SHIPPING_ADDRESS_NOT_FOUND(NOT_FOUND, "배송지를 찾을수 없습니다."),
+    ORDERSHEET_NOT_FOUND(NOT_FOUND, "주문서를 찾을 수 없습니다."),
     // 409
     USER_DUPLICATE_USERNAME(CONFLICT, "이미 존재하는 아이디입니다. 다른 아이디를 이용해 주세요."),
     USER_DUPLICATE_SHIPPING_ADDRESS(CONFLICT, "동일한 배송지가 존재합니다. 수정 후 다시 시도해주세요."),

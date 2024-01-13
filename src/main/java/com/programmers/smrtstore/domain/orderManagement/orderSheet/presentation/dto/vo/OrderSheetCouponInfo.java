@@ -5,6 +5,12 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+// TODO: NoArgsConstructor 쿠폰 완성 후 삭제 예정
+@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class OrderSheetCouponInfo {
     //여기서 Long은 OrderedProduct Id

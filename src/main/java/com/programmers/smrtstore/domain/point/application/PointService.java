@@ -1,22 +1,24 @@
 package com.programmers.smrtstore.domain.point.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
+import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
-import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
+import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
@@ -33,11 +35,13 @@ public class PointService {
 
     private final PointFacade pointFacade;
     private final OrderService orderService;
+    private final ReviewJpaRepository reviewRepository;
     private final ProductJpaRepository productRepository;
     private final UserJpaRepository userJpaRepository;
     private final PointJpaRepository pointRepository;
 
     public static final int MAX_AVAILALBE_USE_POINT = 2000000;
+    public static final int REVIEW_POINT = 50;
     private static final int MAX_AVAILABLE_POINT = 20000;
     private static final int MAX_PRICE_FOR_FOUR = 200000; // 4% 추가 적립이 가능한 월별 쇼핑 금액 기준
     private static final int MAX_PRICE_FOR_ONE = 3000000; // 1% 추가 적립이 가능한 월별 쇼핑 금액 기준
@@ -89,15 +93,17 @@ public class PointService {
         return pointId;
     }
 
-    public OrderExpectedPointDto calculateEstimatedAcmPoint(List<Integer> productPrices, User user) {
+    public OrderExpectedPointDto calculateEstimatedAcmPoint(
+        List<Integer> productPrices, Long userId, boolean membershipYn
+    ) {
 
         int totalPrice = productPrices.stream()
             .reduce(0, Integer::sum);
 
         int defaultPoint = totalPrice / 100; // 기본 1% 예상 적립금액
         int additionalPoint = 0;
-        if (user.getMembershipYn()) {
-            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, user.getId());
+        if (membershipYn) {
+            additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, userId);
         }
         return OrderExpectedPointDto.of(
             defaultPoint,
@@ -122,6 +128,27 @@ public class PointService {
             additionalPoint,
             defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
         );
+    }
+
+    public Integer calculateMaximumPointForUnwrittenReview(Long userId) {
+
+        validateUserExists(userId);
+        Long unWritteReviewCount = reviewRepository.getUnWrittenReviewCount(userId);
+        return calculateTotalReviewPoint(unWritteReviewCount);
+    }
+
+    private Integer calculateTotalReviewPoint(Long unWritteReviewCount) {
+        return unWritteReviewCount == 0 ? 0 : unWritteReviewCount.intValue() * REVIEW_POINT;
+    }
+
+    public Long accumulatePointByReview(ReviewPointRequest request) {
+
+        Long userId = request.getUserId();
+        User user = validateUserExists(userId);
+
+        Point point = request.toEntity(user.getMembershipYn());
+        pointRepository.save(point);
+        return point.getId();
     }
 
     private int calculateDefaultPoint(Long orderId) {
