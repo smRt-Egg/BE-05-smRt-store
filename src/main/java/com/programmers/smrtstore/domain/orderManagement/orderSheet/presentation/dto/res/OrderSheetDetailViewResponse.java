@@ -1,14 +1,14 @@
 package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetCouponInfo;
-import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetPayMethod;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetProductInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetUserPointInfo;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import java.util.List;
+import lombok.Builder;
 
-public class OrderSheetResponse {
+public class OrderSheetDetailViewResponse {
 
     private Long orderSheetId;
     // 유저 배송지 목록
@@ -21,8 +21,28 @@ public class OrderSheetResponse {
     private OrderSheetCouponInfo couponInfo;
     // 유저 포인트 정보
     private OrderSheetUserPointInfo userPoint;
+    // TODO: 결제 도메인을 만든 후
     // 결제 수단
-    private OrderSheetPayMethod payMethod;
+    // private OrderSheetPayMethod payMethod;
     // TODO: 포인트 혜택 따로
     private OrderExpectedPointDto rewardPoint;
+
+    @Builder
+    public OrderSheetDetailViewResponse(
+        Long orderSheetId, DeliveryAddressBook deliveryAddressBook,
+        OrderSheetOrdererInfo ordererInfo,
+        List<OrderSheetProductInfo> productInfo, OrderSheetCouponInfo couponInfo,
+        OrderSheetUserPointInfo userPoint,
+//        OrderSheetPayMethod payMethod,
+        OrderExpectedPointDto rewardPoint
+    ) {
+        this.orderSheetId = orderSheetId;
+        this.deliveryAddressBook = deliveryAddressBook;
+        this.ordererInfo = ordererInfo;
+        this.productInfo = productInfo;
+        this.couponInfo = couponInfo;
+        this.userPoint = userPoint;
+//        this.payMethod = payMethod;
+        this.rewardPoint = rewardPoint;
+    }
 }

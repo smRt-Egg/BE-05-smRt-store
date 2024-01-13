@@ -1,10 +1,11 @@
 package com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity;
 
+import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_EXTRA_PRICE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_ORG_PRICE_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_QUANTITY_INVALID;
 import static com.programmers.smrtstore.core.properties.ErrorCode.ORDERED_PRODUCT_TOTAL_PRICE_INVALID;
-import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_OPTION_NOT_MATCH;
+import static com.programmers.smrtstore.core.properties.ErrorCode.PRODUCT_DETAIL_OPTION_NOT_MATCH;
 
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.exception.OrderedProductException;
@@ -23,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,6 +37,8 @@ public class OrderedProduct {
     @Column(name = "id")
     private Long id;
 
+    // TODO: Setter 때문에 cascade 를 없앨지 고민
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="order_sheet_id")
     private OrderSheet orderSheet;
@@ -50,6 +54,10 @@ public class OrderedProduct {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "extra_price")
+    private Integer extraPrice;
+
+    @Getter
     @Column(name = "total_price")
     private Integer totalPrice;
 
@@ -57,57 +65,61 @@ public class OrderedProduct {
     private Integer orgPrice;
 
     @Column(name = "immediate_discount")
-    private Integer immediateDiscountRatio;
+    private Integer immediateDiscount;
 
     @Column(name = "coupon_discount", nullable = true)
     private Integer couponDiscount;
 
+    @Column(name = "point_discount", nullable = true)
+    private Integer pointDiscount;
+
     @Builder
     public OrderedProduct(
         Long id, OrderSheet orderSheet, Product product,
-        ProductDetailOption productOption, Integer quantity, Integer totalPrice, Integer orgPrice,
-        Integer immediateDiscountRatio, Integer couponDiscount
+        ProductDetailOption productOption, Integer quantity, Integer extraPrice, Integer orgPrice,
+        Integer immediateDiscount
     ) {
         this.id = id;
         this.orderSheet = orderSheet;
         this.product = product;
         this.productOption = productOption;
         this.quantity = quantity;
-        this.totalPrice = totalPrice;
+        this.extraPrice = extraPrice;
         this.orgPrice = orgPrice;
-        this.immediateDiscountRatio = immediateDiscountRatio;
-        this.couponDiscount = couponDiscount;
-        validateMatchingProductAndOption(product, productOption);
+        this.immediateDiscount = immediateDiscount;
+        this.totalPrice = getCalculatedTotalPrice();
+        validateMatchingProductAndOption(product.getId(), productOption.getProduct().getId());
         validateQuantity(quantity);
-        validateTotalPrice(totalPrice);
+        validateExtraPrice(extraPrice);
         validateOrgPrice(orgPrice);
-        validateImmediateDiscount(immediateDiscountRatio);
-        validateCouponDiscount(couponDiscount);
+        validateImmediateDiscount(immediateDiscount);
     }
 
-    public static OrderedProduct createWithDefaultCouponDiscount(
-        Product product, ProductDetailOption productOption,
-        Integer quantity, Integer totalPrice, Integer orgPrice, Integer immediateDiscountRatio
+    public static OrderedProduct createBeforeOrder(
+        Product product, ProductDetailOption productOption, Integer extraPrice,
+        Integer quantity, Integer orgPrice, Integer immediateDiscount
     ) {
         return OrderedProduct.builder()
             .product(product)
             .productOption(productOption)
+            .extraPrice(extraPrice)
             .quantity(quantity)
-            .totalPrice(totalPrice)
             .orgPrice(orgPrice)
-            .immediateDiscountRatio(immediateDiscountRatio)
-            .couponDiscount(null)
+            .immediateDiscount(immediateDiscount)
             .build();
     }
 
-    private void validateMatchingProductAndOption(
-        Product product, ProductDetailOption productOption
-    ) {
-        var productId = product.getId();
-        var productIdInOption = productOption.getProduct().getId();
+    private void validateExtraPrice(Integer extraPrice) {
+        if (extraPrice < 0) {
+            throw new OrderedProductException(ORDERED_PRODUCT_EXTRA_PRICE_INVALID);
+        }
+    }
 
-        if (!productId.equals(productIdInOption)) {
-            throw new OrderedProductException(PRODUCT_OPTION_NOT_MATCH);
+    private void validateMatchingProductAndOption(
+        Long productId, Long productIdInProductOption
+    ) {
+        if (!productId.equals(productIdInProductOption)) {
+            throw new OrderedProductException(PRODUCT_DETAIL_OPTION_NOT_MATCH);
         }
     }
 
@@ -117,12 +129,12 @@ public class OrderedProduct {
             throw new OrderedProductException(ORDERED_PRODUCT_QUANTITY_INVALID);
         }
         // 현재 재고 내에서 수량이 유효한지
-        // TODO: product 에서 구현할지 상의
-        if (productOption.getStockQuantity() < quantity) {
+        if (productOption.isAvailableOrder(quantity)) {
             throw new OrderedProductException(ORDERED_PRODUCT_QUANTITY_INVALID);
         }
     }
 
+    // TODO: 다른 price 값이 변경되면 totalPrice 도 변경되어야 함. 해당 부분은 외부에서 넣어줄지 내부적으로 변경할지 고민
     private void validateTotalPrice(Integer totalPrice) {
         if (totalPrice < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_TOTAL_PRICE_INVALID);
@@ -145,33 +157,44 @@ public class OrderedProduct {
         }
     }
 
+    // TODO: 생성자에서는 couponDiscount, pointDiscount 를 무조건 null 로 받아 검증하지 않음.
     private void validateCouponDiscount(Integer couponDiscount) {
-        if (couponDiscount == null) {
-            return;
-        }
         if (couponDiscount < 0) {
+            throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
+        }
+    }
+
+    private void validatePointDiscount(Integer pointDiscount) {
+        if (pointDiscount < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_IMMEDIATE_DISCOUNT_INVALID);
         }
     }
 
     // OrderedProduct 에 있는 가격 정보들로 total price 를 계산한 금액
     private Integer getCalculatedTotalPrice() {
-        return getOptionAppliedPriceAfterCoupon() * this.quantity;
+        return getOptionAppliedPriceAfterCouponAndPoint() * this.quantity;
     }
 
-    // 즉시할인 된 금액에서 옵션 추가금까지 붙인 후 쿠폰 할인 금액을 뺀 금액
-    private Integer getOptionAppliedPriceAfterCoupon() {
-        return getOptionAppliedPrice() - this.couponDiscount;
+    // 즉시할인 된 금액에서 옵션 추가금까지 붙인 후 쿠폰 할인 금액, 포인트 할인 금액을 뺀 금액
+    private Integer getOptionAppliedPriceAfterCouponAndPoint() {
+        Integer optionAppliedPrice = getOptionAppliedPrice();
+        if (this.couponDiscount != null) {
+            optionAppliedPrice -= this.couponDiscount;
+        }
+        if (this.pointDiscount != null) {
+            optionAppliedPrice -= this.pointDiscount;
+        }
+        return optionAppliedPrice;
     }
 
     // 즉시할인 된 금액에서 옵션 추가금까지 붙인 금액
     private Integer getOptionAppliedPrice() {
-        return getProductSalePrice() + this.productOption.getPrice();
+        return getProductSalePrice() + this.extraPrice;
     }
 
     // 즉시할인 된 금액
     private Integer getProductSalePrice() {
-        return this.orgPrice * (this.immediateDiscountRatio / 100);
+        return this.orgPrice - this.immediateDiscount;
     }
 
 }

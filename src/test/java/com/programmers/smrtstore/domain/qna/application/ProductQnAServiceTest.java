@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.qna.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -33,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -40,6 +43,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 @Transactional
+@Import(RedisTestConfig.class)
 class ProductQnAServiceTest {
 
     @Autowired
