@@ -147,7 +147,7 @@ public class PointFacadeImpl implements PointFacade {
 
     @Override
     public Integer getCancelPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductId) {
-        return pointDetailRepository.getPriceByPointIdAndOrderedProductId(
+        return pointDetailRepository.getTotalPriceByPointIdAndOrderedProductId(
             pointId,
             orderedProductId
         );

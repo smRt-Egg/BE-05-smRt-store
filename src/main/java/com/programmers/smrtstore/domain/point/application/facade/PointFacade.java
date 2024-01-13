@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.point.application;
+package com.programmers.smrtstore.domain.point.application.facade;
 
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailCustomResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
