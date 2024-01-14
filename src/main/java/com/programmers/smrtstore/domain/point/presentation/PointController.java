@@ -23,7 +23,7 @@ public class PointController {
 
     @Secured("ROLE_USER")
     @PostMapping("/history/list")
-    public ResponseEntity<List<PointHistoryAPIResponse>> findPointHistoryByTradeDateRangeAndStatus(
+    public ResponseEntity<List<PointHistoryAPIResponse>> batchPointExpirationProcess(
         @UserId Long securityUserId,
         @Valid @RequestBody PointHistoryRequest request) {
 
