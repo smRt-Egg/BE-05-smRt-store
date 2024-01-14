@@ -29,7 +29,6 @@ public class ExpiredPointDetailResponse {
             .userId(userId)
             .orderId(orderId)
             .pointAmount(pointAmount)
-            .originAcmId(originAcmId)
             .membershipApplyYn(membershipApplyYn)
             .build();
     }
