@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.product.presentation;
 
+import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
 import com.programmers.smrtstore.domain.product.application.ProductDetailService;
 import com.programmers.smrtstore.domain.product.application.ProductService;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductDetailOptionRequest;
@@ -11,14 +12,16 @@ import com.programmers.smrtstore.domain.product.presentation.dto.req.UpdateProdu
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailOptionAPIResponse;
+import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDetailPageAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductDiscountAPIResponse;
 import com.programmers.smrtstore.domain.product.presentation.dto.res.ProductThumbnailAPIResponse;
-import com.programmers.smrtstore.domain.review.application.ReviewService;
+import com.programmers.smrtstore.domain.product.presentation.facade.ProductServiceFacade;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +38,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductDetailService productDetailService;
-    private final ReviewService reviewService;
+    private final ProductServiceFacade productFacade;
 
     @PostMapping
     public ResponseEntity<ProductAPIResponse> createProduct(
@@ -56,18 +59,17 @@ public class ProductController {
         var result = productDetailService.addProductDetailOption(productId, request.toRequest());
         return ResponseEntity.ok(ProductDetailOptionAPIResponse.from(result));
     }
-    // ProductDetailPage
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductDetailPageAPIResponse> findProductById(
+        @PathVariable Long productId) {
+        var result = productFacade.findProductById(productId, certificateUser());
+        return ResponseEntity.ok(result);
+    }
 
     @GetMapping
     public ResponseEntity<List<ProductThumbnailAPIResponse>> findAllProducts() {
-        var result = productService.getAllProducts().stream()
-            .map(productData -> {
-                var reviewData = reviewService.getReviewsSizeAndAvgScoreByProductId(
-                    productData.getId());
-                return ProductThumbnailAPIResponse.of(productData, reviewData);
-            })
-            .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(productFacade.findAllProductThumbnail());
     }
 
     @Secured("ROLE_ADMIN")
@@ -111,6 +113,11 @@ public class ProductController {
         @PathVariable Long optionId) {
         var result = productDetailService.removeProductOption(productId, optionId);
         return ResponseEntity.ok(result);
+    }
+
+    private Long certificateUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ((JwtToken) authentication.getPrincipal()).getUserId();
     }
 
 }
