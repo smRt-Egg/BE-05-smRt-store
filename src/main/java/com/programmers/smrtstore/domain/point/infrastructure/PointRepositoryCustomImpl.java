@@ -1,11 +1,17 @@
 package com.programmers.smrtstore.domain.point.infrastructure;
 
 import static com.programmers.smrtstore.domain.point.domain.entity.QPoint.point;
+import static com.programmers.smrtstore.domain.point.domain.entity.QPointDetail.pointDetail;
+import static com.programmers.smrtstore.domain.orderManagement.order.domain.entity.QOrder.order;
+import static com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.QOrderedProduct.orderedProduct;
 
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import com.programmers.smrtstore.util.DateTimeUtils;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +42,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Optional<Point> findUsedPointByOrderId(Long orderId) {
+    public Optional<Point> findUsedPointByOrderId(String orderId) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(point)
             .where(
@@ -48,7 +54,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public List<Point> findByOrderIdAndPointStatus(Long orderId, PointStatus pointStatus) {
+    public List<Point> findByOrderIdAndPointStatus(String orderId, PointStatus pointStatus) {
         return jpaQueryFactory
             .selectFrom(point)
             .where(
@@ -59,9 +65,9 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Integer getAcmPointByOrderId(Long orderId) {
+    public Integer getAcmPointByOrderId(String orderId) {
         return jpaQueryFactory
-            .select(point.pointValue.sum().as("totalAcmPoint"))
+            .select(point.pointValue.sum())
             .from(point)
             .where(
                 point.orderId.eq(orderId),
@@ -72,7 +78,7 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public Boolean findUserMembershipApplyYnByOrderId(Long orderId) {
+    public Boolean findUserMembershipApplyYnByOrderId(String orderId) {
         return jpaQueryFactory
             .select(point.membershipApplyYn)
             .from(point)
@@ -84,18 +90,35 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom {
     }
 
     @Override
-    public List<Point> findPointByPointStatusAndIssuedAt(Long userId, PointStatus pointStatus, int month, int year) {
+    public List<Tuple> findPointHisoryByPointStatusAndIssuedAt(Long userId, TradeType tradeType, int month, int year) {
         LocalDateTime[] boundaries = DateTimeUtils.getMonthBoundaries(month, year);
         LocalDateTime startDateTime = boundaries[0];
         LocalDateTime endDateTime = boundaries[1];
 
-        return jpaQueryFactory
-            .selectFrom(point)
-            .where(
-                point.userId.eq(userId),
-                point.pointStatus.eq(pointStatus),
-                point.expiredAt.between(startDateTime, endDateTime)
+        JPAQuery<Tuple> query = jpaQueryFactory
+            .select(
+                point,
+                orderedProduct.product.name
             )
-            .fetch();
+            .from(point)
+            .innerJoin(order).on(point.orderId.eq(order.id))
+            .where(
+                point.id.in(
+                    JPAExpressions
+                        .select(pointDetail.id)
+                        .from(pointDetail)
+                        .where(pointDetail.orderedProductId.eq(orderedProduct.id))
+                ),
+                point.userId.eq(userId),
+                point.pointStatus.eq(PointStatus.ACCUMULATED).or(point.pointStatus.eq(PointStatus.USED)),
+                point.issuedAt.between(startDateTime, endDateTime)
+            );
+
+        if (tradeType != TradeType.ALL) {
+            query.where(point.pointStatus.eq(
+                tradeType == TradeType.ACCUMULATED ? PointStatus.ACCUMULATED : PointStatus.USED));
+        }
+
+        return query.fetch();
     }
 }

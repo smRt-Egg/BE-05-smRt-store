@@ -36,7 +36,7 @@ public class Point {
     private Long userId;
 
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "point_status", nullable = false)
@@ -61,7 +61,7 @@ public class Point {
     private Boolean membershipApplyYn;
 
     @Builder
-    private Point(Long userId, Long orderId, PointStatus pointStatus, PointLabel pointLabel,
+    private Point(Long userId, String orderId, PointStatus pointStatus, PointLabel pointLabel,
             Integer pointValue, Boolean membershipApplyYn) {
         validatePointValue(pointStatus, pointValue);
         this.userId = userId;

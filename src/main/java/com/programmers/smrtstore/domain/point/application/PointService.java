@@ -3,17 +3,20 @@ package com.programmers.smrtstore.domain.point.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
-import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UsePointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.OrderExpectedPointDto;
+import com.programmers.smrtstore.domain.point.application.dto.req.PointHistoryRequest;
+import com.programmers.smrtstore.domain.point.application.dto.res.PointHistoryResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
 import com.programmers.smrtstore.domain.point.application.dto.res.ProductEstimatedPointDto;
+import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.domain.entity.vo.TradeDateRange;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.TradeType;
 import com.programmers.smrtstore.domain.point.infrastructure.PointJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -49,7 +52,7 @@ public class PointService {
     public Long accumulatePoint(PointRequest request) {
 
         Long userId = request.getUserId();
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
 
         User user = validateUserExists(userId);
 
@@ -112,16 +115,16 @@ public class PointService {
         );
     }
 
-    public OrderExpectedPointDto calculateAcmPoint(Long orderId, User user) {
+    public OrderExpectedPointDto calculateAcmPoint(String orderId, Long userId, boolean membershipYn) {
 
         // 전체 주문금액에 대한 기본 1% 적립 (=기본직립)
         int defaultPoint = calculateDefaultPoint(orderId);
 
         int additionalPoint = 0;
-        if (user.getMembershipYn()) {
+        if (membershipYn) {
             List<OrderedProductResponse> orderedProducts = orderService.getProductsForOrder(orderId);
             // 멤버십, 월별 쇼핑 금액이 반영된 추가 멤버십 적용 금액
-            additionalPoint = calculateAdditionalAcmPoint(orderedProducts, user.getId());
+            additionalPoint = calculateAdditionalAcmPoint(orderedProducts, userId);
         }
         return OrderExpectedPointDto.of(
             defaultPoint,
@@ -151,7 +154,7 @@ public class PointService {
         return point.getId();
     }
 
-    private int calculateDefaultPoint(Long orderId) {
+    private int calculateDefaultPoint(String orderId) {
         return orderService.getTotalPriceByOrderId(orderId) / 100;
     }
 
@@ -291,7 +294,7 @@ public class PointService {
 
         validateUserExists(request.getUserId());
 
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
 
         // 차감된 포인트 이력 가져오기
         PointResponse pointResponse = pointFacade.getUsedPointByOrderId(orderId);
@@ -315,7 +318,7 @@ public class PointService {
         return point.getId();
     }
 
-    private int calculateExpiredPoint(Long orderId) {
+    private int calculateExpiredPoint(String orderId) {
 
         List<PointDetailResponse> usedDetailHistory = pointFacade.getUsedDetailByOrderId(orderId);
 
@@ -329,13 +332,19 @@ public class PointService {
         return expiredPoint;
     }
 
-    public List<PointResponse> getPointHistory(PointHistoryRequest request) {
+    public List<PointHistoryResponse> getPointHistory(Long securityuserId, PointHistoryRequest request) {
 
-        Long userId = request.getUserId();
-        PointStatus pointStatus = request.getPointStatus();
+        Long userId = validateTokenWithUserId(securityuserId, request.getUserId());
+        TradeType tradeType = request.getTradeType();
         TradeDateRange tradeDateRange = request.getTradeDateRange();
+        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, tradeType, tradeDateRange);
+    }
 
-        return pointFacade.getPointHistoryByIssuedAtAndStatus(userId, pointStatus, tradeDateRange);
+    private Long validateTokenWithUserId(Long securityUserId, Long userId) {
+        if (!securityUserId.equals(userId)) {
+            throw new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId));
+        }
+        return userId;
     }
 
     private User validateUserExists(Long userId) {
