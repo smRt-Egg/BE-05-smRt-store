@@ -25,6 +25,7 @@ public class ExpiredPointDetailResponse {
     public static ExpiredPointDetailResponse of(Long originAcmId, Long userId, String orderId,
             Integer pointAmount, boolean membershipApplyYn) {
         return ExpiredPointDetailResponse.builder()
+            .originAcmId(originAcmId)
             .userId(userId)
             .orderId(orderId)
             .pointAmount(pointAmount)
