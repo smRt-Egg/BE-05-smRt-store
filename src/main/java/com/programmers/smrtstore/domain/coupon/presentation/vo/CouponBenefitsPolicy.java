@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.coupon.presentation.vo;
 
-import com.programmers.smrtstore.domain.coupon.presentation.res.DiscountCoupon;
 import com.programmers.smrtstore.domain.coupon.presentation.res.UserCouponResponse;
 import java.util.List;
 import lombok.AccessLevel;
