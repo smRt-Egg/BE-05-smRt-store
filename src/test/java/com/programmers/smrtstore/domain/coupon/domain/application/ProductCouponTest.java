@@ -101,8 +101,8 @@ public class ProductCouponTest {
                 .price(100_000)
                 .category(Category.CLOTHES)
                 .combinationYn(false)
-                .thumbnail(new URL("http://example.com/thumbnail.jpg"))
-                .contentImage(new URL("http://example.com/content.jpg"))
+                .thumbnail(String.valueOf(new URL("http://example.com/thumbnail.jpg")))
+                .contentImage(String.valueOf(new URL("http://example.com/content.jpg")))
                 .build();
 
     }
