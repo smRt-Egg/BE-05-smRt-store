@@ -18,7 +18,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
-@Table(name = "review_like")
+@Table(name = "review_like_TB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewLike {
 
