@@ -4,11 +4,13 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.ORDER_NOT_FOUN
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.Order;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.orderManagement.order.exception.OrderException;
 import com.programmers.smrtstore.domain.orderManagement.order.infrastructure.OrderJpaRepository;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.req.CreateOrderRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.req.UpdateOrderRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.CreateOrderResponse;
+import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderPreviewResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -75,6 +77,22 @@ public class OrderServiceImpl implements OrderService {
             .getOrderSheet().getOrderedProducts().stream()
             .map(OrderedProductResponse::from)
             .toList();
+    }
+
+    @Override
+    public List<OrderPreviewResponse> getOrderPreviewsByUserId(Long userId) {
+        checkUserExistence(userId);
+        List<Order> orders = orderJpaRepository.findByUserId(userId);
+
+        return orders.stream()
+            .map(OrderPreviewResponse::from)
+            .toList();
+    }
+
+    @Override
+    public Long getActiveOrderCountByUserId(Long userId) {
+        checkUserExistence(userId);
+        return orderJpaRepository.findOrderCountByStatusesAndUserId(userId, OrderStatus.getActiveOrderStatus());
     }
 
     private User checkUserExistence(Long userId) {
