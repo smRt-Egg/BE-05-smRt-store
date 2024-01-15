@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class UsePointRequest {
 
     private Long userId;
-    private Long orderId;
+    private String orderId;
     private Integer pointAmount;
 
     public Point toEntity(boolean membershipApplyYn) {

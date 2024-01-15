@@ -8,13 +8,13 @@ public class ExpiredPointDetailResponse {
 
     private final Long originAcmId;
     private final Long userId;
-    private final Long orderId;
+    private final String orderId;
     private final Integer pointAmount;
     private final boolean membershipApplyYn;
 
     @Builder
-    private ExpiredPointDetailResponse(Long originAcmId, Long userId, Long orderId, Integer pointAmount,
-        boolean membershipApplyYn) {
+    private ExpiredPointDetailResponse(Long originAcmId, Long userId, String orderId,
+            Integer pointAmount, boolean membershipApplyYn) {
         this.originAcmId = originAcmId;
         this.userId = userId;
         this.orderId = orderId;
@@ -22,8 +22,8 @@ public class ExpiredPointDetailResponse {
         this.membershipApplyYn = membershipApplyYn;
     }
 
-    public static ExpiredPointDetailResponse of(Long originAcmId, Long userId, Long orderId, Integer pointAmount,
-        boolean membershipApplyYn) {
+    public static ExpiredPointDetailResponse of(Long originAcmId, Long userId, String orderId,
+            Integer pointAmount, boolean membershipApplyYn) {
         return ExpiredPointDetailResponse.builder()
             .originAcmId(originAcmId)
             .userId(userId)

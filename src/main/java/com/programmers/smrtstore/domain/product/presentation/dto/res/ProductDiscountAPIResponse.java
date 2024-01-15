@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.product.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductResponse;
+import com.programmers.smrtstore.domain.product.presentation.vo.ProductDetailOptionPrice;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class ProductDiscountAPIResponse {
     private Integer discountRatio;
     private boolean discountYn;
 
-    private List<ProductDetailOptionPriceResponse> detailOptionPriceAPIResponses;
+    private List<ProductDetailOptionPrice> detailOptionPriceAPIResponses;
 
     public static ProductDiscountAPIResponse from(ProductResponse response) {
         return new ProductDiscountAPIResponse(
@@ -25,7 +26,7 @@ public class ProductDiscountAPIResponse {
             response.getSalePrice(),
             response.getDiscountRatio(),
             response.isDiscountYn(),
-            response.getDetailOptionResponses().stream().map(ProductDetailOptionPriceResponse::from)
+            response.getDetailOptionResponses().stream().map(ProductDetailOptionPrice::from)
                 .toList()
         );
     }
