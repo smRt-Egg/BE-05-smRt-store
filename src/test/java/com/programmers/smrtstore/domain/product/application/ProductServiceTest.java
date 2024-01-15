@@ -12,7 +12,6 @@ import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import java.net.MalformedURLException;
-import java.net.URL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -54,8 +52,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         // Act
@@ -82,8 +80,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedResult = productService.createProduct(request);
@@ -113,8 +111,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         productService.createProduct(request);
@@ -132,8 +130,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -154,8 +152,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -173,8 +171,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -195,8 +193,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -213,8 +211,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -234,8 +232,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -252,8 +250,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -269,8 +267,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -287,8 +285,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -319,8 +317,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -341,8 +339,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -360,8 +358,8 @@ class ProductServiceTest {
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();

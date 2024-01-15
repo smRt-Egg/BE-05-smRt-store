@@ -4,7 +4,6 @@ import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatusType;
 import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNameTypes;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -22,8 +21,8 @@ public class ProductDetailResponse {
     private Integer discountRatio;
     private Category category;
     private Integer stockQuantity;
-    private URL thumbnail;
-    private URL contentImage;
+    private String thumbnail;
+    private String contentImage;
     private LocalDate releaseDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

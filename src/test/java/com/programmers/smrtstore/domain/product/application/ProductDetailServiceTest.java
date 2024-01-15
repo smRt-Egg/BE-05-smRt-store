@@ -12,8 +12,6 @@ import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatu
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -38,21 +35,13 @@ class ProductDetailServiceTest {
     private static final Category CATEGORY = Category.IT;
     private static final Integer SALE_PRICE = 10000;
     private static final Integer STOCK_QUANTITY = 100;
-    private static final URL THUMBNAIL;
-    private static final URL CONTENT_IMAGE;
+    private static final String THUMBNAIL = "https://localhost";
+    private static final String CONTENT_IMAGE = "https://localhost:8080";
     private static final String OPTION_NAME_TYPE_1 = "optionName1";
     private static final String OPTION_NAME_TYPE_2 = "optionName2";
     private static final String OPTION_NAME_1 = "optionName1";
     private static final String OPTION_NAME_2 = "optionName2";
 
-    static {
-        try {
-            THUMBNAIL = new URL("https://localhost");
-            CONTENT_IMAGE = new URL("https://localhost:8080");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private final CreateProductRequest productRequest = CreateProductRequest.builder()
         .name(NAME)

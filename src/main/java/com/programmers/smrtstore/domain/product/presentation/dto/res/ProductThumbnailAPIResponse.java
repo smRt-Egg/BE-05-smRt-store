@@ -2,7 +2,6 @@ package com.programmers.smrtstore.domain.product.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductThumbnailResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewStatisticsResponse;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class ProductThumbnailAPIResponse {
     private boolean discountYn;
     private Integer salePrice;
     private Integer discountRatio;
-    private URL thumbnail;
+    private String thumbnail;
     private Integer reviewCount;
     private Double reviewAvgScore;
 

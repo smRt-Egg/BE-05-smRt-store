@@ -3,8 +3,6 @@ package com.programmers.smrtstore.domain.keep.presentation.dto.res;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.net.URL;
-
 @Getter
 @Builder
 public class KeepResponse {
@@ -12,9 +10,9 @@ public class KeepResponse {
     private Long userId;
     private String name;
     private Integer salePrice;
-    private URL contentImage;
+    private String contentImage;
 
-    public KeepResponse(Long id, Long userId, String name, Integer salePrice, URL contentImage) {
+    public KeepResponse(Long id, Long userId, String name, Integer salePrice, String contentImage) {
         this.id = id;
         this.userId = userId;
         this.name = name;
