@@ -6,8 +6,8 @@ import java.util.Map;
 
 
 public class SelectedCoupons {
-
-    private Map<Long, CouponResponse> selectedProductCouponListsByOrderSheetOptionId;
-    private Map<Long, CouponResponse> selectedProductDuplicateCouponsByOrderSheetItemId;
+    //여기서 Long은 OrderedProductId .
+    private Map<Long, CouponResponse> selectedProductCouponListsByOrderedProductId; //오더프로덕트당 선택된 쿠폰
+    private Map<Long, CouponResponse> selectedProductDuplicateCouponsByOrderedProductId;
     private List<CouponResponse> selectedCartCoupons;
 }

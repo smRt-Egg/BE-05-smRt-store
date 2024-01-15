@@ -11,7 +11,9 @@ import com.programmers.smrtstore.domain.coupon.infrastructure.CouponAvailableUse
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponCommonTransactionJpaRepository;
 import com.programmers.smrtstore.domain.coupon.infrastructure.facade.CouponQuantityFacade;
 import com.programmers.smrtstore.domain.coupon.presentation.req.SaveCouponRequest;
-import com.programmers.smrtstore.domain.coupon.presentation.res.*;
+import com.programmers.smrtstore.domain.coupon.presentation.res.ProductCouponResponse;
+import com.programmers.smrtstore.domain.coupon.presentation.res.UserCouponResponse;
+import com.programmers.smrtstore.domain.coupon.presentation.vo.DiscountCoupon;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
