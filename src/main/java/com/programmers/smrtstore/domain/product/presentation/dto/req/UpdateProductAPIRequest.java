@@ -29,7 +29,7 @@ public class UpdateProductAPIRequest {
             .name(name)
             .price(price)
             .stockQuantity(stockQuantity)
-            .category(Category.findById(categoryId))
+            .category(categoryId == null ? null : Category.findById(categoryId))
             .thumbnail(thumbnailUrl)
             .contentImage(contentImageUrl)
             .optionNameType1(optionNameType1)

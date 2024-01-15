@@ -42,11 +42,12 @@ public class ProductDetailPageAPIResponse {
             productResponse.getPrice(),
             productResponse.getStockQuantity(),
             productResponse.getProductStatusType().name(),
-            productResponse.getContentImage().toString(),
+            productResponse.getContentImage(),
             getOptionResponses(productResponse.getOptionNameTypes()),
             productResponse.getDetailOptionResponses().stream()
                 .map(ProductDetailOptionAPIResponse::from).toList(),
-            productResponse.getReleaseDate().toString(),
+            productResponse.getReleaseDate() == null ? null
+                : productResponse.getReleaseDate().toString(),
             // benefitsView
             PointBenefits.builder()
                 .discountSalePrice(productResponse.getSalePrice())
@@ -63,6 +64,9 @@ public class ProductDetailPageAPIResponse {
 
     private static List<ProductOptionType> getOptionResponses(
         OptionNameTypes optionNameTypes) {
+        if (optionNameTypes == null) {
+            return List.of();
+        }
         return switch (optionNameTypes.getSize()) {
             case 1 -> List.of(ProductOptionType.from(optionNameTypes.getOptionNameType1()));
             case 2 -> List.of(ProductOptionType.from(optionNameTypes.getOptionNameType1()),
