@@ -4,8 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.core.config.RedisTestConfig;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.infrastructure.OrderSheetJpaRepository;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.infrastructure.OrderedProductJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
@@ -47,9 +54,16 @@ class ReviewServiceTest {
     ProductJpaRepository productJpaRepository;
     @Autowired
     UserJpaRepository userJpaRepository;
+    @Autowired
+    OrderedProductJpaRepository orderedProductJpaRepository;
+    @Autowired
+    OrderSheetJpaRepository orderSheetJpaRepository;
 
     User user;
     Product product;
+    OrderedProduct orderedProduct1;
+    OrderedProduct orderedProduct2;
+    OrderSheet orderSheet;
 
     @BeforeEach
     void init() throws MalformedURLException {
@@ -71,6 +85,27 @@ class ReviewServiceTest {
                 .thumbnail("https://www.naver.com")
                 .contentImage("https://www.naver.com")
                 .build());
+        ProductDetailOption productDetailOption = ProductDetailOption.builder()
+                .stockQuantity(10)
+                .price(1000)
+                .product(product)
+                .optionType(OptionType.SINGLE)
+                .optionNames(OptionNames.builder()
+                        .optionName1("optionName1")
+                        .optionName2("optionName2")
+                        .optionName3("optionName3")
+                        .build()
+                )
+                .build();
+        orderedProduct1 = OrderedProduct.createBeforeOrder(product, productDetailOption, 100, 10, 100, 10);
+        orderedProduct2 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        orderedProductJpaRepository.save(orderedProduct1);
+        orderedProductJpaRepository.save(orderedProduct2);
+        orderSheet = OrderSheet.builder()
+                .user(user)
+                .orderedProducts(List.of(orderedProduct1, orderedProduct2))
+                .build();
+        orderSheetJpaRepository.save(orderSheet);
     }
 
     @DisplayName("오더가 생생 되어 있지 않다면 리뷰를 생성할 수 없다.")
@@ -86,7 +121,7 @@ class ReviewServiceTest {
                 .content(content)
                 .reviewScore(score)
                 .userId(user.getId())
-                .productId(product.getId())
+                .orderProductId(orderedProduct1.getId())
                 .build();
         //When //Then
         assertThatThrownBy(() -> reviewService.createReview(user.getId(), request))
@@ -103,7 +138,7 @@ class ReviewServiceTest {
 
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -115,7 +150,7 @@ class ReviewServiceTest {
         assertThat(response.getContent()).isEqualTo(content);
         assertThat(response.getReviewScore()).isEqualTo(score);
         assertThat(response.getUserId()).isEqualTo(user.getId());
-        assertThat(response.getProductId()).isEqualTo(product.getId());
+        assertThat(response.getOrderedProductId()).isEqualTo(orderedProduct1.getId());
         assertThat(response.getLikeCount()).isZero();
     }
 
@@ -128,7 +163,7 @@ class ReviewServiceTest {
         for (int i = 0; i < testSize; i++) {
             Review review = Review.builder()
                     .user(user)
-                    .product(product)
+                    .orderedProduct(orderedProduct1)
                     .title("title" + i)
                     .content("content" + i)
                     .reviewScore(ReviewScore.FOUR)
@@ -151,7 +186,7 @@ class ReviewServiceTest {
         for (int i = 0; i < testSize; i++) {
             Review review = Review.builder()
                     .user(user)
-                    .product(product)
+                    .orderedProduct(orderedProduct1)
                     .title("title" + i)
                     .content("content" + i)
                     .reviewScore(ReviewScore.FOUR)
@@ -174,7 +209,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -208,7 +243,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -228,7 +263,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -252,7 +287,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -276,7 +311,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -302,7 +337,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
