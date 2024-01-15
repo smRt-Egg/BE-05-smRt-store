@@ -25,7 +25,6 @@ import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
-import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -87,13 +85,13 @@ class ProductQnAServiceTest {
             .name("productName")
             .price(1000)
             .category(Category.IT)
-            .thumbnail(new URL("https://www.naver.com"))
+            .thumbnail("https://www.naver.com")
             .build();
         product2 = Product.builder()
             .name("productName2")
             .price(10000)
             .category(Category.IT)
-            .thumbnail(new URL("https://www.google.com"))
+            .thumbnail("https://www.google.com")
             .build();
         Product saveProduct1 = productRepository.save(product1);
         Product saveProduct2 = productRepository.save(product2);

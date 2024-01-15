@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ReviewPointRequest {
 
     private Long userId;
-    private Long orderId;
+    private String orderId;
 
     public Point toEntity(boolean membershipApplyYn) {
         return Point.builder()

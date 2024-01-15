@@ -20,7 +20,6 @@ import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -70,8 +68,8 @@ class ReviewServiceTest {
                 .name("productName")
                 .price(1000)
                 .category(Category.IT)
-                .thumbnail(new URL("https://www.naver.com"))
-                .contentImage(new URL("https://www.naver.com"))
+                .thumbnail("https://www.naver.com")
+                .contentImage("https://www.naver.com")
                 .build());
     }
 

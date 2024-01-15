@@ -1,8 +1,7 @@
 package com.programmers.smrtstore.domain.product.presentation.dto.res;
 
 import com.programmers.smrtstore.domain.product.application.dto.res.ProductThumbnailResponse;
-import com.programmers.smrtstore.domain.review.application.dto.res.ReviewDetailResponse;
-import java.net.URL;
+import com.programmers.smrtstore.domain.review.application.dto.res.ReviewStatisticsResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,12 +16,12 @@ public class ProductThumbnailAPIResponse {
     private boolean discountYn;
     private Integer salePrice;
     private Integer discountRatio;
-    private URL thumbnail;
+    private String thumbnail;
     private Integer reviewCount;
-    private Float reviewAvgScore;
+    private Double reviewAvgScore;
 
     public static ProductThumbnailAPIResponse of(ProductThumbnailResponse productResponse,
-        ReviewDetailResponse reviewResponse) {
+        ReviewStatisticsResponse reviewResponse) {
         return new ProductThumbnailAPIResponse(
             productResponse.getId(),
             productResponse.getName(),
@@ -31,8 +30,8 @@ public class ProductThumbnailAPIResponse {
             productResponse.getSalePrice(),
             productResponse.getDiscountRatio(),
             productResponse.getThumbnail(),
-            reviewResponse.getSize(),
-            reviewResponse.getAvgScore()
+            reviewResponse.getTotalReviewCount(),
+            reviewResponse.getAverageReviewScore()
         );
     }
 }

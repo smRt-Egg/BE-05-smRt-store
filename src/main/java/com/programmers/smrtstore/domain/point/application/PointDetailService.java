@@ -10,6 +10,7 @@ import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPoint
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
+import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import com.programmers.smrtstore.domain.point.infrastructure.PointDetailJpaRepository;
@@ -23,6 +24,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +42,7 @@ public class PointDetailService {
 
         validateUserExists(request.getUserId());
 
-        Long orderId = request.getOrderId();
+        String orderId = request.getOrderId();
         List<PointResponse> acmHistory = pointFacade.getByOrderIdAndStatus(
             orderId, PointStatus.ACCUMULATED
         );
@@ -101,7 +103,7 @@ public class PointDetailService {
         Long userId = request.getUserId();
 
         PointResponse point = pointFacade.getPointById(pointId);
-        Long orderId = point.getOrderId();
+        String orderId = point.getOrderId();
         int usedPoint = Math.abs(point.getPointValue());
 
         // 주문에 대한 상품별 결제금액
@@ -224,6 +226,7 @@ public class PointDetailService {
         return cancelPoint;
     }
 
+    @Scheduled(cron = "0 0 0 * * *")
     public Integer saveExpirationHistory() {
 
         List<ExpiredPointDetailResponse> expireHistory = pointFacade.getExpiredSumGroupByOriginAcmId();

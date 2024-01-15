@@ -62,14 +62,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Integer getTotalPriceByOrderId(Long orderId) {
+    public Integer getTotalPriceByOrderId(String orderId) {
         Order order = orderJpaRepository.findByIdIncludeDeleted(orderId)
             .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)));
         return order.getTotalPrice();
     }
 
     @Override
-    public List<OrderedProductResponse> getProductsForOrder(Long orderId) {
+    public List<OrderedProductResponse> getProductsForOrder(String orderId) {
         return orderJpaRepository.findByIdWithOrderSheetIncludeDeleted(orderId)
             .orElseThrow(() -> new OrderException(ORDER_NOT_FOUND, String.valueOf(orderId)))
             .getOrderSheet().getOrderedProducts().stream()
