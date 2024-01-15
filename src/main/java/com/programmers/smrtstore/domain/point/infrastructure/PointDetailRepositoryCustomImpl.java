@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCustom {
 
-    private JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<PointDetail> findUsedDetailsByOrderId(String orderId) {
