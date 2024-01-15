@@ -73,4 +73,11 @@ public class GlobalExceptionHandler {
         return ErrorResponse.toResponseEntity(ErrorCode.SECURITY_ACCESS_DENIED,
             e.getMessage());
     }
+
+    @ExceptionHandler(value = Exception.class)
+    protected ResponseEntity<ErrorResponse> handleException(
+        Exception e, HttpServletRequest request
+    ) {
+        return ErrorResponse.toResponseEntity(ErrorCode.SERVER_ERROR, e.getMessage());
+    }
 }
