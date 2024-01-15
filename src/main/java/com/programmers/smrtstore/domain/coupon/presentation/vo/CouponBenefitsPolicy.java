@@ -1,6 +1,5 @@
 package com.programmers.smrtstore.domain.coupon.presentation.vo;
 
-import com.programmers.smrtstore.domain.coupon.presentation.res.DiscountCoupon;
 import com.programmers.smrtstore.domain.coupon.presentation.res.UserCouponResponse;
 import java.util.List;
 import lombok.AccessLevel;
@@ -24,8 +23,16 @@ public class CouponBenefitsPolicy {
         List<UserCouponResponse> unIssuableCoupons, DiscountCoupon maxDiscountCoupon,
         Integer price, Integer salePrice) {
         int sellerImmediateDiscountAmount = price - salePrice;
-        int productDiscountAmount = maxDiscountCoupon.getProductCouponDiscount();
-        int storeDiscountAmount = maxDiscountCoupon.getOrderCouponDiscount();
+        int productDiscountAmount;
+        int storeDiscountAmount;
+        if (maxDiscountCoupon == null){
+            productDiscountAmount = 0;
+            storeDiscountAmount = 0;
+        } else{
+            productDiscountAmount = maxDiscountCoupon.getProductCouponDiscount();
+            storeDiscountAmount = maxDiscountCoupon.getOrderCouponDiscount();
+        }
+
         int totalDiscountAmount =
             sellerImmediateDiscountAmount + productDiscountAmount + storeDiscountAmount;
         return new CouponBenefitsPolicy(

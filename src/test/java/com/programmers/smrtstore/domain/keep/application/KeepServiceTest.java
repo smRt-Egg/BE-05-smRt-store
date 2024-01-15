@@ -22,7 +22,6 @@ import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import jakarta.persistence.EntityManager;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -75,8 +73,8 @@ class KeepServiceTest {
                     .name("productName" + i)
                     .price(i * 1000)
                     .category(Category.IT)
-                    .contentImage(new URL("https://www.naver.com"))
-                    .thumbnail(new URL("https://www.naver.com"))
+                    .contentImage("https://www.naver.com")
+                    .thumbnail("https://www.naver.com")
                     .build();
             productList.add(product);
             User user = User.builder()

@@ -17,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,10 +55,10 @@ public class Product {
     private Category category;
 
     @Column(name = "thumbnail", nullable = false)
-    private URL thumbnail;
+    private String thumbnail;
 
     @Column(name = "content_image")
-    private URL contentImage;
+    private String contentImage;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -94,7 +93,7 @@ public class Product {
 
     @Builder
     private Product(String name, Integer price, Category category, boolean combinationYn,
-        URL thumbnail, URL contentImage, String optionNameType1, String optionNameType2,
+        String thumbnail, String contentImage, String optionNameType1, String optionNameType2,
         String optionNameType3) {
         this.name = name;
         this.price = price;
@@ -253,7 +252,7 @@ public class Product {
         }
     }
 
-    public void updateThumbnail(URL thumbnail) {
+    public void updateThumbnail(String thumbnail) {
         if (thumbnail != null) {
             this.thumbnail = thumbnail;
         }
@@ -267,7 +266,7 @@ public class Product {
         }
     }
 
-    public void updateContentImage(URL contentImage) {
+    public void updateContentImage(String contentImage) {
         if (contentImage != null) {
             this.contentImage = contentImage;
         }
