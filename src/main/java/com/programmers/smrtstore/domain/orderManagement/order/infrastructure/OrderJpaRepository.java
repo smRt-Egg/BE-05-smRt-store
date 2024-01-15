@@ -52,7 +52,7 @@ public interface OrderJpaRepository extends JpaRepository<Order, Long>, OrderRep
      */
     @EntityGraph(attributePaths = {"orderSheet"})
     @Query("SELECT o FROM Order o WHERE o.id = :orderId")
-    Optional<Order> findByIdWithOrderSheetIncludeDeleted(Long orderId);
+    Optional<Order> findByIdWithOrderSheetIncludeDeleted(String orderId);
 
     /**
      * 단일 Order를 조회합니다. 이 메소드는 삭제 된 Order 엔티티도 포함하여 결과를 반환합니다.
@@ -62,6 +62,6 @@ public interface OrderJpaRepository extends JpaRepository<Order, Long>, OrderRep
      * 있는 Optional을 반환합니다.
      */
     @Query("SELECT o FROM Order o WHERE o.id = :orderId")
-    Optional<Order> findByIdIncludeDeleted(Long orderId);
+    Optional<Order> findByIdIncludeDeleted(String orderId);
 
 }

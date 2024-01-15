@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class PointRequest {
 
     private Long userId;
-    private Long orderId;
+    private String orderId;
 
     public Point toEntity(PointStatus pointStatus, Integer pointValue, boolean membershipApplyYn) {
         return Point.builder()
