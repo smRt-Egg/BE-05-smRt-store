@@ -40,6 +40,7 @@ public class ProductController {
     private final ProductDetailService productDetailService;
     private final ProductServiceFacade productFacade;
 
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<ProductAPIResponse> createProduct(
         @Valid @RequestBody CreateProductAPIRequest request) {
@@ -84,7 +85,7 @@ public class ProductController {
     @Secured("ROLE_ADMIN")
     @PutMapping("/discount/{productId}")
     public ResponseEntity<ProductDiscountAPIResponse> updateProductDiscount(
-        @PathVariable Long productId, @Valid ProductDiscountRatioAPIRequest request) {
+        @PathVariable Long productId, @RequestBody @Valid ProductDiscountRatioAPIRequest request) {
         var result = productService.updateProductDiscountRatio(productId,
             request.getDiscountRatio());
         return ResponseEntity.ok(ProductDiscountAPIResponse.from(result));
@@ -112,6 +113,13 @@ public class ProductController {
     public ResponseEntity<Long> removeDetailOption(@PathVariable Long productId,
         @PathVariable Long optionId) {
         var result = productDetailService.removeProductOption(productId, optionId);
+        return ResponseEntity.ok(result);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Long> removeProduct(@PathVariable Long productId) {
+        var result = productService.deleteProduct(productId);
         return ResponseEntity.ok(result);
     }
 
