@@ -118,31 +118,31 @@ public class PointDetailService {
         // 포인트 차감을 위한 사용 가능한 포인트 상세 적립 이력
         List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
 
-        int idx = 0;
-        for (OrderedProductResponse product : products) {
-            Long orderedProductId = product.getOrderedProductId();
-            saveUsedPointDetailPerPointPiece(
-                pointPieces.get(orderedProductId), history, idx, orderedProductId, request
-            );
+        int i = 0;
+        int remainPiece = 0;
+        for (PointDetailCustomResponse available : history) {
+            if (i == pointPieces.size()) {
+                break;
+            }
+            int pointValue = available.getPointAmount();
+            while (pointValue != 0) {
+                Long orderedProductId = products.get(i).getOrderedProductId();
+                int piece = remainPiece == 0 ? pointPieces.get(orderedProductId) : remainPiece;
+                int pointAmount = calculateDeductedPoint(pointValue, piece);
+                PointDetail pointDetail = request.toEntity(
+                    orderedProductId,
+                    pointFacade.makeNegativeNumber(pointAmount),
+                    available.getOriginAcmId()
+                );
+                pointDetailRepository.save(pointDetail);
+                pointValue -= pointAmount;
+                remainPiece = piece > pointValue ? piece - pointValue : 0;
+                if (remainPiece == 0) {
+                    i++;
+                }
+            }
         }
         return usedPoint;
-    }
-
-    private void saveUsedPointDetailPerPointPiece(int piece, List<PointDetailCustomResponse> history,
-        int idx, Long orderedProductId, PointDetailRequest request) {
-
-        // 차감되어야 하는 포인트 금액 (주문상품 비율별로 계산된) 에 대해 적립 이력을 통해 순차적으로 포인트 차감 이력 저장
-        while (piece != 0) {
-            PointDetailCustomResponse acmHistory = history.get(idx);
-            int pointAmount = calculateDeductedPoint(acmHistory.getPointAmount(), piece);
-            PointDetail pointDetail = request.toEntity(
-                orderedProductId,
-                pointFacade.makeNegativeNumber(pointAmount),
-                acmHistory.getOriginAcmId()
-            );
-            pointDetailRepository.save(pointDetail);
-            piece -= pointAmount;
-        }
     }
 
     private int calculateDeductedPoint(int pointAmount, int usedPoint) {
