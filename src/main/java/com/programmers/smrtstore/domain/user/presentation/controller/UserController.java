@@ -6,6 +6,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
@@ -61,6 +62,12 @@ public class UserController {
         @RequestParam("code") String code) {
         userFacade.verifyCode(userEmail, code);
         return ResponseEntity.ok("인증에 성공했습니다.");
+    }
+
+    @GetMapping("/home")
+    public ResponseEntity<MyHomeResponse> myHome(@UserId Long userId) {
+        MyHomeResponse response = userFacade.getMyHome(userId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/shipping")

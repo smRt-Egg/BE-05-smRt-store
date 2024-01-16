@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,11 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public void withdraw(Long userId) {
         userService.withdraw(userId);
+    }
+
+    @Override
+    public MyHomeResponse getMyHome(Long userId) {
+        return userService.getMyHome(userId);
     }
 
     @Override

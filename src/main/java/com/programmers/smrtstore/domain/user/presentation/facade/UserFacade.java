@@ -5,6 +5,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 
 public interface UserFacade {
@@ -14,6 +15,8 @@ public interface UserFacade {
     ProfileUserResponse update(Long userId, UpdateUserRequest request);
 
     void withdraw(Long userId);
+
+    MyHomeResponse getMyHome(Long userId);
 
     DetailShippingResponse createShippingAddress(Long userId, DetailShippingRequest request);
 

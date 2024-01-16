@@ -4,14 +4,24 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_VERIFICA
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
 
+import com.programmers.smrtstore.domain.cart.application.CartService;
+import com.programmers.smrtstore.domain.coupon.application.UserCouponService;
+import com.programmers.smrtstore.domain.keep.application.KeepService;
+import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
+import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderServiceImpl;
+import com.programmers.smrtstore.domain.point.application.PointService;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +36,11 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final RedisService redisService;
     private final MailService mailService;
+    private final CartService cartService;
+    private final UserCouponService userCouponService;
+    private final KeepService keepService;
+    private final OrderServiceImpl orderService;
+    private final PointService pointService;
     private static final String MESSAGE_TITLE = "smRt store 인증 번호";
 
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
@@ -77,6 +92,39 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public MyHomeResponse getMyHome(Long userId) {
+        User user = findByUserId(userId);
+
+        return MyHomeResponse.builder()
+            .nickName(user.getNickName())
+            .thumbnail(user.getThumbnail())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .cartCount(cartService.getAllCarts(userId).size())
+            .reviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .allKeeps(keepService.getAllKeepsByUserId(userId, userId))
+            .clothesKeeps(getKeepsByCategory(userId, Category.CLOTHES))
+            .clothesKeepsCount(getKeepsByCategory(userId, Category.CLOTHES).size())
+            .foodKeeps(getKeepsByCategory(userId, Category.FOOD))
+            .foodKeepsCount(getKeepsByCategory(userId, Category.FOOD).size())
+            .electricKeeps(getKeepsByCategory(userId, Category.ELECTRIC))
+            .electricKeepsCount(getKeepsByCategory(userId, Category.ELECTRIC).size())
+            .houseKeeps(getKeepsByCategory(userId, Category.HOUSE))
+            .houseKeepsCount(getKeepsByCategory(userId, Category.HOUSE).size())
+            .itKeeps(getKeepsByCategory(userId, Category.IT))
+            .itKeepsCount(getKeepsByCategory(userId, Category.IT).size())
+            .build();
+    }
+
+    private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {
+        FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
+            .userId(userId)
+            .category(category)
+            .build();
+
+        return keepService.findKeepByUserAndCategory(userId, request);
+    }
     private void checkDuplicatedEmail(String userEmail) {
         userJpaRepository.findByEmail(userEmail).ifPresent(e -> {
             throw new UserException(USER_DUPLICATE_EMAIL, userEmail);
