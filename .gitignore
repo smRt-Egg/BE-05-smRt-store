@@ -37,3 +37,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/src/test/resources/ddl.sql
