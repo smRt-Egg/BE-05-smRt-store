@@ -83,8 +83,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByProductId(Long tokenUserId, Long productId) {
         User user = getUser(tokenUserId);
-        Product product = getProduct(productId);
-        return reviewJPARepository.findByProduct(product)
+        return reviewJPARepository.findByProductId(productId)
                 .stream()
                 .map(ReviewResponse::from)
                 .toList();
@@ -93,8 +92,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewStatisticsResponse getReviewStatisticsFromProduct(Long productId) {
-        Product product = getProduct(productId);
-        return ReviewStatisticsResponse.from(reviewJPARepository.findByProduct(product));
+        return ReviewStatisticsResponse.from(reviewJPARepository.findByProductId(productId));
     }
 
     @Transactional(readOnly = true)

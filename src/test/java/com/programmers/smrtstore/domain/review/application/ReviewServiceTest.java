@@ -86,7 +86,7 @@ class ReviewServiceTest {
                 .contentImage("https://www.naver.com")
                 .build());
         ProductDetailOption productDetailOption = ProductDetailOption.builder()
-                .stockQuantity(10)
+                .stockQuantity(1)
                 .price(1000)
                 .product(product)
                 .optionType(OptionType.SINGLE)
