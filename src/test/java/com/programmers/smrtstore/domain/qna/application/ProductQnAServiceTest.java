@@ -31,15 +31,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @Transactional
 @Import(RedisTestConfig.class)
 class ProductQnAServiceTest {
@@ -63,7 +59,7 @@ class ProductQnAServiceTest {
     static Product product2;
 
     @BeforeEach
-    void init() throws Exception {
+    void init() {
         // 유저가 등록되어 있어야 한다.
         user = User.builder()
             .age(27)
