@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "coupon_common_transaction_TB")
 public class CouponCommonTransaction extends CouponTransaction {
 
     private CouponCommonTransaction(User user, Coupon coupon, CouponStatus couponStatus) {
