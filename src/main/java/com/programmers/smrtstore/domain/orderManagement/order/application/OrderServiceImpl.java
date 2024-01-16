@@ -90,6 +90,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderPreviewResponse> getOrderPreviewsByUserIdAndStatus(
+        Long userId, List<OrderStatus> statuses
+    ) {
+        checkUserExistence(userId);
+        return orderJpaRepository.findOrdersByStatusesAndUserId(userId, statuses).stream()
+            .map(OrderPreviewResponse::from)
+            .toList();
+    }
+
+    @Override
     public Long getActiveOrderCountByUserId(Long userId) {
         checkUserExistence(userId);
         return orderJpaRepository.findOrderCountByStatusesAndUserId(userId, OrderStatus.getActiveOrderStatus());
