@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

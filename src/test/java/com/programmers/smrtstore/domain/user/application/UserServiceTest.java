@@ -1,18 +1,18 @@
 package com.programmers.smrtstore.domain.user.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.ShippingAddressJpaRepository;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
@@ -27,7 +27,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -229,6 +228,16 @@ class UserServiceTest {
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();
     }
+
+    @Test
+    @DisplayName("myhome 페이지를 조회할 수 있다.")
+    void myhome() {
+        MyHomeResponse response = userFacade.getMyHome(kazuhaId);
+
+        assertThat(response.getNickName()).isEqualTo("카즈하");
+        assertThat(response.getThumbnail()).isNull();
+    }
+
 
 //    @Test
 //    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")

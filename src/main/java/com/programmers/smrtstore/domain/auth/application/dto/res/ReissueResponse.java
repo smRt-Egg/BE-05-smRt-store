@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.auth.application.dto.res;
 
 import com.programmers.smrtstore.domain.auth.jwt.JwtToken;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

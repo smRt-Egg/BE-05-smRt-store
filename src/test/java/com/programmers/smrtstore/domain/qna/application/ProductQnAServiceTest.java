@@ -21,8 +21,8 @@ import com.programmers.smrtstore.domain.qna.presentation.dto.res.DeleteQuestionR
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.QuestionResponse;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.UpdateAnswerResponse;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.UpdateQuestionResponse;
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.util.Comparator;

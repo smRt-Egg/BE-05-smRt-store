@@ -2,8 +2,8 @@ package com.programmers.smrtstore.domain.auth.application.dto.req;
 
 import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
 import com.programmers.smrtstore.domain.auth.presentation.dto.req.SignUpAPIRequest;
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;

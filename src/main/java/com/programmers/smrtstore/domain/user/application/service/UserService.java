@@ -16,9 +16,15 @@ import com.programmers.smrtstore.domain.review.application.ReviewService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -129,7 +135,83 @@ public class UserService {
             .point(user.getPoint())
             .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
             .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
-            .orderDeliveryList(orderService.getOrderPreviewsByUserId(userId)).build();
+            .orderList(orderService.getOrderPreviewsByUserId(userId))
+            .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MyAllKeepsResponse getMyAllKeeps(Long userId) {
+        User user = findByUserId(userId);
+        return MyAllKeepsResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .point(user.getPoint())
+            .allKeeps(keepService.getAllKeepsByUserId(userId, userId))
+            .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MyCategoryKeepsResponse getMyKeepsByCategory(Long userId, Integer categoryId) {
+        User user = findByUserId(userId);
+        return MyCategoryKeepsResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .point(user.getPoint())
+            .categoryKeeps(getKeepsByCategory(userId, Category.findById(categoryId)))
+            .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MyReviewsResponse getMyReviews(Long userId, DurationRequest request) {
+        User user = findByUserId(userId);
+        return MyReviewsResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .point(user.getPoint())
+            //리뷰 리스트
+            .build();
+    }
+    @Transactional(readOnly = true)
+    public MyWritableReviewsResponse getMyWritableReviews(Long userId) {
+        User user = findByUserId(userId);
+        return MyWritableReviewsResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .point(user.getPoint())
+            //작성 안 한 리뷰 리스트
+            .build();
+    }
+
+    public MyQnaResponse getMyQna(Long userId, DurationRequest request) {
+        User user = findByUserId(userId);
+        return MyQnaResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
+            .couponCount(userCouponService.getCouponsByUserId(userId).size())
+            .point(user.getPoint())
+            //qna 리스트
+            .build();
+    }
+
+    public MyOrdersResponse getPurchasedConfirmedOrders(Long userId) {
+        User user = findByUserId(userId);
+        return MyOrdersResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .point(user.getPoint())
+            .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
+            .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
+            //구매확정 리스트
+            .build();
     }
 
     private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {
@@ -140,6 +222,7 @@ public class UserService {
 
         return keepService.findKeepByUserAndCategory(userId, request);
     }
+
     private void checkDuplicatedEmail(String userEmail) {
         userJpaRepository.findByEmail(userEmail).ifPresent(e -> {
             throw new UserException(USER_DUPLICATE_EMAIL, userEmail);

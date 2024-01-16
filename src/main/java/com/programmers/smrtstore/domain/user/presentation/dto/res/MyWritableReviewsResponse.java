@@ -1,23 +1,23 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
-import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderPreviewResponse;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class MyOrdersResponse {
+public class MyWritableReviewsResponse {
 
     private String nickName;
 
     private String username;
 
+    private Long orderDeliveryCount;
+
+    private Integer couponCount;
+
     private Integer point;
 
     private Integer unwrittenReviewPoint;
 
-    private Integer reviewCount;
-
-    private List<OrderPreviewResponse> orderList;
+//    작성 안한 리뷰 리스트
 }

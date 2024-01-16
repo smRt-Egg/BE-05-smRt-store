@@ -7,7 +7,7 @@ import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CustomerManageBenefitType;
 import com.programmers.smrtstore.domain.coupon.domain.entity.vo.CouponValue;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

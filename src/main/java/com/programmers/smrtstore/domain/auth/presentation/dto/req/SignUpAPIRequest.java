@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.auth.presentation.dto.req;
 
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
-import com.programmers.smrtstore.domain.user.domain.entity.Role;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

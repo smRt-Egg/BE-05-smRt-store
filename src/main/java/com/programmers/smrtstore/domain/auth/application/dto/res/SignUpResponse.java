@@ -1,7 +1,7 @@
 package com.programmers.smrtstore.domain.auth.application.dto.res;
 
 import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
-import com.programmers.smrtstore.domain.user.domain.entity.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

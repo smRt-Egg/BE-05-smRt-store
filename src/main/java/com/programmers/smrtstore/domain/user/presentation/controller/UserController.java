@@ -2,12 +2,18 @@ package com.programmers.smrtstore.domain.user.presentation.controller;
 
 import com.programmers.smrtstore.common.annotation.UserId;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShippingRequest;
+import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
@@ -71,9 +77,46 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("my/order-delivery")
+    @GetMapping("my/orders")
     public ResponseEntity<MyOrdersResponse> myOrders(@UserId Long userId) {
         MyOrdersResponse response = userFacade.getOrders(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/orders/purchased-confirmed")
+    public ResponseEntity<MyOrdersResponse> myPurchasedConfirmedOrders(@UserId Long userId) {
+        MyOrdersResponse response = userFacade.getPurchasedConfirmedOrders(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/reviews")
+    public ResponseEntity<MyReviewsResponse> myReviews(@UserId Long userId, @RequestBody @Valid DurationRequest request) {
+        MyReviewsResponse response = userFacade.getMyReviews(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/writable-reviews")
+    public ResponseEntity<MyWritableReviewsResponse> myWritableReviews(@UserId Long userId) {
+        MyWritableReviewsResponse response = userFacade.getMyWritableReviews(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/qna")
+    public ResponseEntity<MyQnaResponse> myQna(@UserId Long userId, @RequestBody @Valid
+        DurationRequest request) {
+        MyQnaResponse response = userFacade.getMyQna(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/keeps")
+    public ResponseEntity<MyAllKeepsResponse> myAllKeeps(@UserId Long userId) {
+        MyAllKeepsResponse response = userFacade.getMyAllKeeps(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/keeps/{categoryId}")
+    public ResponseEntity<MyCategoryKeepsResponse> myKeepsByCategory(@UserId Long userId, @PathVariable Integer categoryId) {
+        MyCategoryKeepsResponse response = userFacade.getMyKeepsByCategory(userId, categoryId);
         return ResponseEntity.ok(response);
     }
 

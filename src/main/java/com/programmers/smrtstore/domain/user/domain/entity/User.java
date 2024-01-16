@@ -6,6 +6,8 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_INPUT_INVALID;
 
 import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
+import com.programmers.smrtstore.domain.user.domain.enums.Gender;
+import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.CascadeType;
