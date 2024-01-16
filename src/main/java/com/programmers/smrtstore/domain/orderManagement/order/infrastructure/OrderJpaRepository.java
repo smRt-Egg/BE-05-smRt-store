@@ -7,9 +7,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface OrderJpaRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
+
+    @Query("SELECT o FROM Order o JOIN OrderSheet os ON o.orderSheet.id = os.id WHERE os.user.id = :userId AND o.orderStatus IN :statuses AND o.deletedAt IS NULL")
+    List<Order> findOrdersByStatusesAndUserId(Long userId, List<OrderStatus> statuses);
 
     @Query("SELECT count(o) FROM Order o JOIN OrderSheet os ON o.orderSheet.id = os.id WHERE os.user.id = :userId AND o.orderStatus IN :statuses AND o.deletedAt IS NULL")
     Long findOrderCountByStatusesAndUserId(Long userId, List<OrderStatus> statuses);

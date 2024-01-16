@@ -28,4 +28,21 @@ public enum OrderStatus {
             DISPATCH_DELAYED
         );
     }
+
+    public static List<OrderStatus> getAllOrderStatus() {
+        return List.of(
+            PAYMENT_WAITING,
+            PAYMENT_COMPLETED,
+            DELIVERY_PREPARING,
+            DELIVERING_BEFORE,
+            DELIVERING,
+            DELIVERED,
+            CANCELLED,
+            PURCHASE_CONFIRMED,
+            REFUND_REQUESTED,
+            REFUND_COMPLETED,
+            CANCELLED_BY_NO_PAYMENT,
+            DISPATCH_DELAYED
+        );
+    }
 }

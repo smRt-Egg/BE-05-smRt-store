@@ -19,22 +19,17 @@ import com.programmers.smrtstore.domain.user.domain.enums.Gender;
 import com.programmers.smrtstore.domain.user.domain.enums.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @Transactional
 @Import(RedisTestConfig.class)
 class ReviewServiceTest {
@@ -52,7 +47,7 @@ class ReviewServiceTest {
     Product product;
 
     @BeforeEach
-    void init() throws MalformedURLException {
+    void init() {
         user = userJpaRepository.save(User.builder()
                 .nickName("nickName")
                 .email("void@email.com")
