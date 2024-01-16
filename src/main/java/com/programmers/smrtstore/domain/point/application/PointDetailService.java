@@ -22,7 +22,9 @@ import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -110,7 +112,7 @@ public class PointDetailService {
         List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
 
         // 상품별 결제금액에 대한 비율
-        List<Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
+        Map<Long, Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
 
         // 포인트 차감을 위한 사용 가능한 포인트 상세 적립 이력
         List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
@@ -147,19 +149,20 @@ public class PointDetailService {
         return Math.min(usedPoint, pointAmount);
     }
 
-    private List<Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
+    private Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
 
-        List<Double> productRatio = getOrderedProductRatio(products);
-        List<Integer> pointPieces = new ArrayList<>();
+        Map<Long, Double> productRatio = getOrderedProductsRatio(products);
+        Map<Long, Integer> pointPieces = new HashMap<>();
 
         // 상품별 비율에 따른 사용할 포인트의 비율 계산
-        for (int idx = 0; idx < productRatio.size() - 1; idx++) {
-            int price = (int) (usePoint * productRatio.get(idx));
-            pointPieces.add(price);
+        for (int idx = 0; idx < products.size() - 1; idx++) {
+            Long orderedProductId = products.get(idx).getOrderedProductId();
+            int price = (int) (usePoint * productRatio.get(orderedProductId));
+            pointPieces.put(orderedProductId, price);
             // 마지막 차감포인트는 액수를 맞추기 위해 소거법 적용
             usePoint -= price;
         }
-        pointPieces.add(usePoint);
+        pointPieces.put(products.get(products.size() - 1).getOrderedProductId(), usePoint);
         return pointPieces;
     }
 
