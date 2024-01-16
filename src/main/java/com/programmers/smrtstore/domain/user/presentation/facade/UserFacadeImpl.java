@@ -8,6 +8,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -74,5 +75,10 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public void verifyCode(String userEmail, String code) {
         userService.verifyCode(userEmail, code);
+    }
+
+    @Override
+    public MyOrdersResponse getOrders(Long userId) {
+        return userService.getOrders(userId);
     }
 }

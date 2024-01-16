@@ -7,6 +7,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequ
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
@@ -67,6 +68,12 @@ public class UserController {
     @GetMapping("/home")
     public ResponseEntity<MyHomeResponse> myHome(@UserId Long userId) {
         MyHomeResponse response = userFacade.getMyHome(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/order-delivery")
+    public ResponseEntity<MyOrdersResponse> myOrders(@UserId Long userId) {
+        MyOrdersResponse response = userFacade.getOrders(userId);
         return ResponseEntity.ok(response);
     }
 

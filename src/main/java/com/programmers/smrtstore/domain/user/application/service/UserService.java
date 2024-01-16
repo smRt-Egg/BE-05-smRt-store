@@ -12,11 +12,13 @@ import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderServiceImpl;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.review.application.ReviewService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -41,6 +43,7 @@ public class UserService {
     private final KeepService keepService;
     private final OrderServiceImpl orderService;
     private final PointService pointService;
+    private final ReviewService reviewService;
     private static final String MESSAGE_TITLE = "smRt store 인증 번호";
 
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
@@ -115,6 +118,18 @@ public class UserService {
             .itKeeps(getKeepsByCategory(userId, Category.IT))
             .itKeepsCount(getKeepsByCategory(userId, Category.IT).size())
             .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MyOrdersResponse getOrders(Long userId) {
+        User user = findByUserId(userId);
+        return MyOrdersResponse.builder()
+            .nickName(user.getNickName())
+            .username(user.getAuth().getUsername())
+            .point(user.getPoint())
+            .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
+            .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
+            .orderDeliveryList(orderService.getOrderPreviewsByUserId(userId)).build();
     }
 
     private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {

@@ -5,6 +5,7 @@ import static com.programmers.smrtstore.core.properties.ErrorCode.UPDATED_POINT_
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_SHIPPING_ADDRESS;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_INPUT_INVALID;
 
+import com.programmers.smrtstore.domain.auth.domain.entity.Auth;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
 import jakarta.persistence.CascadeType;
@@ -16,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
@@ -94,6 +96,9 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Auth auth;
 
     private static final int MAXIMUM_SHIPPING_SIZE = 15;
     private static final Pattern emailPattern = Pattern.compile(
