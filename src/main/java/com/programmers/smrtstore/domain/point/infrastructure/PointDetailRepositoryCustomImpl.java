@@ -85,7 +85,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
                 point.membershipApplyYn
             )
             .having(pointDetail.pointAmount.sum().gt(0))
-            .orderBy(pointDetail.originAcmId.asc())
+            .orderBy(point.userId.asc(), pointDetail.originAcmId.asc())
             .fetch();
     }
 
