@@ -17,15 +17,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponResponse {
 
+    private final Long id;
     private final String name;
     private final String content;
     private final Integer benefitValue;
     private final Integer maxDiscountValue;
     private final Integer minOrderPrice;
     private final Integer idPerIssuableCount;
-    private final Boolean membershipCouponYn;
-    private final Boolean duplicationYn;
-    private final Boolean availableYn;
+    private final boolean membershipCouponYn;
+    private final boolean duplicationYn;
+    private final boolean availableYn;
     private final CouponType couponType;
     private final BenefitUnitType benefitUnitType;
     private final CustomerManageBenefitType customerManageBenefitType;
@@ -36,6 +37,7 @@ public class CouponResponse {
 
     public static CouponResponse from(Coupon coupon) {
         return CouponResponse.builder()
+                .id(coupon.getId())
                 .name(coupon.getCouponValue().getName())
                 .content(coupon.getCouponValue().getContent())
                 .benefitValue(coupon.getCouponValue().getBenefitValue())

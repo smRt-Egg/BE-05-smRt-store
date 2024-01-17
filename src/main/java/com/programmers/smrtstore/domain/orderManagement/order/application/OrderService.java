@@ -1,8 +1,10 @@
 package com.programmers.smrtstore.domain.orderManagement.order.application;
 
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.CreateOrderResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.req.CreateOrderRequest;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.req.UpdateOrderRequest;
+import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderPreviewResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import java.util.List;
@@ -22,5 +24,13 @@ public interface OrderService {
     Integer getTotalPriceByOrderId(String orderId);
 
     List<OrderedProductResponse> getProductsForOrder(String orderId);
+
+    List<OrderPreviewResponse> getOrderPreviewsByUserId(Long userId);
+
+    List<OrderPreviewResponse> getOrderPreviewsByUserIdAndStatus(Long userId, List<OrderStatus> statuses);
+
+    Long getActiveOrderCountByUserId(Long userId);
+
+
 
 }
