@@ -18,25 +18,37 @@ import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewR
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.UnWrittenReviewResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
+import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewScore;
 import com.programmers.smrtstore.domain.review.exception.ReviewException;
 import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepository;
+import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+
+import java.net.MalformedURLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
 @Transactional
 @Import(RedisTestConfig.class)
 class ReviewServiceTest {
@@ -45,6 +57,8 @@ class ReviewServiceTest {
     ReviewService reviewService;
     @Autowired
     ReviewJpaRepository reviewRepository;
+    @Autowired
+    ReviewLikeJpaRepository reviewLikeRepository;
     @Autowired
     ProductJpaRepository productJpaRepository;
     @Autowired
@@ -58,10 +72,11 @@ class ReviewServiceTest {
     Product product;
     OrderedProduct orderedProduct1;
     OrderedProduct orderedProduct2;
+    List<OrderedProduct> orderedProducts;
     OrderSheet orderSheet;
 
     @BeforeEach
-    void init() {
+    void init() throws MalformedURLException {
         user = userJpaRepository.save(User.builder()
                 .nickName("nickName")
                 .email("void@email.com")
@@ -94,11 +109,13 @@ class ReviewServiceTest {
                 .build();
         orderedProduct1 = OrderedProduct.createBeforeOrder(product, productDetailOption, 100, 10, 100, 10);
         orderedProduct2 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
-        orderedProductJpaRepository.save(orderedProduct1);
-        orderedProductJpaRepository.save(orderedProduct2);
+        OrderedProduct orderedProduct3 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        OrderedProduct orderedProduct4 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        orderedProducts = List.of(orderedProduct1, orderedProduct2, orderedProduct3, orderedProduct4);
+        orderedProductJpaRepository.saveAll(orderedProducts);
         orderSheet = OrderSheet.builder()
                 .user(user)
-                .orderedProducts(List.of(orderedProduct1, orderedProduct2))
+                .orderedProducts(orderedProducts)
                 .build();
         orderSheetJpaRepository.save(orderSheet);
     }
@@ -345,4 +362,99 @@ class ReviewServiceTest {
         assertThatThrownBy(() -> reviewService.dislikeReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
+
+    @DisplayName("주문은 했으나 작성하지 않은 리뷰의 갯수를 가져올 수 있다.")
+    @Test
+    void getUnWritten() {
+        //Given
+        Review review = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        reviewRepository.save(review);
+        //When
+        Long count = reviewRepository.getUnWrittenReviewCount(user.getId());
+        //Then
+        assertThat(count).isEqualTo(orderedProducts.size() - 1);
+    }
+
+    @DisplayName("주문은 했으나 작성하지 않은 리뷰들을 가져올 수 있다.")
+    @Test
+    void getUnWrittenReviewResponses() {
+        //Given
+        Review review = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        reviewRepository.save(review);
+        //When
+        List<UnWrittenReviewResponse> reviewResponses = reviewService.getUnWrittenReviews(user.getId());
+        //Then
+        assertThat(reviewResponses).hasSize(orderedProducts.size() - 1);
+    }
+
+    @DisplayName("기간 검색으로 리뷰를 조회할 수 있다.")
+    @Test
+    void searchReviewByDate(){
+        //Given
+        Review review1 = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        Review review2 = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct2)
+                .title("review2")
+                .reviewScore(ReviewScore.FIVE)
+                .content("awesome!")
+                .build();
+        List<Review> reviewList = reviewRepository.saveAll(List.of(review1, review2));
+        //When
+        List<Review> response = reviewService.findByCreatedAtBetween(user.getId(), LocalDateTime.now().with(LocalTime.MIN), LocalDateTime.now().with(LocalTime.MAX));
+        //Then
+        assertThat(response).hasSize(reviewList.size());
+        assertThat(response).contains(review1);
+     }
+
+     @DisplayName("기간 검색으로 좋아요를 누른 리뷰를 조회할 수 있다.")
+     @Test
+     void searchLikedReviewByDate(){
+         //Given
+         Review review1 = Review.builder()
+                 .user(user)
+                 .orderedProduct(orderedProduct1)
+                 .title("review1")
+                 .reviewScore(ReviewScore.FOUR)
+                 .content("good!")
+                 .build();
+         Review review2 = Review.builder()
+                 .user(user)
+                 .orderedProduct(orderedProduct2)
+                 .title("review2")
+                 .reviewScore(ReviewScore.FIVE)
+                 .content("awesome!")
+                 .build();
+         ReviewLike reviewLike = ReviewLike.builder()
+                 .review(review1)
+                 .user(user)
+                 .build();
+         List<Review> reviewList = reviewRepository.saveAll(List.of(review1, review2));
+         reviewLikeRepository.save(reviewLike);
+         //When
+         List<Review> response = reviewService.findLikedReviewByCreatedAtBetween(user.getId(), LocalDateTime.now().with(LocalTime.MIN), LocalDateTime.now().with(LocalTime.MAX));
+         //Then
+         assertThat(response).hasSize(1);
+         assertThat(response.contains(review1)).isTrue();
+      }
+
+
 }

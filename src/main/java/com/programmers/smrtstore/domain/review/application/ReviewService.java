@@ -20,6 +20,7 @@ import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewR
 import com.programmers.smrtstore.domain.review.application.dto.res.CreateReviewResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewStatisticsResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.UnWrittenReviewResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
 import com.programmers.smrtstore.domain.review.exception.ReviewException;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -147,6 +149,18 @@ public class ReviewService {
 
     public Long getUnWrittenReviewCount(Long userId) {
         return reviewJPARepository.getUnWrittenReviewCount(userId);
+    }
+
+    public List<UnWrittenReviewResponse> getUnWrittenReviews(Long userId) {
+        return reviewJPARepository.getUnWrittenReviewResponses(userId);
+    }
+
+    public List<Review> findByCreatedAtBetween(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+        return reviewJPARepository.findByCreatedAtBetween(userId, startTime, endTime);
+    }
+
+    public List<Review> findLikedReviewByCreatedAtBetween(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+        return reviewJPARepository.findLikedReviewByCreatedAtBetween(userId, startTime, endTime);
     }
 
     private User getUser(Long userId) {
