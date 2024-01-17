@@ -150,7 +150,7 @@ public class PointDetailService {
         return Math.min(usedPoint, pointAmount);
     }
 
-    private Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
+    public Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
 
         Map<Long, Double> productRatio = getOrderedProductsRatio(products);
         Map<Long, Integer> pointPieces = new HashMap<>();
