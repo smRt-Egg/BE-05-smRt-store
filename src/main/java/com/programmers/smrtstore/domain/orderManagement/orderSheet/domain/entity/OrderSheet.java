@@ -8,6 +8,7 @@ import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.en
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -49,18 +50,23 @@ public class OrderSheet {
     @OneToMany(mappedBy = "orderSheet", cascade = CascadeType.ALL)
     private List<OrderedProduct> orderedProducts = new ArrayList<>();
 
+    @Embedded
+    private DeliveryOptions deliveryOptions;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
     public OrderSheet(
-        Long id, User user, List<OrderedProduct> orderedProducts, LocalDateTime createdAt
+        Long id, User user, List<OrderedProduct> orderedProducts, LocalDateTime createdAt,
+        DeliveryMethodType deliveryMethod, Integer deliveryFee
     ) {
         this.id = id;
         this.user = user;
         this.orderedProducts = orderedProducts;
         orderedProducts.forEach(orderedProduct -> orderedProduct.setOrderSheet(this));
+        this.deliveryOptions = new DeliveryOptions(deliveryMethod, deliveryFee);
         this.createdAt = createdAt;
     }
 
