@@ -124,7 +124,7 @@ public class OrderCouponDiscountCalculator {
 
 
     //TODO: 메서드2. 주어진 select 대로 계산해서 반환
-    public static Map<Long, List<CouponApplyResult>> getCouponApplyResult(List<OrderedProduct> orderedProducts, SelectedCouponsRequest selectedCoupons) {
+    public static Map<Long, List<CouponApplyResult>> getCouponApplyResult(List<OrderedProduct> orderedProducts, Map<Long,Coupon>selectedProductCoupons,Coupon selectedCartCoupon) {
 
         Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = new HashMap<>();
 
@@ -136,8 +136,8 @@ public class OrderCouponDiscountCalculator {
         int productDiscountSum = 0;
 
         for (OrderedProduct orderedProduct : orderedProducts) {
-            if (selectedCoupons.getSelectedProductCouponListsByOrderedProductId().containsKey(orderedProduct.getId())) { //쿠폰이 적용된 상품이라면
-                Coupon coupon = selectedCoupons.getSelectedProductCouponListsByOrderedProductId().get(orderedProduct.getId());
+            if (selectedProductCoupons.containsKey(orderedProduct.getId())) { //쿠폰이 적용된 상품이라면
+                Coupon coupon = selectedProductCoupons.get(orderedProduct.getId());
 
                 Integer baseAmount = orderedProduct.getProductSalePriceWithQuantity();
                 Integer saleAmount = coupon.discountProduct(baseAmount);
@@ -158,8 +158,7 @@ public class OrderCouponDiscountCalculator {
         int productCouponAppliedSum = orderedProductSalePriceSum - productDiscountSum;  //즉시할인가 총합 - 상품쿠폰 적용가 -> 상품쿠폰까지 적용된 총합
 
         //TODO: 장바구니 쿠폰을 각 OrderedProduct에 CouponApplyResult를 추가하기
-        Coupon selectedCartCoupons = selectedCoupons.getSelectedCartCoupons();
-        int cartCouponDiscount = selectedCartCoupons.discountProduct(productCouponAppliedSum);
+        int cartCouponDiscount = selectedCartCoupon.discountProduct(productCouponAppliedSum);
 
         for (OrderedProduct orderedProduct : orderedProducts) {
             List<CouponApplyResult> couponApplyResults = discountsByOrderedProductId.get(orderedProduct.getId());
@@ -170,7 +169,7 @@ public class OrderCouponDiscountCalculator {
             if (couponApplyResults.size() == 0) { //상품 쿠폰 적용 없었던 것들
                 List<CouponApplyResult> list = new ArrayList<>();
                 list.add(new CouponApplyResult(
-                        selectedCartCoupons.getId(),
+                        selectedCartCoupon.getId(),
                         CouponType.CART,
                         orderedProduct.getProductSalePriceWithQuantity(), //baseAmount = 상품할인 안한 즉시할인(옵션o,수량o) 총합 가격
                         cartCouponAppliedPrice));
