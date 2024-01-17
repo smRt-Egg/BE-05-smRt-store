@@ -16,7 +16,7 @@ public class ReviewResponse {
     private String content;
     private ReviewScore reviewScore;
     private Long userId;
-    private Long productId;
+    private Long orderedProductId;
     private Integer likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -28,7 +28,7 @@ public class ReviewResponse {
             review.getContent(),
             review.getReviewScore(),
             review.getUser().getId(),
-            review.getProduct().getId(),
+            review.getOrderedProduct().getId(),
             review.getReviewLikeCount(),
             review.getCreatedAt(),
             review.getUpdatedAt());

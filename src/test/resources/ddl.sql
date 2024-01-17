@@ -318,7 +318,7 @@ CREATE TABLE review_tb
     review_score enum ('ONE','TWO','THREE','FOUR','FIVE') NOT NULL,
     title        varchar(100)                             NOT NULL,
     updated_at   datetime(6)                              NOT NULL,
-    product_id   bigint DEFAULT NULL,
+    order_product_id   bigint DEFAULT NULL,
     user_id      bigint DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
