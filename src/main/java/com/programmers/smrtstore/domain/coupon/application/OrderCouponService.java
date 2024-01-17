@@ -2,6 +2,7 @@ package com.programmers.smrtstore.domain.coupon.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
+import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
 import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req.SelectedCouponsRequest;
@@ -16,10 +17,7 @@ import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,15 +41,24 @@ public class OrderCouponService {
      */
     //  1. 쿠폰을 선택해서 파라미터(selectedCoupons)로 주는 메서드 -->여기선 selectedCoupons 그대로 반환하고
     public OrderSheetCouponInfo getOrderSheetCouponInfoWithSelectedCoupons(Long userId, List<OrderedProduct> orderedProducts, SelectedCouponsRequest selectedCouponsRequest) {
-
         ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId, orderedProducts);
         ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
-        List<Coupon> cartCoupons = getCartCoupons();
-        SelectedCoupons selectedCoupons = getSelectedCoupons(selectedCouponsRequest);
-        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts, selectedCouponsRequest);
-        List<CouponResponse> cartCouponResponses = cartCoupons.stream().map(cartCoupon -> CouponResponse.from(cartCoupon)).toList();
+        List<CouponResponse> cartCoupons = getCartCoupons().stream().map(coupon -> CouponResponse.from(coupon)).toList();
+        Map<Long, Coupon> selectedProductCoupons = new HashMap<>();
+        for (OrderedProduct orderedProduct : orderedProducts) {
+            if (selectedCouponsRequest.getSelectedProductCouponListsByOrderedProductId().containsKey(orderedProduct.getId())) {
+                selectedProductCoupons.put(orderedProduct.getId(), getCouponJpaRepositoryById(selectedCouponsRequest.getSelectedProductCouponListsByOrderedProductId().get(orderedProduct.getId())));
+            }
+        }
 
-        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCouponResponses);
+        Coupon cartCoupon = couponJpaRepository.findById(selectedCouponsRequest.getSelectedCartCoupons())
+                .orElseThrow(()->new CouponException(ErrorCode.COUPON_NOT_FOUND));
+
+        SelectedCoupons selectedCoupons = getSelectedCoupons(selectedCouponsRequest);
+
+        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts,selectedProductCoupons ,cartCoupon);
+        CouponResponse cartCouponResponses = CouponResponse.from(cartCoupon);
+        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCoupons);
     }
 
     //2. 쿠폰 선택X, 쿠폰 서비스에서 자체적으로 최적의 쿠폰 조합을 제공해야함. -> 여기선 selectedCoupons 을 최적 알고리즘으로 반환
@@ -82,14 +89,19 @@ public class OrderCouponService {
         Map<Long, CouponResponse> selectedProductDuplicateCouponsByOrderedProductId = new HashMap<>();
 
         for (Long orderedProductId : selectedCoupons.getSelectedProductCouponListsByOrderedProductId().keySet()) {
-            Coupon coupon = selectedCoupons.getSelectedProductCouponListsByOrderedProductId().get(orderedProductId);
+            Coupon coupon = getCouponJpaRepositoryById(selectedCoupons.getSelectedProductCouponListsByOrderedProductId().get(orderedProductId));
             if (coupon.isDuplicationYn()) {
                 selectedProductDuplicateCouponsByOrderedProductId.put(orderedProductId, CouponResponse.from(coupon));
             } else selectedProductCouponListsByOrderedProductId.put(orderedProductId, CouponResponse.from(coupon));
         }
-        CouponResponse cartCoupon = CouponResponse.from(selectedCoupons.getSelectedCartCoupons());
+        CouponResponse cartCoupon = CouponResponse.from(getCouponJpaRepositoryById(selectedCoupons.getSelectedCartCoupons()));
 
         return new SelectedCoupons(selectedProductCouponListsByOrderedProductId, selectedProductDuplicateCouponsByOrderedProductId, cartCoupon);
+    }
+
+    private Coupon getCouponJpaRepositoryById(Long couponId) {
+        return couponJpaRepository.findById(couponId)
+                .orElseThrow(()-> new CouponException(ErrorCode.COUPON_NOT_FOUND));
     }
 
     private ApplicableProductCoupons getApplicableProductCoupons(Long userId, List<OrderedProduct> orderedProducts) {
