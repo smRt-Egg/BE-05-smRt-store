@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.user.application.service;
 import static com.programmers.smrtstore.core.properties.ErrorCode.EMAIL_VERIFICATION_CODE_ERROR;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_DUPLICATE_EMAIL;
 import static com.programmers.smrtstore.core.properties.ErrorCode.USER_NOT_FOUND;
+import static com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus.PURCHASE_CONFIRMED;
 
 import com.programmers.smrtstore.domain.cart.application.CartService;
 import com.programmers.smrtstore.domain.coupon.application.UserCouponService;
@@ -10,6 +11,7 @@ import com.programmers.smrtstore.domain.keep.application.KeepService;
 import com.programmers.smrtstore.domain.keep.presentation.dto.req.FindKeepByCategoryRequest;
 import com.programmers.smrtstore.domain.keep.presentation.dto.res.KeepResponse;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderServiceImpl;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
@@ -29,6 +31,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserRes
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -204,13 +207,15 @@ public class UserService {
 
     public MyOrdersResponse getPurchasedConfirmedOrders(Long userId) {
         User user = findByUserId(userId);
+        List<OrderStatus> orderStatusList = new ArrayList<>();
+        orderStatusList.add(PURCHASE_CONFIRMED);
         return MyOrdersResponse.builder()
             .nickName(user.getNickName())
             .username(user.getAuth().getUsername())
             .point(user.getPoint())
             .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
             .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
-            //구매확정 리스트
+            .orderList(orderService.getOrderPreviewsByUserIdAndStatus(userId, orderStatusList))
             .build();
     }
 
