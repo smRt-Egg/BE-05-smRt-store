@@ -38,6 +38,7 @@ public enum ErrorCode {
     COUPON_ALREADY_USED(BAD_REQUEST, "이미 사용 완료한 쿠폰입니다."),
     COUPON_NOT_AVAILABLE(BAD_REQUEST, "유효하지 않은 쿠폰입니다."),
     COUPON_STOCK_INVALID(BAD_REQUEST,"쿠폰 수량은 0개 이상이어야 합니다."),
+    // TODO: DELIVERY_FEE_COUPON_ALREADY_APPLIED 통합 논의 필요
     COUPON_ALREADY_APPLIED_PRODUCT(BAD_REQUEST,"이미 쿠폰이 적용된 상품입니다"),
     COUPON_BENEFIT_VALUE_EXCEED(BAD_REQUEST,"쿠폰의 할인값은 최대할인값을 초과할 수 없습니다."),
     COUPON_PRICE_NOT_ENOUGH(BAD_REQUEST,"쿠폰의 최수 주문 금액 미만입니다."),
@@ -68,6 +69,9 @@ public enum ErrorCode {
     PRODUCT_NOT_AVAILABLE_ORDER(BAD_REQUEST, "주문할 수 없는 상품입니다."),
     UPDATED_POINT_VALUE_INVALID(BAD_REQUEST, "갱신할 포인트의 값이 유효하지 않습니다."),
     ORDERSHEET_ALREADY_ORDERED(BAD_REQUEST, "이미 주문이 완료된 주문서입니다."),
+    DELIVERY_FEE_COUPON_ALREADY_APPLIED(BAD_REQUEST, "이미 적용된 배송비 쿠폰입니다."),
+    // TODO: 적용 할 수 없는 쿠폰 에러 메시지 통합 논의 필요
+    DELIVERY_FEE_COUPON_NOT_APPLICABLE(BAD_REQUEST, "배송비가 없는 상품입니다."),
     // 401
     AUTH_MISSING_CREDENTIALS(UNAUTHORIZED, "사용자의 인증 정보를 찾을 수 없습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증 정보가 유효하지 않습니다"),
