@@ -258,9 +258,19 @@ public class PointDetailService {
         List<ExpiredPointDetailResponse> expireHistory = pointFacade.getExpiredSumGroupByOriginAcmId();
 
         int expiredPoint = 0;
+        Long userId = null;
+        User user = null;
         for (ExpiredPointDetailResponse expireDetail : expireHistory) {
+            Long savedUserId = expireDetail.getUserId();
             PointDetail pointDetail = PointDetail.makeExpirationHistory(expireDetail);
             pointDetailRepository.save(pointDetail);
+            if (userId == null || !userId.equals(savedUserId)) {
+                userId = savedUserId;
+                user = validateUserExists(userId);
+            }
+            if (user != null) {
+                user.updatePoint(pointDetail.getPointAmount());
+            }
             expiredPoint += pointDetail.getPointAmount();
         }
         return expiredPoint;
