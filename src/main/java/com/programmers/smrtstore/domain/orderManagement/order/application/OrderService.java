@@ -18,12 +18,6 @@ public interface OrderService {
 
     Long updateOrder(Long orderId, UpdateOrderRequest request);
 
-    Integer calculateUserMonthlyTotalSpending(Long userId, int month, int year);
-
-    Integer getTotalPriceByOrderId(String orderId);
-
-    List<OrderedProductResponse> getProductsForOrder(String orderId);
-
     List<OrderPreviewResponse> getOrderPreviewsByUserId(Long userId);
 
     List<OrderPreviewResponse> getOrderPreviewsByUserIdAndStatus(Long userId, List<OrderStatus> statuses);
