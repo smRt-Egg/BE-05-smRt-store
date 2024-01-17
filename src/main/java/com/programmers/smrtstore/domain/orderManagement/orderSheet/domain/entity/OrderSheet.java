@@ -3,6 +3,8 @@ package com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entit
 import static com.programmers.smrtstore.core.properties.ErrorCode.INVALID_USER;
 
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.Order;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.DeliveryMethodType;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.vo.DeliveryOptions;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.exception.OrderSheetException;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -26,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
@@ -43,6 +46,7 @@ public class OrderSheet {
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
+    @Setter
     @OneToOne(mappedBy = "orderSheet")
     private Order order;
 
@@ -68,6 +72,16 @@ public class OrderSheet {
         orderedProducts.forEach(orderedProduct -> orderedProduct.setOrderSheet(this));
         this.deliveryOptions = new DeliveryOptions(deliveryMethod, deliveryFee);
         this.createdAt = createdAt;
+    }
+
+    public Integer getOrderSheetTotalPrice() {
+        return this.calProductTotalPrice() + this.deliveryOptions.getDeliveryFee();
+    }
+
+    private Integer calProductTotalPrice() {
+        return this.orderedProducts.stream()
+            .mapToInt(OrderedProduct::getTotalPrice)
+            .sum();
     }
 
     public boolean isAvailableOrder() {
