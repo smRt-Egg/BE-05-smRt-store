@@ -6,7 +6,12 @@ import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
 import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req.SelectedCouponsRequest;
-import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.*;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.ApplicableDeliveryFeeCoupons;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.ApplicableProductCoupons;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.CouponApplyResult;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetCouponInfo;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.SelectedCoupons;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.SelectedCouponsWithCouponApplyResult;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
@@ -14,10 +19,12 @@ import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaReposit
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +50,11 @@ public class OrderCouponService {
     public OrderSheetCouponInfo getOrderSheetCouponInfoWithSelectedCoupons(Long userId, List<OrderedProduct> orderedProducts, SelectedCouponsRequest selectedCouponsRequest) {
         ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId, orderedProducts);
         ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
-        List<CouponResponse> cartCoupons = getCartCoupons().stream().map(coupon -> CouponResponse.from(coupon)).toList();
+        List<CouponResponse> cartCoupons = getCartCoupons().stream().map(CouponResponse::from)
+            .toList();
+
+        // TODO: 함수 분리
+        // 쿠폰 entity 로 변환
         Map<Long, Coupon> selectedProductCoupons = new HashMap<>();
         for (OrderedProduct orderedProduct : orderedProducts) {
             if (selectedCouponsRequest.getSelectedProductCouponListsByOrderedProductId().containsKey(orderedProduct.getId())) {
@@ -51,37 +62,84 @@ public class OrderCouponService {
             }
         }
 
+        // 장바구니 쿠폰 가져오기
         Coupon cartCoupon = couponJpaRepository.findById(selectedCouponsRequest.getSelectedCartCoupons())
                 .orElseThrow(()->new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
-        SelectedCoupons selectedCoupons = getSelectedCoupons(selectedCouponsRequest);
-
+        // 할인 금액 적용 결과
         Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts,selectedProductCoupons ,cartCoupon);
+
+        // response 로 보낼 쿠폰 정보
+        SelectedCoupons selectedCoupons = getSelectedCoupons(selectedCouponsRequest);
         CouponResponse cartCouponResponses = CouponResponse.from(cartCoupon);
+
         return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCoupons);
     }
 
     //2. 쿠폰 선택X, 쿠폰 서비스에서 자체적으로 최적의 쿠폰 조합을 제공해야함. -> 여기선 selectedCoupons 을 최적 알고리즘으로 반환
     public OrderSheetCouponInfo getOrderSheetCouponInfo(Long userId, List<OrderedProduct> orderedProducts) {
-
-
         Map<Long, List<Coupon>> orderedProductCouponMap = new HashMap<>(); // OrderProductId에 적용 가능한 coupon List
 
+        // orderedProduct 의 Id 를 key 로 하여 쿠폰 Map 만듬
         for (OrderedProduct orderedProduct : orderedProducts) {
-            List<Coupon> productCoupons = getProductCouponsByUserIdAndProductId(userId, orderedProduct.getProduct().getId());
+            List<Coupon> productCoupons = getProductCouponsByUserIdAndProductId(userId,
+                orderedProduct.getProduct().getId());
             orderedProductCouponMap.put(orderedProduct.getId(), productCoupons);
         }
 
+        // 장바구니 쿠폰 가져오기
         List<Coupon> cartCoupons = getCartCoupons();
-        SelectedCouponsWithCouponApplyResult selectedCouponsWithCouponApplyResult = OrderCouponDiscountCalculator.getMaxDiscountCouponApplyResult(orderedProducts, orderedProductCouponMap, cartCoupons);
-        List<CouponResponse> cartCouponResponses = cartCoupons.stream().map(cartCoupon -> CouponResponse.from(cartCoupon)).toList();
 
-        ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId, orderedProducts);
-        ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
+        // 최대 할인 쿠폰 적용 결과 + 적용한 쿠폰 가져오기
+        SelectedCouponsWithCouponApplyResult selectedCouponsWithCouponApplyResult =
+            OrderCouponDiscountCalculator.getMaxDiscountCouponApplyResult(orderedProducts,
+                orderedProductCouponMap, cartCoupons);
+        // 적용 되어진 쿠폰 리스트 가져오기
         SelectedCoupons selectedCoupons = selectedCouponsWithCouponApplyResult.getSelectedCoupons();
-        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId = selectedCouponsWithCouponApplyResult.getCouponApplyResult();
+        // 쿠폰 적용 결과 가져오기
+        Map<Long, List<CouponApplyResult>> discountsByOrderedProductId =
+            selectedCouponsWithCouponApplyResult.getCouponApplyResult();
 
-        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons, applicableProductCoupons, applicableDeliveryFeeCoupons, cartCouponResponses);
+        // 장바구니 쿠폰 Response 로 변환
+        List<CouponResponse> cartCouponResponses = cartCoupons.stream().map(CouponResponse::from)
+            .toList();
+
+        // 적용 가능한 쿠폰들
+        ApplicableProductCoupons applicableProductCoupons = getApplicableProductCoupons(userId,
+            orderedProducts);
+
+        // 적용 가능한 배송비 쿠폰
+        ApplicableDeliveryFeeCoupons applicableDeliveryFeeCoupons = getApplicableDeliveryFeeCoupons();
+
+        return new OrderSheetCouponInfo(discountsByOrderedProductId, selectedCoupons,
+            applicableProductCoupons, applicableDeliveryFeeCoupons, cartCouponResponses);
+    }
+
+    public Map<Long, List<CouponApplyResult>> calCouponApplyResult(
+        List<OrderedProduct> orderedProducts, SelectedCouponsRequest selectedCouponsRequest
+    ) {
+        // 쿠폰 entity 로 변환
+        Map<Long, Coupon> selectedProductCoupons = new HashMap<>();
+        for (OrderedProduct orderedProduct : orderedProducts) {
+            if (selectedCouponsRequest.getSelectedProductCouponListsByOrderedProductId()
+                .containsKey(orderedProduct.getId())) {
+                selectedProductCoupons.put(orderedProduct.getId(), getCouponJpaRepositoryById(
+                    selectedCouponsRequest.getSelectedProductCouponListsByOrderedProductId()
+                        .get(orderedProduct.getId())));
+            }
+        }
+
+        // 장바구니 쿠폰 가져오기
+        Coupon cartCoupon = couponJpaRepository.findById(
+                selectedCouponsRequest.getSelectedCartCoupons())
+            .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 최대 할인 쿠폰 적용 결과 + 적용한 쿠폰 가져오기
+        Map<Long, List<CouponApplyResult>> selectedCouponsWithCouponApplyResult =
+            OrderCouponDiscountCalculator.getCouponApplyResult(orderedProducts,
+                selectedProductCoupons, cartCoupon);
+
+        return selectedCouponsWithCouponApplyResult;
     }
 
     private SelectedCoupons getSelectedCoupons(SelectedCouponsRequest selectedCoupons) {
