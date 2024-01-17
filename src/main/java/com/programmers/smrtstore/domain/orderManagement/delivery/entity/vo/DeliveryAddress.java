@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.orderManagement.order.domain.entity.vo;
+package com.programmers.smrtstore.domain.orderManagement.delivery.entity.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryAddress {
-
+    // TODO 대문자로 변경
     @Column(name = "address_1depth")
     private String address1depth;
 
@@ -19,4 +19,10 @@ public class DeliveryAddress {
 
     @Column(name = "zip_code")
     private String zipCode;
+
+    public DeliveryAddress(String address1depth, String address2depth, String zipCode) {
+        this.address1depth = address1depth;
+        this.address2depth = address2depth;
+        this.zipCode = zipCode;
+    }
 }
