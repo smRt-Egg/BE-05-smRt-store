@@ -4,6 +4,7 @@ package com.programmers.smrtstore.domain.point.application;
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.point.application.dto.req.AcmPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPointDetailRequest;
@@ -210,6 +211,47 @@ public class PointDetailService {
         // 마지막 주문상품에 대한 비율은 합 (=1)을 맞추기 위해 소거법 적용
         OrderedProductResponse product = products.get(products.size() - 1);
         ratiosByOrderedProductId.put(product.getOrderedProductId(), remain);
+        return ratiosByOrderedProductId;
+    }
+
+    public Map<Long, Integer> getPointPiecesByOrderedProduct(List<OrderedProduct> products, int usePoint) {
+
+        Map<Long, Double> productRatio = getRatioByOrderedProduct(products);
+        Map<Long, Integer> pointPieces = new HashMap<>();
+
+        for (OrderedProduct product : products) {
+            Long orderedProductId = product.getId();
+            int price = (int) (usePoint * productRatio.get(orderedProductId));
+            pointPieces.put(orderedProductId, price);
+            usePoint -= price;
+        }
+        pointPieces.put(products.get(products.size() - 1).getId(), usePoint);
+        return pointPieces;
+    }
+
+    private Map<Long, Double> getRatioByOrderedProduct(List<OrderedProduct> products) {
+
+        Map<Long, Double> ratiosByOrderedProductId = new HashMap<>();
+
+        int totalPrice = products.stream()
+            .mapToInt(OrderedProduct::getTotalPrice)
+            .sum();
+
+        double remain = 1.0;
+        for (int idx = 0; idx < products.size() - 1; idx++) {
+            OrderedProduct product = products.get(idx);
+            Integer originPrice = product.getTotalPrice();
+            double ratio = originPrice.doubleValue() / totalPrice;
+
+            // 주문상품별 비율은 소수점 둘째자리까지만 계산
+            BigDecimal ratioBigDecimal = new BigDecimal(Double.toString(ratio));
+            double roundedRatio = ratioBigDecimal.setScale(2, RoundingMode.DOWN).doubleValue();
+            ratiosByOrderedProductId.put(product.getId(), roundedRatio);
+            remain -= roundedRatio;
+        }
+        // 마지막 주문상품에 대한 비율은 합 (=1)을 맞추기 위해 소거법 적용
+        OrderedProduct product = products.get(products.size() - 1);
+        ratiosByOrderedProductId.put(product.getId(), remain);
         return ratiosByOrderedProductId;
     }
 
