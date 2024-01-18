@@ -1,5 +1,7 @@
 package com.programmers.smrtstore.domain.qna.domain.entity;
 
+import com.programmers.smrtstore.core.properties.ErrorCode;
+import com.programmers.smrtstore.domain.qna.exception.QnAException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -50,7 +52,14 @@ public class ProductQuestion {
         this.content = content;
     }
 
-    public void updateContent(String updateContent) {
+    public void updateContent(Long userId, String updateContent) {
+        if (!checkUserEquals(userId)) {
+            throw new QnAException(ErrorCode.QUESTION_ACCESS_DENIED);
+        }
         this.content = updateContent;
+    }
+
+    public Boolean checkUserEquals(Long userId) {
+        return this.userId.equals(userId);
     }
 }
