@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.product.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.product.application.dto.req.CreateProductRequest;
 import com.programmers.smrtstore.domain.product.application.dto.req.ProductRequest;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
@@ -10,22 +11,17 @@ import com.programmers.smrtstore.domain.product.domain.entity.enums.ProductStatu
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductDetailOptionJpaRepository;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
 @DisplayName("Test Product Service")
-@Testcontainers
 @Transactional
+@Import(RedisTestConfig.class)
 class ProductServiceTest {
 
     private static final String NAME = "test";
@@ -43,15 +39,15 @@ class ProductServiceTest {
     private ProductDetailOptionJpaRepository detailOptionJpaRepository;
 
     @Test
-    void testCreateProductWithoutOptions() throws Exception {
+    void testCreateProductWithoutOptions() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         // Act
@@ -71,15 +67,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testGetProductByIdSuccess() throws MalformedURLException {
+    void testGetProductByIdSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedResult = productService.createProduct(request);
@@ -102,15 +98,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testGetAllProductsSuccess() throws MalformedURLException {
+    void testGetAllProductsSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         productService.createProduct(request);
@@ -121,15 +117,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testReleaseProductSuccess() throws MalformedURLException {
+    void testReleaseProductSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -143,15 +139,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testReleaseProductFail() throws MalformedURLException {
+    void testReleaseProductFail() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -162,15 +158,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testMakeProductNotAvailableSuccess() throws MalformedURLException {
+    void testMakeProductNotAvailableSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedProductId = productService.createProduct(request).getId();
@@ -184,15 +180,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testMakeProductNotAvailableFail() throws MalformedURLException {
+    void testMakeProductNotAvailableFail() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -202,15 +198,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testMakeProductAvailableSuccess() throws MalformedURLException {
+    void testMakeProductAvailableSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -223,15 +219,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testMakeProductAvailableFailWhenProductAlreadyAvailable() throws MalformedURLException {
+    void testMakeProductAvailableFailWhenProductAlreadyAvailable() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -241,15 +237,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testMakeProductAvailableFailWhenProductNotReleased() throws MalformedURLException {
+    void testMakeProductAvailableFailWhenProductNotReleased() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -258,15 +254,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testDeleteProduct() throws MalformedURLException {
+    void testDeleteProduct() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -276,15 +272,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testUpdateProduct() throws MalformedURLException {
+    void testUpdateProduct() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -308,15 +304,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testUpdateProductDiscountRatioSuccess() throws MalformedURLException {
+    void testUpdateProductDiscountRatioSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -330,15 +326,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testUpdateProductDiscountRatioFail() throws MalformedURLException {
+    void testUpdateProductDiscountRatioFail() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();
@@ -349,15 +345,15 @@ class ProductServiceTest {
     }
 
     @Test
-    void testDisableProductDiscountSuccess() throws MalformedURLException {
+    void testDisableProductDiscountSuccess() {
         // Arrange
         CreateProductRequest request = CreateProductRequest.builder()
             .name(NAME)
             .category(CATEGORY)
             .price(SALE_PRICE)
             .stockQuantity(STOCK_QUANTITY)
-            .thumbnail(new URL(THUMBNAIL_STR))
-            .contentImage(new URL(CONTENT_IMAGE_STR))
+            .thumbnail(THUMBNAIL_STR)
+            .contentImage(CONTENT_IMAGE_STR)
             .combinationYn(false)
             .build();
         var expectedId = productService.createProduct(request).getId();

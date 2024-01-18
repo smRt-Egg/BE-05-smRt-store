@@ -1,12 +1,11 @@
 package com.programmers.smrtstore.domain.orderManagement.order.domain.entity;
 
 import com.programmers.smrtstore.common.base.TimestampBaseEntity;
+import com.programmers.smrtstore.domain.orderManagement.delivery.entity.DeliveryInfo;
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
-import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.vo.PaymentInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,6 +15,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,7 +47,21 @@ public class Order extends TimestampBaseEntity {
     @JoinColumn(name = "delivery_info_id")
     private DeliveryInfo deliveryInfo;
 
-    @Embedded
-    private PaymentInfo paymentInfo;
+//    @Embedded
+//    private PaymentInfo paymentInfo;
+
+    @Builder
+    public Order(
+        String id, OrderSheet orderSheet, LocalDateTime orderDate, DeliveryInfo deliveryInfo
+    ) {
+        this.id = id;
+        this.orderSheet = orderSheet;
+        orderSheet.setOrder(this);
+        this.orderStatus = OrderStatus.PAYMENT_COMPLETED;
+        this.totalPrice = orderSheet.getOrderSheetTotalPrice();
+        this.orderDate = orderDate;
+        this.deliveryInfo = deliveryInfo;
+//        this.paymentInfo = paymentInfo;
+    }
 
 }

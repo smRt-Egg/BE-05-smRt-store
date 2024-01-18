@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.application.dto.req;
 
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointLabel;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class UsePointRequest {
 
     private Long userId;
-    private Long orderId;
+    private String orderId;
     private Integer pointAmount;
 
     public Point toEntity(boolean membershipApplyYn) {
@@ -23,6 +24,7 @@ public class UsePointRequest {
             .userId(userId)
             .orderId(orderId)
             .pointStatus(PointStatus.USED)
+            .pointLabel(PointLabel.ORDER)
             .pointValue(-1 * pointAmount)
             .membershipApplyYn(membershipApplyYn)
             .build();

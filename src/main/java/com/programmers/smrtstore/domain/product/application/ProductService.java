@@ -67,9 +67,10 @@ public class ProductService {
         return productId;
     }
 
-    public void deleteProduct(Long productId) {
+    public Long deleteProduct(Long productId) {
         Product product = commonService.getProduct(productId);
-        productRepository.delete(product);
+        product.deleteProduct();
+        return productId;
     }
 
     public ProductDetailResponse updateProduct(ProductRequest request) {

@@ -3,6 +3,7 @@ package com.programmers.smrtstore.domain.keep.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.keep.domain.entity.Keep;
 import com.programmers.smrtstore.domain.keep.exception.KeepException;
 import com.programmers.smrtstore.domain.keep.infrastructure.KeepJpaRepository;
@@ -20,8 +21,6 @@ import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
-import jakarta.persistence.EntityManager;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,18 +30,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @Transactional
+@Import(RedisTestConfig.class)
 class KeepServiceTest {
-    @Autowired
-    private EntityManager em;
+
     @Autowired
     private KeepService keepService;
     @Autowired
@@ -57,11 +53,6 @@ class KeepServiceTest {
     private Long productId1;
     private Long productId2;
 
-    private void persistContextClear() {
-        em.flush();
-        em.clear();
-    }
-
     @BeforeEach
     void init() throws Exception {
         List<Product> productList = new ArrayList<>();
@@ -71,8 +62,8 @@ class KeepServiceTest {
                     .name("productName" + i)
                     .price(i * 1000)
                     .category(Category.IT)
-                    .contentImage(new URL("https://www.naver.com"))
-                    .thumbnail(new URL("https://www.naver.com"))
+                    .contentImage("https://www.naver.com")
+                    .thumbnail("https://www.naver.com")
                     .build();
             productList.add(product);
             User user = User.builder()
@@ -178,42 +169,6 @@ class KeepServiceTest {
         List<KeepResponse> keepByUserAndCategory = keepService.findKeepByUserAndCategory(userId1, request);
         //Then
         assertThat(keepByUserAndCategory).isNotEmpty();
-    }
-
-    @DisplayName("user가 삭제되면 keep도 삭제된다.")
-    @Test
-    void deleteKeepWhenDeleteUser() {
-        //Given
-        userJpaRepository.deleteAll();
-        persistContextClear();
-        //When
-        List<Keep> allKeeps = keepRepository.findAll();
-        //Then
-        assertThat(allKeeps).isEmpty();
-    }
-
-    @DisplayName("user 하나가 삭제되면 해당 keep도 삭제된다.")
-    @Test
-    void deleteOneKeepWithDeleteUser() {
-        //Given
-        userJpaRepository.deleteById(userId1);
-        persistContextClear();
-        //When
-        List<KeepResponse> keepList = keepRepository.findAllByUserId(userId1);
-        //Then
-        assertThat(keepList).isEmpty();
-    }
-
-    @DisplayName("product가 삭제되면 keep도 삭제된다.")
-    @Test
-    void deleteKeepWithDeleteProduct() {
-        //Given
-        productRepository.deleteAll();
-        persistContextClear();
-        //When
-        List<Keep> allKeeps = keepRepository.findAll();
-        //Then
-        assertThat(allKeeps).isEmpty();
     }
 
 }

@@ -18,10 +18,10 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCustom {
 
-    private JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PointDetail> findUsedDetailsByOrderId(Long orderId) {
+    public List<PointDetail> findUsedDetailsByOrderId(String orderId) {
         return jpaQueryFactory.selectFrom(pointDetail)
             .where(pointDetail.pointId.in(
                 JPAExpressions
@@ -29,7 +29,8 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
                     .from(point)
                     .where(
                         point.orderId.eq(orderId),
-                        point.pointStatus.eq(PointStatus.USED))
+                        point.pointStatus.eq(PointStatus.USED)
+                    )
             ))
             .fetch();
     }
@@ -40,15 +41,15 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
         return jpaQueryFactory
             .select(
                 pointDetail.originAcmId,
-                pointDetail.pointAmount.sum().as("sum_of_point")
+                pointDetail.pointAmount.sum()
             )
             .from(pointDetail)
             .where(pointDetail.userId.eq(userId))
             .groupBy(pointDetail.originAcmId)
             .having(Expressions.numberTemplate(
                 Integer.class,
-                "SUM({0})", pointDetail.pointAmount)
-                .gt(0))
+                "SUM({0})", pointDetail.pointAmount
+            ).gt(0))
             .orderBy(pointDetail.originAcmId.asc())
             .fetch();
     }
@@ -63,7 +64,7 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
                 pointDetail.originAcmId,
                 point.userId,
                 point.orderId,
-                pointDetail.pointAmount.sum().as("total"),
+                pointDetail.pointAmount.sum(),
                 point.membershipApplyYn
             )
             .from(pointDetail)
@@ -86,5 +87,33 @@ public class PointDetailRepositoryCustomImpl implements PointDetailRepositoryCus
             .having(pointDetail.pointAmount.sum().gt(0))
             .orderBy(pointDetail.originAcmId.asc())
             .fetch();
+    }
+
+    @Override
+    public List<PointDetail> getUsedDetailByPointIdAndOrderedProductId(Long pointId, Long orderedProductid) {
+        return jpaQueryFactory
+            .selectFrom(pointDetail)
+            .where(
+                pointDetail.pointId.in(
+                    JPAExpressions
+                        .select(point.id)
+                        .from(point)
+                        .where(point.pointStatus.eq(PointStatus.USED))
+                ),
+                pointDetail.orderedProductId.eq(orderedProductid)
+            )
+            .fetch();
+    }
+
+    @Override
+    public Integer getTotalPriceByPointIdAndOrderedProductId(Long pointId, Long orderedProductid) {
+        return jpaQueryFactory
+            .select(pointDetail.pointAmount.sum())
+            .from(pointDetail)
+            .where(
+                pointDetail.pointId.eq(pointId),
+                pointDetail.orderedProductId.eq(orderedProductid)
+            )
+            .fetchOne();
     }
 }

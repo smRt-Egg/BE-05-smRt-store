@@ -83,7 +83,7 @@ public class Cart {
 
     private static void validateDetailOption(Product product, ProductDetailOption detailOption) {
         if (!detailOption.getProduct().getId().equals(product.getId())) {
-            throw new CartException(ErrorCode.CART_PRODUCT_DETAIL_OPTION_NOT_MATCH);
+            throw new CartException(ErrorCode.PRODUCT_DETAIL_OPTION_NOT_MATCH);
         }
     }
 

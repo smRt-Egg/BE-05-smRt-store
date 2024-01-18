@@ -25,12 +25,12 @@ public class CreateCouponRequest {
     private final String content;
     @NotNull
     @Min(value = 1,message = "쿠폰 할인의 최소값은 1 이상입니다.")
-    private final Long benefitValue;
+    private final Integer benefitValue;
     @NotNull
     @Min(value = 1,message = "쿠폰의 최대할인값은 1 이상입니다.")
-    private final Long maxDiscountValue;
+    private final Integer maxDiscountValue;
     @NotNull
-    private final Long minOrderPrice;
+    private final Integer minOrderPrice;
     @NotNull
     @Min(value = 0,message = "인당 쿠폰 발급 횟수는 0회 이상입니다.")
     private final Integer idPerIssuableCount;

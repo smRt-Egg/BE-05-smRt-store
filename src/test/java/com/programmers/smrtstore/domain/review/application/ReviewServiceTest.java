@@ -3,31 +3,47 @@ package com.programmers.smrtstore.domain.review.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.programmers.smrtstore.core.config.RedisTestConfig;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.DeliveryMethodType;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.infrastructure.OrderSheetJpaRepository;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.infrastructure.OrderedProductJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.product.domain.entity.ProductDetailOption;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.product.domain.entity.enums.OptionType;
+import com.programmers.smrtstore.domain.product.domain.entity.vo.OptionNames;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
 import com.programmers.smrtstore.domain.review.application.dto.req.CreateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.ReviewLikeRequest;
 import com.programmers.smrtstore.domain.review.application.dto.req.UpdateReviewRequest;
 import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.UnWrittenReviewResponse;
 import com.programmers.smrtstore.domain.review.domain.entity.Review;
+import com.programmers.smrtstore.domain.review.domain.entity.ReviewLike;
 import com.programmers.smrtstore.domain.review.domain.entity.ReviewScore;
 import com.programmers.smrtstore.domain.review.exception.ReviewException;
 import com.programmers.smrtstore.domain.review.infrastructure.ReviewJpaRepository;
+import com.programmers.smrtstore.domain.review.infrastructure.ReviewLikeJpaRepository;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
+
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -35,6 +51,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 @Transactional
+@Import(RedisTestConfig.class)
 class ReviewServiceTest {
 
     @Autowired
@@ -42,12 +59,22 @@ class ReviewServiceTest {
     @Autowired
     ReviewJpaRepository reviewRepository;
     @Autowired
+    ReviewLikeJpaRepository reviewLikeRepository;
+    @Autowired
     ProductJpaRepository productJpaRepository;
     @Autowired
     UserJpaRepository userJpaRepository;
+    @Autowired
+    OrderedProductJpaRepository orderedProductJpaRepository;
+    @Autowired
+    OrderSheetJpaRepository orderSheetJpaRepository;
 
     User user;
     Product product;
+    OrderedProduct orderedProduct1;
+    OrderedProduct orderedProduct2;
+    List<OrderedProduct> orderedProducts;
+    OrderSheet orderSheet;
 
     @BeforeEach
     void init() throws MalformedURLException {
@@ -66,9 +93,34 @@ class ReviewServiceTest {
                 .name("productName")
                 .price(1000)
                 .category(Category.IT)
-                .thumbnail(new URL("https://www.naver.com"))
-                .contentImage(new URL("https://www.naver.com"))
+                .thumbnail("https://www.naver.com")
+                .contentImage("https://www.naver.com")
                 .build());
+        ProductDetailOption productDetailOption = ProductDetailOption.builder()
+                .stockQuantity(1)
+                .price(1000)
+                .product(product)
+                .optionType(OptionType.SINGLE)
+                .optionNames(OptionNames.builder()
+                        .optionName1("optionName1")
+                        .optionName2("optionName2")
+                        .optionName3("optionName3")
+                        .build()
+                )
+                .build();
+        orderedProduct1 = OrderedProduct.createBeforeOrder(product, productDetailOption, 100, 10, 100, 10);
+        orderedProduct2 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        OrderedProduct orderedProduct3 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        OrderedProduct orderedProduct4 = OrderedProduct.createBeforeOrder(product, productDetailOption, 500, 20, 30, 20);
+        orderedProducts = List.of(orderedProduct1, orderedProduct2, orderedProduct3, orderedProduct4);
+        orderedProductJpaRepository.saveAll(orderedProducts);
+        orderSheet = OrderSheet.builder()
+                .user(user)
+                .orderedProducts(orderedProducts)
+                .deliveryMethod(DeliveryMethodType.DELIVERY)
+                .deliveryFee(0)
+                .build();
+        orderSheetJpaRepository.save(orderSheet);
     }
 
     @DisplayName("오더가 생생 되어 있지 않다면 리뷰를 생성할 수 없다.")
@@ -84,10 +136,10 @@ class ReviewServiceTest {
                 .content(content)
                 .reviewScore(score)
                 .userId(user.getId())
-                .productId(product.getId())
+                .orderProductId(orderedProduct1.getId())
                 .build();
         //When //Then
-        assertThatThrownBy(() -> reviewService.createReview(request))
+        assertThatThrownBy(() -> reviewService.createReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
 
@@ -101,19 +153,19 @@ class ReviewServiceTest {
 
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
                 .build());
         //When
-        ReviewResponse response = reviewService.getReviewById(review.getId());
+        ReviewResponse response = reviewService.getReviewById(user.getId(), review.getId());
         //Then
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContent()).isEqualTo(content);
         assertThat(response.getReviewScore()).isEqualTo(score);
         assertThat(response.getUserId()).isEqualTo(user.getId());
-        assertThat(response.getProductId()).isEqualTo(product.getId());
+        assertThat(response.getOrderedProductId()).isEqualTo(orderedProduct1.getId());
         assertThat(response.getLikeCount()).isZero();
     }
 
@@ -126,7 +178,7 @@ class ReviewServiceTest {
         for (int i = 0; i < testSize; i++) {
             Review review = Review.builder()
                     .user(user)
-                    .product(product)
+                    .orderedProduct(orderedProduct1)
                     .title("title" + i)
                     .content("content" + i)
                     .reviewScore(ReviewScore.FOUR)
@@ -135,7 +187,7 @@ class ReviewServiceTest {
         }
         reviewRepository.saveAll(reviewList);
         //When
-        List<ReviewResponse> reviewListByProductId = reviewService.getReviewsByProductId(product.getId());
+        List<ReviewResponse> reviewListByProductId = reviewService.getReviewsByProductId(user.getId(), product.getId());
         //Then
         assertThat(reviewListByProductId).hasSize(testSize);
     }
@@ -149,7 +201,7 @@ class ReviewServiceTest {
         for (int i = 0; i < testSize; i++) {
             Review review = Review.builder()
                     .user(user)
-                    .product(product)
+                    .orderedProduct(orderedProduct1)
                     .title("title" + i)
                     .content("content" + i)
                     .reviewScore(ReviewScore.FOUR)
@@ -158,7 +210,7 @@ class ReviewServiceTest {
         }
         reviewRepository.saveAll(reviewList);
         //When
-        List<ReviewResponse> reviewListByUserId = reviewService.getReviewsByUserId(user.getId());
+        List<ReviewResponse> reviewListByUserId = reviewService.getReviewsByUserId(user.getId(), user.getId());
         //Then
         assertThat(reviewListByUserId).hasSize(testSize);
     }
@@ -172,7 +224,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -189,7 +241,7 @@ class ReviewServiceTest {
                 .reviewScore(updateScore)
                 .build();
         //When
-        ReviewResponse updateReviewResponse = reviewService.updateReview(request);
+        ReviewResponse updateReviewResponse = reviewService.updateReview(user.getId(), request);
         //Then
         assertThat(updateReviewResponse.getUserId()).isEqualTo(user.getId());
         assertThat(updateReviewResponse.getTitle()).isEqualTo(updateTitle);
@@ -206,13 +258,13 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
                 .build());
         //When
-        Long deleteId = reviewService.deleteReview(review.getId());
+        Long deleteId = reviewService.deleteReview(user.getId(), review.getId());
         //Then
         assertThat(deleteId).isEqualTo(review.getId());
     }
@@ -226,7 +278,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -236,7 +288,7 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When
-        reviewService.likeReview(request);
+        reviewService.likeReview(user.getId(), request);
         //Then
         assertThat(review.getReviewLikeCount()).isOne();
     }
@@ -250,7 +302,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -260,8 +312,8 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When //Then
-        reviewService.likeReview(request);
-        assertThatThrownBy(() -> reviewService.likeReview(request))
+        reviewService.likeReview(user.getId(), request);
+        assertThatThrownBy(() -> reviewService.likeReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
 
@@ -274,7 +326,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -283,9 +335,9 @@ class ReviewServiceTest {
                 .userId(user.getId())
                 .reviewId(review.getId())
                 .build();
-        reviewService.likeReview(request);
+        reviewService.likeReview(user.getId(), request);
         //When
-        Long dislikeReviewId = reviewService.dislikeReview(request);
+        Long dislikeReviewId = reviewService.dislikeReview(user.getId(), request);
         //Then
         assertThat(dislikeReviewId).isEqualTo(review.getId());
         assertThat(review.getReviewLikeCount()).isZero();
@@ -300,7 +352,7 @@ class ReviewServiceTest {
         ReviewScore score = ReviewScore.FIVE;
         Review review = reviewRepository.save(Review.builder()
                 .user(user)
-                .product(product)
+                .orderedProduct(orderedProduct1)
                 .title(title)
                 .content(content)
                 .reviewScore(score)
@@ -310,7 +362,102 @@ class ReviewServiceTest {
                 .reviewId(review.getId())
                 .build();
         //When //Then
-        assertThatThrownBy(() -> reviewService.dislikeReview(request))
+        assertThatThrownBy(() -> reviewService.dislikeReview(user.getId(), request))
                 .isInstanceOf(ReviewException.class);
     }
+
+    @DisplayName("주문은 했으나 작성하지 않은 리뷰의 갯수를 가져올 수 있다.")
+    @Test
+    void getUnWritten() {
+        //Given
+        Review review = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        reviewRepository.save(review);
+        //When
+        Long count = reviewRepository.getUnWrittenReviewCount(user.getId());
+        //Then
+        assertThat(count).isEqualTo(orderedProducts.size() - 1);
+    }
+
+    @DisplayName("주문은 했으나 작성하지 않은 리뷰들을 가져올 수 있다.")
+    @Test
+    void getUnWrittenReviewResponses() {
+        //Given
+        Review review = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        reviewRepository.save(review);
+        //When
+        List<UnWrittenReviewResponse> reviewResponses = reviewService.getUnWrittenReviews(user.getId());
+        //Then
+        assertThat(reviewResponses).hasSize(orderedProducts.size() - 1);
+    }
+
+    @DisplayName("기간 검색으로 리뷰를 조회할 수 있다.")
+    @Test
+    void searchReviewByDate(){
+        //Given
+        Review review1 = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct1)
+                .title("review1")
+                .reviewScore(ReviewScore.FOUR)
+                .content("good!")
+                .build();
+        Review review2 = Review.builder()
+                .user(user)
+                .orderedProduct(orderedProduct2)
+                .title("review2")
+                .reviewScore(ReviewScore.FIVE)
+                .content("awesome!")
+                .build();
+        List<Review> reviewList = reviewRepository.saveAll(List.of(review1, review2));
+        //When
+        List<Review> response = reviewService.findByCreatedAtBetween(user.getId(), LocalDateTime.now().with(LocalTime.MIN), LocalDateTime.now().with(LocalTime.MAX));
+        //Then
+        assertThat(response).hasSize(reviewList.size());
+        assertThat(response).contains(review1);
+     }
+
+     @DisplayName("기간 검색으로 좋아요를 누른 리뷰를 조회할 수 있다.")
+     @Test
+     void searchLikedReviewByDate(){
+         //Given
+         Review review1 = Review.builder()
+                 .user(user)
+                 .orderedProduct(orderedProduct1)
+                 .title("review1")
+                 .reviewScore(ReviewScore.FOUR)
+                 .content("good!")
+                 .build();
+         Review review2 = Review.builder()
+                 .user(user)
+                 .orderedProduct(orderedProduct2)
+                 .title("review2")
+                 .reviewScore(ReviewScore.FIVE)
+                 .content("awesome!")
+                 .build();
+         ReviewLike reviewLike = ReviewLike.builder()
+                 .review(review1)
+                 .user(user)
+                 .build();
+         List<Review> reviewList = reviewRepository.saveAll(List.of(review1, review2));
+         reviewLikeRepository.save(reviewLike);
+         //When
+         List<Review> response = reviewService.findLikedReviewByCreatedAtBetween(user.getId(), LocalDateTime.now().with(LocalTime.MIN), LocalDateTime.now().with(LocalTime.MAX));
+         //Then
+         assertThat(response).hasSize(1);
+         assertThat(response.contains(review1)).isTrue();
+      }
+
+
 }

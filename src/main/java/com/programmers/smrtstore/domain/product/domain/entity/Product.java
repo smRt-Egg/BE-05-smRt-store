@@ -17,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,10 +55,10 @@ public class Product {
     private Category category;
 
     @Column(name = "thumbnail", nullable = false)
-    private URL thumbnail;
+    private String thumbnail;
 
     @Column(name = "content_image")
-    private URL contentImage;
+    private String contentImage;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -72,6 +71,9 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private final List<ProductDetailOption> productDetailOptions = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(name = "product_status_type", nullable = false)
     private ProductStatusType productStatusType;
@@ -79,9 +81,8 @@ public class Product {
     @Column(name = "discount_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
     private boolean discountYn;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private final List<ProductDetailOption> productDetailOptions = new ArrayList<>();
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Column(name = "combination_yn", nullable = false)
     @JdbcTypeCode(SqlTypes.TINYINT)
@@ -92,7 +93,7 @@ public class Product {
 
     @Builder
     private Product(String name, Integer price, Category category, boolean combinationYn,
-        URL thumbnail, URL contentImage, String optionNameType1, String optionNameType2,
+        String thumbnail, String contentImage, String optionNameType1, String optionNameType2,
         String optionNameType3) {
         this.name = name;
         this.price = price;
@@ -132,14 +133,14 @@ public class Product {
 
     public void addOption(ProductDetailOption detailOption) {
         if (!this.combinationYn && productDetailOptions.size() == 1) {
-            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
         productDetailOptions.add(detailOption);
     }
 
     public void increaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_USE_COMBINATION_OPTION);
         }
         var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
@@ -148,8 +149,9 @@ public class Product {
     }
 
     public void increaseDetailStockQuantity(Integer quantity, Long productOptionId) {
-        productDetailOptions.stream().filter(option -> option.getId().equals(productOptionId))
-            .findFirst()
+        productDetailOptions.stream()
+            .filter(option -> option.getId().equals(productOptionId))
+            .filter(option -> !option.isDeleted()).findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND))
             .addStockQuantity(quantity);
     }
@@ -157,7 +159,7 @@ public class Product {
 
     public void decreaseStockQuantity(Integer quantity) {
         if (this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_USE_COMBINATION_OPTION);
         }
         var option = productDetailOptions.stream().findFirst()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
@@ -176,17 +178,21 @@ public class Product {
 
     public void removeDetailOption(Long productOptionId) {
         if (!this.combinationYn) {
-            throw new ProductException(ErrorCode.PRODUCT_USE_SINGLE_OPTION);
+            throw new ProductException(ErrorCode.PRODUCT_NOT_USE_COMBINATION_OPTION);
         }
         var productOption = productDetailOptions.stream()
-            .filter(option -> option.getId().equals(productOptionId)).findAny()
+            .filter(option -> option.getId().equals(productOptionId))
+            .filter(option -> !option.isDeleted())
+            .findAny()
             .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        productOption.deleteOption();
         productDetailOptions.remove(productOption);
     }
 
     public Integer getStockQuantity() {
         if (combinationYn) {
             return productDetailOptions.stream()
+                .filter(option -> !option.isDeleted())
                 .map(ProductDetailOption::getStockQuantity)
                 .reduce(0, Integer::sum);
         }
@@ -246,7 +252,7 @@ public class Product {
         }
     }
 
-    public void updateThumbnail(URL thumbnail) {
+    public void updateThumbnail(String thumbnail) {
         if (thumbnail != null) {
             this.thumbnail = thumbnail;
         }
@@ -260,7 +266,7 @@ public class Product {
         }
     }
 
-    public void updateContentImage(URL contentImage) {
+    public void updateContentImage(String contentImage) {
         if (contentImage != null) {
             this.contentImage = contentImage;
         }
@@ -275,6 +281,20 @@ public class Product {
         }
         this.discountRatio = discountRatio;
         this.discountYn = discountRatio != 0;
+    }
+
+    public boolean isAvailableOrder() {
+        return this.productStatusType.equals(ProductStatusType.SALE);
+    }
+
+    public Integer getImmediateDiscount() {
+        return getPrice() - getSalePrice();
+    }
+
+    public void deleteProduct() {
+        this.deletedAt = LocalDateTime.now();
+        productDetailOptions.forEach(ProductDetailOption::deleteOption);
+        productDetailOptions.clear();
     }
 
 }

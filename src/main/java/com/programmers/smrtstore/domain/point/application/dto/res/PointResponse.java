@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.point.application.dto.res;
 
 import com.programmers.smrtstore.domain.point.domain.entity.Point;
+import com.programmers.smrtstore.domain.point.domain.entity.enums.PointLabel;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -11,8 +12,9 @@ public class PointResponse {
 
     private Long id;
     private Long userId;
-    private Long orderId;
+    private String orderId;
     private PointStatus status;
+    private PointLabel label;
     private Integer pointValue;
     private LocalDateTime issuedAt;
     private LocalDateTime expiredAt;
@@ -24,6 +26,7 @@ public class PointResponse {
         this.userId = point.getUserId();
         this.orderId = point.getOrderId();
         this.status = point.getPointStatus();
+        this.label = point.getPointLabel();
         this.pointValue = point.getPointValue();
         this.issuedAt = point.getIssuedAt();
         this.expiredAt = point.getExpiredAt();

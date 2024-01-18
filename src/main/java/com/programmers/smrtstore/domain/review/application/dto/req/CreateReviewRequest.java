@@ -17,5 +17,5 @@ public class CreateReviewRequest {
     private String content;
     private ReviewScore reviewScore;
     private Long userId;
-    private Long productId;
+    private Long orderProductId;
 }

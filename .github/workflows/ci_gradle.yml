@@ -17,52 +17,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    ## Gradle Wrapper 권한 부여
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      ## Gradle Wrapper 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    ## create application.yml
-    - name: make application.yml
-      run: |
-        mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.yml
-      shell: bash
-    - name: deliver application.yml
-      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
-      shell: bash
+      ## create application.yml
+      - name: make application.yml
+        run: |
+          mkdir -p ./src/main/resources
+          touch ./src/main/resources/application.yml
+        shell: bash
+      - name: deliver application.yml
+        run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+        shell: bash
 
       ## create test application.yml
-    - name: make test application.yml
-      run: |
-        mkdir -p ./src/test/resources
-        touch ./src/test/resources/application.yml
-      shell: bash
-    - name: deliver test application.yml
-      run: echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application.yml
-      shell: bash
+      - name: make test application.yml
+        run: |
+          mkdir -p ./src/test/resources
+          touch ./src/test/resources/application.yml
+        shell: bash
+      - name: deliver test application.yml
+        run: echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application.yml
+        shell: bash
+
+#      ## create test ddl.sql
+#      - name: make test ddl.sql
+#        run: |
+#          touch ./src/test/resources/ddl.sql
+#        shell: bash
+#      - name: deliver test ddl.sql
+#        run: echo "${{ secrets.DDL }}" > ./src/test/resources/ddl.sql
+#        shell: bash
+
 
       ## Gradle Test를 실행한다
-    - name: Test with Gradle
-      run: ./gradlew --info test
+      - name: Test with Gradle
+        run: ./gradlew --info test
 
       ## Test 후 Report 생성
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: '**/build/test-results/test/TEST-*.xml'
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
 
-    ## 오류가 나는 부분에 코멘트를 달아줌
-    - name: add comments to a pull request
-      uses: mikepenz/action-junit-report@v3
-      if: always()
-      with:
-        report_paths: '**/build/test-results/test/TEST-*.xml'
+      ## 오류가 나는 부분에 코멘트를 달아줌
+      - name: add comments to a pull request
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
 
