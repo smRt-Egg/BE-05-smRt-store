@@ -63,7 +63,10 @@ public class OrderSheetService {
         OrderSheet orderSheet = OrderSheet.builder()
             .user(checkUserExistence(request.getOrdererId()))
             .orderedProducts(orderedProducts)
+            .deliveryMethod(request.getDeliveryMethod())
+            .deliveryFee(request.getDeliveryFee())
             .build();
+
         orderSheetJpaRepository.save(orderSheet);
 
         return orderSheet.getId();
@@ -79,15 +82,7 @@ public class OrderSheetService {
             () -> new OrderSheetException(ORDERSHEET_NOT_FOUND, String.valueOf(orderSheetId)));
 
         // 유효성 검증
-        // TODO: exception 발생을 도메인 내부에서 할지 고민
-        // 이미 주문이 된 주문서인지 검증
-        if (orderSheet.isAvailableOrder()) {
-            throw new OrderSheetException(ORDERSHEET_ALREADY_ORDERED, String.valueOf(orderSheetId));
-        }
-        // 주문서의 유저와 토큰의 유저가 일치하는지 검증
-        orderSheet.validateOwnerOfOrderSheet(user);
-        // 주문서의 orderedProducts 유효성 검증
-        orderSheet.getOrderedProducts().forEach(orderedProductService::validateOrderedProduct);
+        validateAvailableOrderSheet(orderSheet, user);
 
         // orderSheetResponse 생성에 필요한 정보 가져오기
         // 배송지 정보
@@ -122,7 +117,21 @@ public class OrderSheetService {
             .couponInfo(couponInfo)
             .userPoint(userPoint)
             .rewardPoint(orderExpectedPoint)
+            .deliveryOptions(orderSheet.getDeliveryOptions())
             .build();
+    }
+
+    public void validateAvailableOrderSheet(OrderSheet orderSheet, User user) {
+        // TODO: exception 발생을 도메인 내부에서 할지 고민
+        // 이미 주문이 된 주문서인지 검증
+        if (orderSheet.isAvailableOrder()) {
+            throw new OrderSheetException(ORDERSHEET_ALREADY_ORDERED,
+                String.valueOf(orderSheet.getId()));
+        }
+        // 주문서의 유저와 토큰의 유저가 일치하는지 검증
+        orderSheet.validateOwnerOfOrderSheet(user);
+        // 주문서의 orderedProducts 유효성 검증
+        orderSheet.getOrderedProducts().forEach(orderedProductService::validateOrderedProduct);
     }
 
     public void deleteOrderSheetById(Long orderSheetId) {

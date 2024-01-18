@@ -116,7 +116,6 @@ CREATE TABLE delivery_info_tb
     address_1depth   varchar(255) DEFAULT NULL,
     address_2depth   varchar(255) DEFAULT NULL,
     zip_code         varchar(255) DEFAULT NULL,
-    delivery_fee     int          DEFAULT NULL,
     delivery_request varchar(255) DEFAULT NULL,
     receiver_name    varchar(255) DEFAULT NULL,
     receiver_phone   varchar(255) DEFAULT NULL,
@@ -141,6 +140,9 @@ CREATE TABLE order_sheet_tb
     id         bigint NOT NULL AUTO_INCREMENT,
     created_at datetime(6) DEFAULT NULL,
     user_id    bigint      DEFAULT NULL,
+    delivery_method             enum ('DELIVERY','VISIT') DEFAULT NULL,
+    delivery_fee                int     DEFAULT NULL,
+    applied_delivery_fee_coupon tinyint DEFAULT false,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -154,8 +156,8 @@ CREATE TABLE order_tb
     updated_at       datetime(6)                                                                                                                                                                                                                        DEFAULT NULL,
     order_date       datetime(6)                                                                                                                                                                                                                        DEFAULT NULL,
     order_status     enum ('PAYMENT_WAITING','PAYMENT_COMPLETED','DELIVERY_PREPARING','DELIVERING_BEFORE','DELIVERING','DELIVERED','CANCELLED','PURCHASE_CONFIRMED','REFUND_REQUESTED','REFUND_COMPLETED','CANCELLED_BY_NO_PAYMENT','DISPATCH_DELAYED') DEFAULT NULL,
-    payment_date     datetime(6)                                                                                                                                                                                                                        DEFAULT NULL,
-    payment_method   enum ('SAMSUNG_PAY','PAY_LATER','CARD','CARD_EASY_PAY','RECHARGE_POINT','CHARGE_POINT','BANK_EASY_PAY','MOBILE','MOBILE_EASY_PAY','REWARD_POINT')                                                                                  DEFAULT NULL,
+--     payment_date     datetime(6)                                                                                                                                                                                                                        DEFAULT NULL,
+--     payment_method   enum ('SAMSUNG_PAY','PAY_LATER','CARD','CARD_EASY_PAY','RECHARGE_POINT','CHARGE_POINT','BANK_EASY_PAY','MOBILE','MOBILE_EASY_PAY','REWARD_POINT')                                                                                  DEFAULT NULL,
     total_price      int                                                                                                                                                                                                                                DEFAULT NULL,
     delivery_info_id bigint                                                                                                                                                                                                                             DEFAULT NULL,
     order_sheet_id   bigint                                                                                                                                                                                                                             DEFAULT NULL,
@@ -318,7 +320,7 @@ CREATE TABLE review_tb
     review_score enum ('ONE','TWO','THREE','FOUR','FIVE') NOT NULL,
     title        varchar(100)                             NOT NULL,
     updated_at   datetime(6)                              NOT NULL,
-    product_id   bigint DEFAULT NULL,
+    order_product_id   bigint DEFAULT NULL,
     user_id      bigint DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB

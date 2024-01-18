@@ -48,14 +48,14 @@ jobs:
         run: echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application.yml
         shell: bash
 
-      ## create test ddl.sql
-      - name: make test ddl.sql
-        run: |
-          touch ./src/test/resources/ddl.sql
-        shell: bash
-      - name: deliver test ddl.sql
-        run: echo "${{ secrets.DDL }}" > ./src/test/resources/ddl.sql
-        shell: bash
+#      ## create test ddl.sql
+#      - name: make test ddl.sql
+#        run: |
+#          touch ./src/test/resources/ddl.sql
+#        shell: bash
+#      - name: deliver test ddl.sql
+#        run: echo "${{ secrets.DDL }}" > ./src/test/resources/ddl.sql
+#        shell: bash
 
 
       ## Gradle Test를 실행한다

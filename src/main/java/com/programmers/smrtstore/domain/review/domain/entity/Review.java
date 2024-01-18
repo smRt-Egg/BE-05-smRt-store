@@ -1,6 +1,6 @@
 package com.programmers.smrtstore.domain.review.domain.entity;
 
-import com.programmers.smrtstore.domain.product.domain.entity.Product;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,8 +45,8 @@ public class Review {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "order_product_id")
+    private OrderedProduct orderedProduct;
 
     @Column(name = "title", nullable = false, length = 100)
     private String title;
@@ -71,10 +71,10 @@ public class Review {
     private LocalDateTime updatedAt;
 
     @Builder
-    private Review(User user, Product product, String title, String content,
+    private Review(User user, OrderedProduct orderedProduct, String title, String content,
         ReviewScore reviewScore) {
         this.user = user;
-        this.product = product;
+        this.orderedProduct = orderedProduct;
         this.title = title;
         this.content = content;
         this.reviewScore = reviewScore;

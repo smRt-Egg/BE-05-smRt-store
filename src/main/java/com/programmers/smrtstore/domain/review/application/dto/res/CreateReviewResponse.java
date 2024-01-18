@@ -16,7 +16,7 @@ public class CreateReviewResponse {
     private String content;
     private ReviewScore reviewScore;
     private Long userId;
-    private Long productId;
+    private Long orderedProductId;
     private LocalDateTime createdAt;
 
     public static CreateReviewResponse from(Review review) {
@@ -26,7 +26,7 @@ public class CreateReviewResponse {
             review.getContent(),
             review.getReviewScore(),
             review.getUser().getId(),
-            review.getProduct().getId(),
+            review.getOrderedProduct().getId(),
             review.getCreatedAt()
         );
     }
