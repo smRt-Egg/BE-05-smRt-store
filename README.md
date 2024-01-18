@@ -149,12 +149,12 @@ DDD 스터디를 통해 패키지 구조 스타일부터 객체의 역할과 책
 
 ## ⚙️ 아키텍처
 ### Server
-![image](https://github.com/smRt-Egg/BE-05-smRt-store/assets/57834671/499b5413-a22c-41cb-8f2c-14b48d9007a0)
+![](https://github.com/smRt-Egg/BE-05-smRt-store/assets/85854384/d78905c1-c919-4e8d-83ab-2165d6a2ce5b)
 
 <br>
 
 ### ERD
-![image](https://github.com/smRt-Egg/BE-05-smRt-store/assets/57834671/28a56593-298f-4bb4-8d2f-c75be1203e1e)
+![](https://github.com/smRt-Egg/BE-05-smRt-store/assets/57834671/28a56593-298f-4bb4-8d2f-c75be1203e1e)
 
 <br>
 
