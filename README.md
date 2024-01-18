@@ -71,7 +71,10 @@ DDD 스터디를 통해 우리 팀은 패키지 구조 스타일부터 객체의
 </ul>
 </table>
 
+<br>
 
+# ⚙️ 아키텍처
+![image](https://github.com/smRt-Egg/BE-05-smRt-store/assets/57834671/499b5413-a22c-41cb-8f2c-14b48d9007a0)
 
 
 
