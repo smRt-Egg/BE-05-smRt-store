@@ -55,14 +55,14 @@ DDD 스터디를 통해 우리 팀은 패키지 구조 스타일부터 객체의
 # 📚 기술 스택
 <table>
 <ul>  
-  <img src="https://img.shields.io/badge/java-FF4800?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
+  <img src="https://img.shields.io/badge/java 17-FF4800?style=for-the-badge&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/spring 3.2-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
+  <img src="https://img.shields.io/badge/mysql 8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
   <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
   <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
-  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white"><br>
-  <img src="https://img.shields.io/badge/QueryDsl-4169E1?style=for-the-badge&logo=QueryDsl&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring Security 3.2-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
+  <img src="https://img.shields.io/badge/JWT 4.4-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white"><br>
+  <img src="https://img.shields.io/badge/QueryDsl 5.0-4169E1?style=for-the-badge&logo=QueryDsl&logoColor=white">
   <img src="https://img.shields.io/badge/JPA-6DB33F?style=for-the-badge&logo=JPA&logoColor=white">
   <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=for-the-badge&logo=Amazon AWS&logoColor=white">
   <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white">
