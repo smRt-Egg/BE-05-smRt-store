@@ -1,7 +1,11 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
+import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
+import com.programmers.smrtstore.domain.review.domain.entity.Review;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -17,5 +21,5 @@ public class MyReviewsResponse {
 
     private Integer point;
 
-    //기간 / 카테고리 조건 리뷰
+    private List<ReviewResponse> reviewList;
 }

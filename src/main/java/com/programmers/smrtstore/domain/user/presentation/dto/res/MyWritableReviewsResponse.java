@@ -1,7 +1,11 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
+import com.programmers.smrtstore.domain.review.application.dto.res.ReviewResponse;
+import com.programmers.smrtstore.domain.review.application.dto.res.UnWrittenReviewResponse;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -19,5 +23,5 @@ public class MyWritableReviewsResponse {
 
     private Integer unwrittenReviewPoint;
 
-//    작성 안한 리뷰 리스트
+    private List<UnWrittenReviewResponse> reviewList;
 }

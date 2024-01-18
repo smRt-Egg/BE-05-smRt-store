@@ -14,6 +14,8 @@ import com.programmers.smrtstore.domain.orderManagement.order.application.OrderS
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.qna.application.ProductQnAService;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -53,6 +55,7 @@ public class UserService {
     private final OrderServiceImpl orderService;
     private final PointService pointService;
     private final ReviewService reviewService;
+    private final ProductQnAService qnAService;
     private static final String MESSAGE_TITLE = "smRt store 인증 번호";
 
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
@@ -177,7 +180,7 @@ public class UserService {
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //리뷰 리스트
+                .reviewList(reviewService.getReviewsByUserId(userId, userId))
             .build();
     }
     @Transactional(readOnly = true)
@@ -189,19 +192,22 @@ public class UserService {
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //작성 안 한 리뷰 리스트
+                .reviewList(reviewService.getUnWrittenReviews(userId))
             .build();
     }
 
     public MyQnaResponse getMyQna(Long userId, DurationRequest request) {
         User user = findByUserId(userId);
+        FindQuestionRequest qnaRequest = FindQuestionRequest.builder()
+                .userId(userId)
+                .build();
         return MyQnaResponse.builder()
             .nickName(user.getNickName())
             .username(user.getAuth().getUsername())
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //qna 리스트
+                .qnaList(qnAService.findByUserId(userId, qnaRequest))
             .build();
     }
 

@@ -1,7 +1,10 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.QuestionResponse;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -17,5 +20,5 @@ public class MyQnaResponse {
 
     private Integer point;
 
-    //기간 / 카테고리 리뷰
+    private List<QuestionResponse> qnaList;
 }
