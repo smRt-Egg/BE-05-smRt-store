@@ -19,7 +19,7 @@ public class OrderResponse {
 
     private String orderDate;
 
-    private PaymentInfo paymentInfo;
+//    private PaymentInfo paymentInfo;
 
     private String deliveryInfo;
 
@@ -30,14 +30,14 @@ public class OrderResponse {
     @Builder
     private OrderResponse(
         String id, OrderStatus orderStatus, Integer totalPrice, String orderDate,
-        PaymentInfo paymentInfo, String deliveryInfo, List<OrderedProductResponse> products,
+        String deliveryInfo, List<OrderedProductResponse> products,
         ProfileUserResponse orderer
     ) {
         this.id = id;
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
         this.orderDate = orderDate;
-        this.paymentInfo = paymentInfo;
+//        this.paymentInfo = paymentInfo;
         this.deliveryInfo = deliveryInfo;
         this.products = products;
         this.orderer = orderer;
@@ -49,7 +49,7 @@ public class OrderResponse {
             .orderStatus(order.getOrderStatus())
             .totalPrice(order.getTotalPrice())
             .orderDate(order.getOrderDate().toString())
-            .paymentInfo(order.getPaymentInfo())
+//            .paymentInfo(order.getPaymentInfo())
             .deliveryInfo(order.getDeliveryInfo().toString())
             .products(order.getOrderSheet().getOrderedProducts().stream()
                 .map(OrderedProductResponse::from)

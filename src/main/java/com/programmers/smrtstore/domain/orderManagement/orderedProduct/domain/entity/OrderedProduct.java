@@ -109,6 +109,18 @@ public class OrderedProduct {
             .build();
     }
 
+    public void updatePointDiscount(Integer pointDiscount) {
+        validatePointDiscount(pointDiscount);
+        this.pointDiscount = pointDiscount;
+        this.totalPrice = getCalculatedTotalPrice();
+    }
+
+    public void updateCouponDiscount(Integer couponDiscount) {
+        validateCouponDiscount(couponDiscount);
+        this.couponDiscount = couponDiscount;
+        this.totalPrice = getCalculatedTotalPrice();
+    }
+
     private void validateExtraPrice(Integer extraPrice) {
         if (extraPrice < 0) {
             throw new OrderedProductException(ORDERED_PRODUCT_EXTRA_PRICE_INVALID);

@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.res;
 
+import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.vo.DeliveryOptions;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetCouponInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetProductInfo;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.OrderSheetUserPointInfo;
@@ -15,7 +16,7 @@ public class OrderSheetDetailViewResponse {
     private DeliveryAddressBook deliveryAddressBook;
     // 주문자 정보
     private OrderSheetOrdererInfo ordererInfo;
-    // 주문 상품 목록 (즉시 할인 + 추가할인 + 배송비 + 총 주문금액)
+    // 주문 상품 목록 (즉시 할인 + 추가할인 + 총 주문금액)
     private List<OrderSheetProductInfo> productInfo;
     // 상품에 대한 쿠폰 정보
     private OrderSheetCouponInfo couponInfo;
@@ -26,6 +27,8 @@ public class OrderSheetDetailViewResponse {
     // private OrderSheetPayMethod payMethod;
     // TODO: 포인트 혜택 따로
     private OrderExpectedPointDto rewardPoint;
+    // 배송비
+    private DeliveryOptions deliveryOptions;
 
     @Builder
     public OrderSheetDetailViewResponse(
@@ -34,7 +37,7 @@ public class OrderSheetDetailViewResponse {
         List<OrderSheetProductInfo> productInfo, OrderSheetCouponInfo couponInfo,
         OrderSheetUserPointInfo userPoint,
 //        OrderSheetPayMethod payMethod,
-        OrderExpectedPointDto rewardPoint
+        OrderExpectedPointDto rewardPoint, DeliveryOptions deliveryOptions
     ) {
         this.orderSheetId = orderSheetId;
         this.deliveryAddressBook = deliveryAddressBook;
@@ -44,5 +47,6 @@ public class OrderSheetDetailViewResponse {
         this.userPoint = userPoint;
 //        this.payMethod = payMethod;
         this.rewardPoint = rewardPoint;
+        this.deliveryOptions = deliveryOptions;
     }
 }

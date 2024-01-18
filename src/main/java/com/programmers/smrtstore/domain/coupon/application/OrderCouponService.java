@@ -63,7 +63,7 @@ public class OrderCouponService {
         }
 
         // 장바구니 쿠폰 가져오기
-        Coupon cartCoupon = couponJpaRepository.findById(selectedCouponsRequest.getSelectedCartCoupons())
+        Coupon cartCoupon = couponJpaRepository.findById(selectedCouponsRequest.getSelectedCartCouponId())
                 .orElseThrow(()->new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
         // 할인 금액 적용 결과
@@ -131,7 +131,7 @@ public class OrderCouponService {
 
         // 장바구니 쿠폰 가져오기
         Coupon cartCoupon = couponJpaRepository.findById(
-                selectedCouponsRequest.getSelectedCartCoupons())
+                selectedCouponsRequest.getSelectedCartCouponId())
             .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
 
         // 최대 할인 쿠폰 적용 결과 + 적용한 쿠폰 가져오기
@@ -152,7 +152,7 @@ public class OrderCouponService {
                 selectedProductDuplicateCouponsByOrderedProductId.put(orderedProductId, CouponResponse.from(coupon));
             } else selectedProductCouponListsByOrderedProductId.put(orderedProductId, CouponResponse.from(coupon));
         }
-        CouponResponse cartCoupon = CouponResponse.from(getCouponJpaRepositoryById(selectedCoupons.getSelectedCartCoupons()));
+        CouponResponse cartCoupon = CouponResponse.from(getCouponJpaRepositoryById(selectedCoupons.getSelectedCartCouponId()));
 
         return new SelectedCoupons(selectedProductCouponListsByOrderedProductId, selectedProductDuplicateCouponsByOrderedProductId, cartCoupon);
     }

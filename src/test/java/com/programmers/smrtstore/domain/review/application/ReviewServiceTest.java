@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.core.config.RedisTestConfig;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.DeliveryMethodType;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.domain.entity.OrderSheet;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.infrastructure.OrderSheetJpaRepository;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
@@ -116,6 +117,8 @@ class ReviewServiceTest {
         orderSheet = OrderSheet.builder()
                 .user(user)
                 .orderedProducts(orderedProducts)
+                .deliveryMethod(DeliveryMethodType.DELIVERY)
+                .deliveryFee(0)
                 .build();
         orderSheetJpaRepository.save(orderSheet);
     }

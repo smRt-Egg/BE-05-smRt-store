@@ -2,7 +2,7 @@ package com.programmers.smrtstore.domain.point.application;
 
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderPointService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.point.application.dto.req.AcmPointDetailRequest;
@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointDetailService {
 
     private final PointFacade pointFacade;
-    private final OrderService orderService;
+    private final OrderPointService orderPointService;
     private final UserJpaRepository userJpaRepository;
     private final PointDetailJpaRepository pointDetailRepository;
 
@@ -52,7 +52,7 @@ public class PointDetailService {
         );
 
         // 주문에 대한 상품별 결제금액
-        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+        List<OrderedProductResponse> products = orderPointService.getProductsForOrder(orderId);
 
         int idx = 0;
         int totalAcmPoint = 0;
@@ -111,7 +111,7 @@ public class PointDetailService {
         int usedPoint = Math.abs(point.getPointValue());
 
         // 주문에 대한 상품별 결제금액
-        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+        List<OrderedProductResponse> products = orderPointService.getProductsForOrder(orderId);
 
         // 상품별 결제금액에 대한 비율
         Map<Long, Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
@@ -150,7 +150,7 @@ public class PointDetailService {
         return Math.min(usedPoint, pointAmount);
     }
 
-    private Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
+    public Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
 
         Map<Long, Double> productRatio = getOrderedProductsRatio(products);
         Map<Long, Integer> pointPieces = new HashMap<>();
