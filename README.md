@@ -56,12 +56,14 @@ DDD 스터디를 통해 우리 팀은 패키지 구조 스타일부터 객체의
 ## 도메인 분석
 
 ### 📍 주문(Order) 도메인 생성 단계
-![주문단계](https://github.com/smRt-Egg/BE-05-smRt-store/assets/78072370/37c14557-42ba-4f36-93be-082e74d57f30)
+<img src="https://github.com/smRt-Egg/BE-05-smRt-store/assets/78072370/37c14557-42ba-4f36-93be-082e74d57f30" width="700" height="auto">
+
 
 <br>
 
 ### 📍 주문(Order) 도메인 취소
-![주문취소](https://github.com/smRt-Egg/BE-05-smRt-store/assets/78072370/0f4eccb2-e835-4d0e-ad8c-4accaecb265f)
+<img src="https://github.com/smRt-Egg/BE-05-smRt-store/assets/78072370/0f4eccb2-e835-4d0e-ad8c-4accaecb265f" width="700" height="auto">
+
 
 <br>
 
