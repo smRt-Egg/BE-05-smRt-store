@@ -2,9 +2,13 @@ package com.programmers.smrtstore.domain.coupon.application;
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
 import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
+import com.programmers.smrtstore.domain.coupon.domain.entity.CouponUsageTransaction;
+import com.programmers.smrtstore.domain.coupon.domain.entity.enums.CouponStatus;
 import com.programmers.smrtstore.domain.coupon.domain.exception.CouponException;
 import com.programmers.smrtstore.domain.coupon.infrastructure.CouponJpaRepository;
+import com.programmers.smrtstore.domain.coupon.infrastructure.CouponUsageTransactionJpaRepository;
 import com.programmers.smrtstore.domain.coupon.presentation.res.CouponResponse;
+import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.Order;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req.SelectedCouponsRequest;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.ApplicableDeliveryFeeCoupons;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.ApplicableProductCoupons;
@@ -13,6 +17,8 @@ import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.SelectedCoupons;
 import com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.vo.SelectedCouponsWithCouponApplyResult;
 import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.exception.OrderedProductException;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.infrastructure.OrderedProductJpaRepository;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
 import com.programmers.smrtstore.domain.product.exception.ProductException;
 import com.programmers.smrtstore.domain.product.infrastructure.ProductJpaRepository;
@@ -34,7 +40,8 @@ public class OrderCouponService {
     private final UserJpaRepository userJpaRepository;
     private final ProductJpaRepository productJpaRepository;
     private final CouponJpaRepository couponJpaRepository;
-
+    private final OrderedProductJpaRepository orderedProductJpaRepository;
+    private final CouponUsageTransactionJpaRepository couponUsageTransactionJpaRepository;
     /**
      * 구분 필요한 메서드
      * <p>
@@ -156,7 +163,18 @@ public class OrderCouponService {
 
         return new SelectedCoupons(selectedProductCouponListsByOrderedProductId, selectedProductDuplicateCouponsByOrderedProductId, cartCoupon);
     }
+    public void saveCouponUsageTransaction(Long userId, Order order, Map<Long, List<CouponApplyResult>> couponApplyResultMap) {
+        User user = getUser(userId);
 
+        for (Long orderedProductId : couponApplyResultMap.keySet()) {
+            OrderedProduct orderedProduct = orderedProductJpaRepository.findById(orderedProductId).orElseThrow(() -> new OrderedProductException(ErrorCode.ORDER_NOT_FOUND));
+            for (CouponApplyResult couponApplyResult : couponApplyResultMap.get(orderedProductId)) {
+                Coupon coupon = getCoupon(couponApplyResult.getCouponId());
+
+                CouponUsageTransaction save = couponUsageTransactionJpaRepository.save(CouponUsageTransaction.of(user, coupon, order, orderedProduct, CouponStatus.USED));
+            }
+        }
+    }
     private Coupon getCouponJpaRepositoryById(Long couponId) {
         return couponJpaRepository.findById(couponId)
                 .orElseThrow(()-> new CouponException(ErrorCode.COUPON_NOT_FOUND));
@@ -211,5 +229,11 @@ public class OrderCouponService {
         User user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         return user;
+    }
+
+    private Coupon getCoupon(Long couponId) {
+        Coupon coupon = couponJpaRepository.findById(couponId)
+                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND));
+        return coupon;
     }
 }

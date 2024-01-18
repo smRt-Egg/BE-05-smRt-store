@@ -104,6 +104,7 @@ CREATE TABLE coupon_usage_transaction_tb
     coupon_id     bigint       DEFAULT NULL,
     user_id       bigint       DEFAULT NULL,
     order_id      varchar(255) DEFAULT NULL,
+    ordered_product_id bigint DEFAULT  NULL,
     PRIMARY KEY (id),
     UNIQUE KEY UK_order_coupon_usage_transaction (order_id)
 ) ENGINE = InnoDB
