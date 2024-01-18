@@ -20,6 +20,8 @@
 | Name | <center>[소승수](https://github.com/voidmelody)</center>| <center>[김용상](https://github.com/YongNyeo)</center> | <center>[김주환](https://github.com/happyjamy)</center> | <center>[이경민](https://github.com/tidavid1)</center> | <center>[임수진](https://github.com/suzzingv)</center> | <center>[홍지인](https://github.com/JIN-076)</center> |
 | --- | --- | --- | --- | --- | --- | --- |
 | Profile | <img width="100px" src="https://github.com/voidmelody.png" /> | <img width="100px" src="https://github.com/YongNyeo.png" /> | <img width="100px" src="https://github.com/happyjamy.png" /> | <img width="100px" src="https://github.com/tidavid1.png" /> | <img width="100px" src="https://github.com/suzzingv.png" /> | <img width="100px" src="https://github.com/JIN-076.png" /> |
+| Role | `#Dev` | `#Dev` | `#PO` `#Dev` | `#SM` `#Dev` | `#Dev` | `#Dev` |
+| Domain | `infra` <br> `keep` <br> `qna` <br> `review` | `infra` <br> `coupon` | `infra` <br> `order` | `security` <br> `cart` <br> `review` <br> `product` | `security` <br> `user` | `security` <br> `point` |
 
 # 📚 기술 스택
 <table>
