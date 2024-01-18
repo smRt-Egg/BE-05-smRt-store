@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponResponse {
 
+    private final Long id;
     private final String name;
     private final String content;
     private final Integer benefitValue;
@@ -36,6 +37,7 @@ public class CouponResponse {
 
     public static CouponResponse from(Coupon coupon) {
         return CouponResponse.builder()
+                .id(coupon.getId())
                 .name(coupon.getCouponValue().getName())
                 .content(coupon.getCouponValue().getContent())
                 .benefitValue(coupon.getCouponValue().getBenefitValue())

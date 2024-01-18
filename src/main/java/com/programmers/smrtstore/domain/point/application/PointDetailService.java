@@ -2,14 +2,16 @@ package com.programmers.smrtstore.domain.point.application;
 
 
 import com.programmers.smrtstore.core.properties.ErrorCode;
-import com.programmers.smrtstore.domain.orderManagement.order.application.OrderService;
+import com.programmers.smrtstore.domain.orderManagement.order.application.OrderPointService;
 import com.programmers.smrtstore.domain.orderManagement.order.presentation.dto.res.OrderedProductResponse;
+import com.programmers.smrtstore.domain.orderManagement.orderedProduct.domain.entity.OrderedProduct;
 import com.programmers.smrtstore.domain.point.application.dto.req.AcmPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.ReviewPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.req.UseCancelPointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.ExpiredPointDetailResponse;
 import com.programmers.smrtstore.domain.point.application.dto.req.PointDetailRequest;
 import com.programmers.smrtstore.domain.point.application.dto.res.PointResponse;
+import com.programmers.smrtstore.domain.point.application.dto.res.PurchaseRewardPointResponse;
 import com.programmers.smrtstore.domain.point.application.facade.PointFacade;
 import com.programmers.smrtstore.domain.point.domain.entity.PointDetail;
 import com.programmers.smrtstore.domain.point.domain.entity.enums.PointStatus;
@@ -22,7 +24,9 @@ import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointDetailService {
 
     private final PointFacade pointFacade;
-    private final OrderService orderService;
+    private final OrderPointService orderPointService;
     private final UserJpaRepository userJpaRepository;
     private final PointDetailJpaRepository pointDetailRepository;
 
@@ -48,7 +52,7 @@ public class PointDetailService {
         );
 
         // 주문에 대한 상품별 결제금액
-        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+        List<OrderedProductResponse> products = orderPointService.getProductsForOrder(orderId);
 
         int idx = 0;
         int totalAcmPoint = 0;
@@ -107,65 +111,86 @@ public class PointDetailService {
         int usedPoint = Math.abs(point.getPointValue());
 
         // 주문에 대한 상품별 결제금액
-        List<OrderedProductResponse> products = orderService.getProductsForOrder(orderId);
+        List<OrderedProductResponse> products = orderPointService.getProductsForOrder(orderId);
 
         // 상품별 결제금액에 대한 비율
-        List<Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
+        Map<Long, Integer> pointPieces = getPointPiecesPerOrder(products, usedPoint);
 
         // 포인트 차감을 위한 사용 가능한 포인트 상세 적립 이력
         List<PointDetailCustomResponse> history = pointFacade.getSumGroupByOriginAcmId(userId);
 
-        int idx = 0;
-        for (int piece : pointPieces) {
-            saveUsedPointDetailPerPiece(piece, history, idx, products, request);
-            if (idx < history.size() - 1) {
-                idx++;
+        int i = 0;
+        int remainPiece = 0;
+        for (PointDetailCustomResponse available : history) {
+            if (i == pointPieces.size()) {
+                break;
+            }
+            int pointValue = available.getPointAmount();
+            while (pointValue != 0) {
+                Long orderedProductId = products.get(i).getOrderedProductId();
+                int piece = remainPiece == 0 ? pointPieces.get(orderedProductId) : remainPiece;
+                int pointAmount = calculateDeductedPoint(pointValue, piece);
+                PointDetail pointDetail = request.toEntity(
+                    orderedProductId,
+                    pointFacade.makeNegativeNumber(pointAmount),
+                    available.getOriginAcmId()
+                );
+                pointDetailRepository.save(pointDetail);
+                pointValue -= pointAmount;
+                remainPiece = piece > pointValue ? piece - pointValue : 0;
+                if (remainPiece == 0) {
+                    i++;
+                }
             }
         }
         return usedPoint;
-    }
-
-    private void saveUsedPointDetailPerPiece(int piece, List<PointDetailCustomResponse> history,
-        int idx, List<OrderedProductResponse> products, PointDetailRequest request) {
-
-        // 차감되어야 하는 포인트 금액 (주문상품 비율별로 계산된) 에 대해 적립 이력을 통해 순차적으로 포인트 차감 이력 저장
-        while (piece != 0) {
-            // 주문 상품에 대한 포인트 적립 이력 저장 순서는 조회한 주문 상품의 순서와 동일! (idx로 동일하게 처리한 이유)
-            PointDetailCustomResponse acmHistory = history.get(idx);
-            int pointAmount = calculateDeductedPoint(acmHistory.getPointAmount(), piece);
-            PointDetail pointDetail = request.toEntity(
-                products.get(idx).getOrderedProductId(),
-                pointFacade.makeNegativeNumber(pointAmount),
-                acmHistory.getOriginAcmId()
-            );
-            pointDetailRepository.save(pointDetail);
-            piece -= pointAmount;
-        }
     }
 
     private int calculateDeductedPoint(int pointAmount, int usedPoint) {
         return Math.min(usedPoint, pointAmount);
     }
 
-    private List<Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
+    public Map<Long, Integer> getPointPiecesPerOrder(List<OrderedProductResponse> products, int usePoint) {
 
-        List<Double> productRatio = getOrderedProductRatio(products);
-        List<Integer> pointPieces = new ArrayList<>();
+        Map<Long, Double> productRatio = getOrderedProductsRatio(products);
+        Map<Long, Integer> pointPieces = new HashMap<>();
 
         // 상품별 비율에 따른 사용할 포인트의 비율 계산
-        for (int idx = 0; idx < productRatio.size() - 1; idx++) {
-            int price = (int) (usePoint * productRatio.get(idx));
-            pointPieces.add(price);
+        for (int idx = 0; idx < products.size() - 1; idx++) {
+            Long orderedProductId = products.get(idx).getOrderedProductId();
+            int price = (int) (usePoint * productRatio.get(orderedProductId));
+            pointPieces.put(orderedProductId, price);
             // 마지막 차감포인트는 액수를 맞추기 위해 소거법 적용
             usePoint -= price;
         }
-        pointPieces.add(usePoint);
+        pointPieces.put(products.get(products.size() - 1).getOrderedProductId(), usePoint);
         return pointPieces;
     }
 
-    private List<Double> getOrderedProductRatio(List<OrderedProductResponse> products) {
+    public List<PurchaseRewardPointResponse> getPurchaseRewardPoint(List<OrderedProductResponse> products, int usePoint) {
 
-        List<Double> ratios = new ArrayList<>();
+        Map<Long, Double> productRatio = getOrderedProductsRatio(products);
+        List<PurchaseRewardPointResponse> rewardPoints = new ArrayList<>();
+        for (int idx = 0; idx < productRatio.size() - 1; idx++) {
+            Long orderedProductId = products.get(idx).getOrderedProductId();
+            int price = (int) (usePoint * productRatio.get(orderedProductId));
+            PurchaseRewardPointResponse rewardPoint = PurchaseRewardPointResponse.of(
+                orderedProductId, price
+            );
+            rewardPoints.add(rewardPoint);
+            // 마지막 차감포인트는 액수를 맞추기 위해 소거법 적용
+            usePoint -= price;
+        }
+        PurchaseRewardPointResponse rewardPoint = PurchaseRewardPointResponse.of(
+            products.get(products.size() - 1).getOrderedProductId(), usePoint
+        );
+        rewardPoints.add(rewardPoint);
+        return rewardPoints;
+    }
+
+    private Map<Long, Double> getOrderedProductsRatio(List<OrderedProductResponse> products) {
+
+        Map<Long, Double> ratiosByOrderedProductId = new HashMap<>();
 
         int totalPrice = products.stream()
             .mapToInt(OrderedProductResponse::getTotalPrice)
@@ -173,18 +198,61 @@ public class PointDetailService {
 
         double remain = 1.0;
         for (int idx = 0; idx < products.size() - 1; idx++) {
-            Integer originPrice = products.get(idx).getTotalPrice();
+            OrderedProductResponse product = products.get(idx);
+            Integer originPrice = product.getTotalPrice();
             double ratio = originPrice.doubleValue() / totalPrice;
 
             // 주문상품별 비율은 소수점 둘째자리까지만 계산
             BigDecimal ratioBigDecimal = new BigDecimal(Double.toString(ratio));
             double roundedRatio = ratioBigDecimal.setScale(2, RoundingMode.DOWN).doubleValue();
-            ratios.add(roundedRatio);
+            ratiosByOrderedProductId.put(product.getOrderedProductId(), roundedRatio);
             remain -= roundedRatio;
         }
         // 마지막 주문상품에 대한 비율은 합 (=1)을 맞추기 위해 소거법 적용
-        ratios.add(remain);
-        return ratios;
+        OrderedProductResponse product = products.get(products.size() - 1);
+        ratiosByOrderedProductId.put(product.getOrderedProductId(), remain);
+        return ratiosByOrderedProductId;
+    }
+
+    public Map<Long, Integer> getPointPiecesByOrderedProduct(List<OrderedProduct> products, int usePoint) {
+
+        Map<Long, Double> productRatio = getRatioByOrderedProduct(products);
+        Map<Long, Integer> pointPieces = new HashMap<>();
+
+        for (OrderedProduct product : products) {
+            Long orderedProductId = product.getId();
+            int price = (int) (usePoint * productRatio.get(orderedProductId));
+            pointPieces.put(orderedProductId, price);
+            usePoint -= price;
+        }
+        pointPieces.put(products.get(products.size() - 1).getId(), usePoint);
+        return pointPieces;
+    }
+
+    private Map<Long, Double> getRatioByOrderedProduct(List<OrderedProduct> products) {
+
+        Map<Long, Double> ratiosByOrderedProductId = new HashMap<>();
+
+        int totalPrice = products.stream()
+            .mapToInt(OrderedProduct::getTotalPrice)
+            .sum();
+
+        double remain = 1.0;
+        for (int idx = 0; idx < products.size() - 1; idx++) {
+            OrderedProduct product = products.get(idx);
+            Integer originPrice = product.getTotalPrice();
+            double ratio = originPrice.doubleValue() / totalPrice;
+
+            // 주문상품별 비율은 소수점 둘째자리까지만 계산
+            BigDecimal ratioBigDecimal = new BigDecimal(Double.toString(ratio));
+            double roundedRatio = ratioBigDecimal.setScale(2, RoundingMode.DOWN).doubleValue();
+            ratiosByOrderedProductId.put(product.getId(), roundedRatio);
+            remain -= roundedRatio;
+        }
+        // 마지막 주문상품에 대한 비율은 합 (=1)을 맞추기 위해 소거법 적용
+        OrderedProduct product = products.get(products.size() - 1);
+        ratiosByOrderedProductId.put(product.getId(), remain);
+        return ratiosByOrderedProductId;
     }
 
     public Integer saveUseCancelHistory(UseCancelPointDetailRequest request) {

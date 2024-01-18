@@ -6,11 +6,13 @@ import com.programmers.smrtstore.domain.user.domain.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "coupon_usage_transaction_TB")
 public class CouponUsageTransaction extends CouponTransaction {
 
     @OneToOne(fetch = FetchType.LAZY)

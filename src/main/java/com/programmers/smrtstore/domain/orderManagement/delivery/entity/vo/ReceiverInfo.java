@@ -1,4 +1,4 @@
-package com.programmers.smrtstore.domain.orderManagement.order.domain.entity.vo;
+package com.programmers.smrtstore.domain.orderManagement.delivery.entity.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -16,4 +16,9 @@ public class ReceiverInfo {
 
     @Column(name = "receiver_phone")
     private String receiverPhone;
+
+    public ReceiverInfo(String receiverName, String receiverPhone) {
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+    }
 }
