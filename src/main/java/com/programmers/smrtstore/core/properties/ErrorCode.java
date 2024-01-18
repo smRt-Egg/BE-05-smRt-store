@@ -80,6 +80,7 @@ public enum ErrorCode {
     // 403
     INVALID_USER(FORBIDDEN, "유효하지 않은 사용자입니다."),
     SECURITY_ACCESS_DENIED(FORBIDDEN, "접근 권한이 없습니다."),
+    QUESTION_ACCESS_DENIED(FORBIDDEN, "해당 질문에 대한 접근 권한이 없습니다."),
     // 404
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     QUESTION_NOT_FOUND(NOT_FOUND, "문의를 찾을 수 없습니다"),
