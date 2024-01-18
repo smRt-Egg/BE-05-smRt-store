@@ -6,16 +6,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -116,5 +107,10 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public MyOrdersResponse getPurchasedConfirmedOrders(Long userId) {
         return userService.getPurchasedConfirmedOrders(userId);
+    }
+
+    @Override
+    public MyCouponsResponse getMyAllCoupons(Long userId) {
+        return userService.getMyAllCoupons(userId);
     }
 }

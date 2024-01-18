@@ -22,14 +22,8 @@ import com.programmers.smrtstore.domain.user.exception.UserException;
 import com.programmers.smrtstore.domain.user.infrastructure.UserJpaRepository;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.*;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -223,6 +217,13 @@ public class UserService {
             .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
             .orderList(orderService.getOrderPreviewsByUserIdAndStatus(userId, orderStatusList))
             .build();
+    }
+
+    public MyCouponsResponse getMyAllCoupons(Long userId) {
+        findByUserId(userId);
+        return MyCouponsResponse.builder()
+                .couponList(userCouponService.getCouponsByUserId(userId))
+                .build();
     }
 
     private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {

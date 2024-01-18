@@ -4,16 +4,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.*;
 
 public interface UserFacade {
 
@@ -53,4 +44,6 @@ public interface UserFacade {
     MyQnaResponse getMyQna(Long userId, DurationRequest request);
 
     MyOrdersResponse getPurchasedConfirmedOrders(Long userId);
+
+    MyCouponsResponse getMyAllCoupons(Long userId);
 }

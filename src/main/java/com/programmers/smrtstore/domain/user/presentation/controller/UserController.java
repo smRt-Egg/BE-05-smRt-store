@@ -5,16 +5,7 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.DurationRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateUserRequest;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyCategoryKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyHomeResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyAllKeepsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyOrdersResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyQnaResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.MyWritableReviewsResponse;
-import com.programmers.smrtstore.domain.user.presentation.dto.res.ProfileUserResponse;
+import com.programmers.smrtstore.domain.user.presentation.dto.res.*;
 import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -117,6 +108,12 @@ public class UserController {
     @GetMapping("my/keeps/{categoryId}")
     public ResponseEntity<MyCategoryKeepsResponse> myKeepsByCategory(@UserId Long userId, @PathVariable Integer categoryId) {
         MyCategoryKeepsResponse response = userFacade.getMyKeepsByCategory(userId, categoryId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("my/coupons")
+    public ResponseEntity<MyCouponsResponse> myAllCoupons(@UserId Long userId) {
+        MyCouponsResponse response = userFacade.getMyAllCoupons(userId);
         return ResponseEntity.ok(response);
     }
 
