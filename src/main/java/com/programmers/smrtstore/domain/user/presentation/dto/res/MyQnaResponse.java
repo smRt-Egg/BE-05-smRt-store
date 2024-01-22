@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.user.presentation.dto.res;
 
+import com.programmers.smrtstore.domain.qna.presentation.dto.res.AnswerResponse;
 import com.programmers.smrtstore.domain.qna.presentation.dto.res.QuestionResponse;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +21,5 @@ public class MyQnaResponse {
 
     private Integer point;
 
-    private List<QuestionResponse> qnaList;
+    private List<QuestionResponse> questionList;
 }

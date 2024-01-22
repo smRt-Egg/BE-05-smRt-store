@@ -14,7 +14,8 @@ import com.programmers.smrtstore.domain.orderManagement.order.application.OrderS
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
-import com.programmers.smrtstore.domain.qna.application.ProductQnAService;
+import com.programmers.smrtstore.domain.qna.application.ProductAnswerService;
+import com.programmers.smrtstore.domain.qna.application.ProductQuestionService;
 import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
@@ -39,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-//CI FIX
     private final UserJpaRepository userJpaRepository;
     private final RedisService redisService;
     private final MailService mailService;
@@ -49,7 +49,7 @@ public class UserService {
     private final OrderServiceImpl orderService;
     private final PointService pointService;
     private final ReviewService reviewService;
-    private final ProductQnAService qnAService;
+    private final ProductQuestionService questionService;
     private static final String MESSAGE_TITLE = "smRt store 인증 번호";
 
     private static final String VERIFICATION_CODE_PRIFIX = "VerificationCode ";
@@ -201,7 +201,7 @@ public class UserService {
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-                .qnaList(qnAService.findByUserId(userId, qnaRequest))
+                .questionList(questionService.findByUserId(userId, qnaRequest))
             .build();
     }
 
