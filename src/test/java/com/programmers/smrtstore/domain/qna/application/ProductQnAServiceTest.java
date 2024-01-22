@@ -1,6 +1,7 @@
 package com.programmers.smrtstore.domain.qna.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.product.domain.entity.Product;
@@ -31,17 +32,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
 @Transactional
 @Import(RedisTestConfig.class)
 class ProductQnAServiceTest {
 
     @Autowired
-    ProductQnAService productQnAService;
+    ProductQuestionService productQuestionService;
+    @Autowired
+    ProductAnswerService productAnswerService;
     @Autowired
     ProductQuestionRepository questionRepository;
     @Autowired
@@ -62,18 +71,18 @@ class ProductQnAServiceTest {
     void init() {
         // 유저가 등록되어 있어야 한다.
         user = User.builder()
-            .age(27)
-            .birth("1998-07-05")
-            .email("test@email.com")
-            .role(Role.ROLE_USER)
-            .gender(Gender.MALE)
-            .phone("010-1111-1111")
-            .nickName("nickName")
-            .thumbnail("lsfsdfds")
-            .point(0)
-            .marketingAgree(true)
-            .membershipYn(true)
-            .build();
+                .age(27)
+                .birth("1998-07-05")
+                .email("test@email.com")
+                .role(Role.ROLE_USER)
+                .gender(Gender.MALE)
+                .phone("010-1111-1111")
+                .nickName("nickName")
+                .thumbnail("lsfsdfds")
+                .point(0)
+                .marketingAgree(true)
+                .membershipYn(true)
+                .build();
         User saveUser = userJpaRepository.save(user);
         userId = saveUser.getId();
         // 상품이 등록되어 있어야 한다.
@@ -101,12 +110,12 @@ class ProductQnAServiceTest {
         //Given
         String content = "question1 content";
         CreateQuestionRequest request = CreateQuestionRequest.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content(content)
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content(content)
+                .build();
         //When
-        CreateQuestionResponse response = productQnAService.createQuestion(userId, request);
+        CreateQuestionResponse response = productQuestionService.createQuestion(userId, request);
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getUserId()).isEqualTo(userId);
@@ -122,20 +131,20 @@ class ProductQnAServiceTest {
         String content1 = "content1";
         String content2 = "content2";
         ProductQuestion question1 = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content(content1)
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content(content1)
+                .build();
         ProductQuestion question2 = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product2Id)
-            .content(content2)
-            .build();
+                .userId(userId)
+                .productId(product2Id)
+                .content(content2)
+                .build();
         questionRepository.save(question1);
         questionRepository.save(question2);
         //When
-        List<QuestionResponse> questionResponseList = productQnAService.findByUserId(userId,
-            request);
+        List<QuestionResponse> questionResponseList = productQuestionService.findByUserId(userId,
+                request);
         questionResponseList.sort(Comparator.comparing(QuestionResponse::getId));
         //Then
         assertThat(questionResponseList).hasSize(2);
@@ -151,18 +160,18 @@ class ProductQnAServiceTest {
         //Given
         String content = "pre_content";
         ProductQuestion question1 = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content(content)
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content(content)
+                .build();
         questionRepository.save(question1);
         String updateContent = "update_content";
         UpdateQuestionRequest request = UpdateQuestionRequest.builder()
-            .id(question1.getId())
-            .content(updateContent)
-            .build();
+                .id(question1.getId())
+                .content(updateContent)
+                .build();
         //When
-        UpdateQuestionResponse response = productQnAService.updateQuestion(userId, request);
+        UpdateQuestionResponse response = productQuestionService.updateQuestion(userId, request);
         //Then
         assertThat(response.getProductId()).isEqualTo(product1Id);
         assertThat(response.getUserId()).isEqualTo(userId);
@@ -176,14 +185,14 @@ class ProductQnAServiceTest {
     void deleteQuestion() {
         //Given
         ProductQuestion question = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content("content")
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content("content")
+                .build();
         questionRepository.save(question);
         //When
-        DeleteQuestionResponse response = productQnAService.deleteQuestion(userId,
-            question.getId());
+        DeleteQuestionResponse response = productQuestionService.deleteQuestion(userId,
+                question.getId());
         //Then
         assertThat(response.getId()).isEqualTo(question.getId());
     }
@@ -193,19 +202,19 @@ class ProductQnAServiceTest {
     void getQuestionsByProduct() {
         //Given
         ProductQuestion question1 = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content("content1")
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content("content1")
+                .build();
         ProductQuestion question2 = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content("content2")
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content("content2")
+                .build();
         questionRepository.save(question1);
         questionRepository.save(question2);
         //When
-        List<QuestionResponse> questionResponseList = productQnAService.findByProductId(product1Id);
+        List<QuestionResponse> questionResponseList = productQuestionService.findByProductId(product1Id);
         questionResponseList.sort(Comparator.comparing(QuestionResponse::getId));
         //Then
         assertThat(questionResponseList).hasSize(2);
@@ -213,23 +222,24 @@ class ProductQnAServiceTest {
         assertThat(questionResponseList.get(0).getProductName()).isEqualTo(product1.getName());
     }
 
-    @DisplayName("문의에 답변을 달 수 있다.")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("관리자 권한이 있는 유저만 문의에 답변을 달 수 있다.")
     @Test
-    void addAnswerToQuestion() {
+    void addAnswerToQuestionWithAdminRole() {
         //Given
         ProductQuestion question = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content("content1")
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content("content1")
+                .build();
         questionRepository.save(question);
         String answerContent = "answerContent";
         CreateAnswerRequest request = CreateAnswerRequest.builder()
-            .questionId(question.getId())
-            .content(answerContent)
-            .build();
+                .questionId(question.getId())
+                .content(answerContent)
+                .build();
         //When
-        AnswerResponse response = productQnAService.addAnswer(userId, request);
+        AnswerResponse response = productAnswerService.addAnswer(userId, request);
         //Then
         assertThat(response.getQuestionId()).isEqualTo(question.getId());
         assertThat(response.getContent()).isEqualTo(answerContent);
@@ -237,33 +247,55 @@ class ProductQnAServiceTest {
         assertThat(question.getProductAnswerList().get(0).getContent()).isEqualTo(answerContent);
     }
 
+    @WithMockUser(roles = "USER")
+    @DisplayName("유저 권한은 문의에 답변을 달 수 없다.")
+    @Test
+    void addAnswerToQuestionWithUserRole() {
+        //Given
+        ProductQuestion question = ProductQuestion.builder()
+                .userId(userId)
+                .productId(product1Id)
+                .content("content1")
+                .build();
+        questionRepository.save(question);
+        String answerContent = "answerContent";
+        CreateAnswerRequest request = CreateAnswerRequest.builder()
+                .questionId(question.getId())
+                .content(answerContent)
+                .build();
+        //When //Then
+        assertThatThrownBy(() -> productAnswerService.addAnswer(userId, request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+
     @DisplayName("문의에 해당하는 답변들을 가져온다.")
     @Test
     void getAnswersByQuestion() {
         //Given
         String questionContent = "questionContent";
         ProductQuestion question = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content(questionContent)
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content(questionContent)
+                .build();
         questionRepository.save(question);
 
         String answerContent1 = "answerContent1";
         String answerContent2 = "answerContent2";
         ProductAnswer answer1 = ProductAnswer.builder()
-            .productQuestion(question)
-            .content(answerContent1)
-            .build();
+                .productQuestion(question)
+                .content(answerContent1)
+                .build();
         ProductAnswer answer2 = ProductAnswer.builder()
-            .productQuestion(question)
-            .content(answerContent2)
-            .build();
+                .productQuestion(question)
+                .content(answerContent2)
+                .build();
         answerRepository.save(answer1);
         answerRepository.save(answer2);
         //When
-        List<AnswerResponse> answerResponseList = productQnAService.getAnswersByQuestionId(userId,
-            question.getId());
+        List<AnswerResponse> answerResponseList = productAnswerService.getAnswersByQuestionId(userId,
+                question.getId());
         //Then
         assertThat(answerResponseList).hasSize(2);
         assertThat(answerResponseList.get(0).getContent()).isEqualTo(answerContent1);
@@ -271,34 +303,63 @@ class ProductQnAServiceTest {
         assertThat(answerResponseList.get(0).getQuestionId()).isEqualTo(question.getId());
     }
 
-    @DisplayName("답변을 수정할 수 있다.")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("관리자 권한을 가진 유저는 답변을 수정할 수 있다.")
     @Test
-    void updateAnswerTest() {
+    void updateAnswerTestWithAdminRole() {
         //Given
         String questionContent = "questionContent";
         ProductQuestion question = ProductQuestion.builder()
-            .userId(userId)
-            .productId(product1Id)
-            .content(questionContent)
-            .build();
+                .userId(userId)
+                .productId(product1Id)
+                .content(questionContent)
+                .build();
         questionRepository.save(question);
         String answerContent = "answerContent";
         ProductAnswer answer = ProductAnswer.builder()
-            .productQuestion(question)
-            .content(answerContent)
-            .build();
+                .productQuestion(question)
+                .content(answerContent)
+                .build();
         answerRepository.save(answer);
 
         String updateAnswerContent = "updateContent";
         UpdateAnswerRequest request = UpdateAnswerRequest.builder()
-            .id(answer.getId())
-            .content(updateAnswerContent)
-            .build();
+                .id(answer.getId())
+                .content(updateAnswerContent)
+                .build();
         //When
-        UpdateAnswerResponse updateAnswerResponse = productQnAService.updateAnswer(userId, request);
+        UpdateAnswerResponse updateAnswerResponse = productAnswerService.updateAnswer(userId, request);
         //Then
         assertThat(answer.getContent()).isNotEqualTo(answerContent);
         assertThat(answer.getContent()).isEqualTo(updateAnswerContent);
     }
 
+    @WithMockUser(roles = "USER")
+    @DisplayName("유저 권한을 가진 유저는 답변을 수정할 수 없다.")
+    @Test
+    void updateAnswerTestWithUserRole() {
+        //Given
+        String questionContent = "questionContent";
+        ProductQuestion question = ProductQuestion.builder()
+                .userId(userId)
+                .productId(product1Id)
+                .content(questionContent)
+                .build();
+        questionRepository.save(question);
+        String answerContent = "answerContent";
+        ProductAnswer answer = ProductAnswer.builder()
+                .productQuestion(question)
+                .content(answerContent)
+                .build();
+        answerRepository.save(answer);
+
+        String updateAnswerContent = "updateContent";
+        UpdateAnswerRequest request = UpdateAnswerRequest.builder()
+                .id(answer.getId())
+                .content(updateAnswerContent)
+                .build();
+        //When //Then
+        assertThatThrownBy(() -> productAnswerService.updateAnswer(userId, request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
 }
