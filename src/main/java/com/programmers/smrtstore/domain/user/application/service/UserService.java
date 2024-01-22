@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-
+//CI FIX
     private final UserJpaRepository userJpaRepository;
     private final RedisService redisService;
     private final MailService mailService;
