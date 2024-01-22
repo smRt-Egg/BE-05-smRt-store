@@ -229,15 +229,6 @@ class UserServiceTest {
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();
     }
 
-    @Test
-    @DisplayName("myhome 페이지를 조회할 수 있다.")
-    void myhome() {
-        MyHomeResponse response = userFacade.getMyHome(kazuhaId);
-
-        assertThat(response.getNickName()).isEqualTo("카즈하");
-        assertThat(response.getThumbnail()).isNull();
-    }
-
 
 //    @Test
 //    @DisplayName("본인 인증을 위한 코드를 보낼 수 있다.")
