@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(RedisTestConfig.class)
 public class UserCouponTest {
 

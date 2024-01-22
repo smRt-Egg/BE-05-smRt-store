@@ -13,6 +13,8 @@ import com.programmers.smrtstore.domain.orderManagement.order.application.OrderS
 import com.programmers.smrtstore.domain.orderManagement.order.domain.entity.enums.OrderStatus;
 import com.programmers.smrtstore.domain.point.application.PointService;
 import com.programmers.smrtstore.domain.product.domain.entity.enums.Category;
+import com.programmers.smrtstore.domain.qna.application.ProductQuestionService;
+import com.programmers.smrtstore.domain.qna.presentation.dto.req.FindQuestionRequest;
 import com.programmers.smrtstore.domain.review.application.ReviewService;
 import com.programmers.smrtstore.domain.user.domain.entity.User;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -46,6 +48,7 @@ public class MyHomeService {
     private final OrderServiceImpl orderService;
     private final PointService pointService;
     private final ReviewService reviewService;
+    private final ProductQuestionService questionService;
 
     @Transactional(readOnly = true)
     public MyHomeResponse getMyHome(Long userId) {
@@ -75,10 +78,9 @@ public class MyHomeService {
     @Transactional(readOnly = true)
     public MyOrdersResponse getOrders(Long userId) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         return MyOrdersResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .point(user.getPoint())
             .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
             .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
@@ -89,10 +91,9 @@ public class MyHomeService {
     @Transactional(readOnly = true)
     public MyAllKeepsResponse getMyAllKeeps(Long userId) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         return MyAllKeepsResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
@@ -103,10 +104,9 @@ public class MyHomeService {
     @Transactional(readOnly = true)
     public MyCategoryKeepsResponse getMyKeepsByCategory(Long userId, Integer categoryId) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         return MyCategoryKeepsResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
@@ -117,52 +117,50 @@ public class MyHomeService {
     @Transactional(readOnly = true)
     public MyReviewsResponse getMyReviews(Long userId, DurationRequest request) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         return MyReviewsResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //리뷰 리스트
+            .reviewList(reviewService.getReviewsByUserId(userId, userId))
             .build();
     }
-
     @Transactional(readOnly = true)
     public MyWritableReviewsResponse getMyWritableReviews(Long userId) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         return MyWritableReviewsResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //작성 안 한 리뷰 리스트
+            .reviewList(reviewService.getUnWrittenReviews(userId))
             .build();
     }
 
     public MyQnaResponse getMyQna(Long userId, DurationRequest request) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
+        FindQuestionRequest qnaRequest = FindQuestionRequest.builder()
+            .userId(userId)
+            .build();
         return MyQnaResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .orderDeliveryCount(orderService.getActiveOrderCountByUserId(userId))
             .couponCount(userCouponService.getCouponsByUserId(userId).size())
             .point(user.getPoint())
-            //qna 리스트
+            .questionList(questionService.findByUserId(userId, qnaRequest))
             .build();
     }
 
     public MyOrdersResponse getPurchasedConfirmedOrders(Long userId) {
         User user = findByUserId(userId);
-        String username = findUsernameByUserId(userId);
         List<OrderStatus> orderStatusList = new ArrayList<>();
         orderStatusList.add(PURCHASE_CONFIRMED);
         return MyOrdersResponse.builder()
             .nickName(user.getNickName())
-            .username(username)
+            .username(findUsernameByUserId(userId))
             .point(user.getPoint())
             .unwrittenReviewPoint(pointService.calculateMaximumPointForUnwrittenReview(userId))
             .reviewCount(reviewService.getReviewsByUserId(userId, userId).size())
@@ -177,11 +175,6 @@ public class MyHomeService {
             .build();
     }
 
-    private User findByUserId(Long userId) {
-        return userJpaRepository.findById(userId)
-            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
-    }
-
     private List<KeepResponse> getKeepsByCategory(Long userId, Category category) {
         FindKeepByCategoryRequest request = FindKeepByCategoryRequest.builder()
             .userId(userId)
@@ -191,6 +184,11 @@ public class MyHomeService {
         return keepService.findKeepByUserAndCategory(userId, request);
     }
 
+    private User findByUserId(Long userId) {
+        return userJpaRepository.findById(userId)
+            .orElseThrow(() -> new UserException(USER_NOT_FOUND, String.valueOf(userId)));
+    }
+
     private String findUsernameByUserId(Long userId) {
         String username = userQueryRepository.getUsername(userId);
         if (username == null) {
@@ -198,5 +196,4 @@ public class MyHomeService {
         }
         return username;
     }
-
 }
