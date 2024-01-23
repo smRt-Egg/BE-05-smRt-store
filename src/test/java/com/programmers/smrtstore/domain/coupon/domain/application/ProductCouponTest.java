@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
  * 2. ProductDetail Page의 CouponList()에 대한 검증 테스트 -> 479 Line부터~
  */
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(RedisTestConfig.class)
 @Transactional
 public class ProductCouponTest {

@@ -7,6 +7,9 @@ import com.programmers.smrtstore.core.config.RedisTestConfig;
 import com.programmers.smrtstore.domain.auth.application.AuthService;
 import com.programmers.smrtstore.domain.auth.application.dto.req.SignUpRequest;
 import com.programmers.smrtstore.domain.auth.infrastructure.AuthJpaRepository;
+import com.programmers.smrtstore.domain.user.application.service.MyHomeService;
+import com.programmers.smrtstore.domain.user.application.service.ShippingAddressService;
+import com.programmers.smrtstore.domain.user.application.service.UserService;
 import com.programmers.smrtstore.domain.user.domain.entity.Gender;
 import com.programmers.smrtstore.domain.user.domain.entity.Role;
 import com.programmers.smrtstore.domain.user.exception.UserException;
@@ -16,7 +19,6 @@ import com.programmers.smrtstore.domain.user.presentation.dto.req.DetailShipping
 import com.programmers.smrtstore.domain.user.presentation.dto.req.UpdateShippingRequest;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DeliveryAddressBook;
 import com.programmers.smrtstore.domain.user.presentation.dto.res.DetailShippingResponse;
-import com.programmers.smrtstore.domain.user.presentation.facade.UserFacade;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
     @Autowired
-    UserFacade userFacade;
+    UserService userService;
+
+    @Autowired
+    MyHomeService myHomeService;
+
+    @Autowired
+    ShippingAddressService shippingAddressService;
 
     @Autowired
     AuthService authService;
@@ -106,7 +114,7 @@ class UserServiceTest {
     @Test
     @DisplayName("배송지를 추가할 수 있다.")
     void createShippingAddress() {
-        DetailShippingResponse response = userFacade.createShippingAddress(kazuhaId, request1);
+        DetailShippingResponse response = shippingAddressService.createShippingAddress(kazuhaId, request1);
 
         assertThat(shippingAddressJpaRepository.findById(response.getId())).isNotNull();
         assertThat(response.getName()).isEqualTo(request1.getName());
@@ -122,9 +130,9 @@ class UserServiceTest {
     @Test
     @DisplayName("기본 배송지 등록 시 갱신")
     void createDefaultShippingAddress() {
-        DetailShippingResponse response4 = userFacade.createShippingAddress(kazuhaId, request4);
+        DetailShippingResponse response4 = shippingAddressService.createShippingAddress(kazuhaId, request4);
 
-        DetailShippingResponse response5 = userFacade.createShippingAddress(kazuhaId,
+        DetailShippingResponse response5 = shippingAddressService.createShippingAddress(kazuhaId,
             request5);
 
         assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getDefaultYn()).isFalse();
@@ -134,12 +142,12 @@ class UserServiceTest {
     @Test
     @DisplayName("user가 가지고 있는 배송지 목록을 조회할 수 있다.")
     void getShippingAddressList() {
-        userFacade.createShippingAddress(kazuhaId, request1);
-        userFacade.createShippingAddress(kazuhaId, request2);
-        userFacade.createShippingAddress(kazuhaId, request3);
-        userFacade.createShippingAddress(kazuhaId, request4);
+        shippingAddressService.createShippingAddress(kazuhaId, request1);
+        shippingAddressService.createShippingAddress(kazuhaId, request2);
+        shippingAddressService.createShippingAddress(kazuhaId, request3);
+        shippingAddressService.createShippingAddress(kazuhaId, request4);
 
-        DeliveryAddressBook response = userFacade.getShippingAddressList(kazuhaId);
+        DeliveryAddressBook response = shippingAddressService.getShippingAddressList(kazuhaId);
 
         assertThat(userJpaRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(4);
         assertThat(response.getDefaultDeliveryAddress().getRecipient()).isEqualTo("라이덴");
@@ -149,9 +157,9 @@ class UserServiceTest {
     @Test
     @DisplayName("수정 시 배송지 정보를 배송지 id로 조회할 수 있다.")
     void findByShippingId() {
-        DetailShippingResponse response = userFacade.createShippingAddress(kazuhaId, request1);
+        DetailShippingResponse response = shippingAddressService.createShippingAddress(kazuhaId, request1);
 
-        DetailShippingResponse byShippingId = userFacade.findByShippingId(response.getId());
+        DetailShippingResponse byShippingId = shippingAddressService.findByShippingId(response.getId());
 
         assertThat(byShippingId.getName()).isEqualTo(request1.getName());
         assertThat(byShippingId.getRecipient()).isEqualTo(request1.getRecipient());
@@ -166,12 +174,12 @@ class UserServiceTest {
     @Test
     @DisplayName("기본 배송지가 아닌 배송지를 삭제할 수 있다.")
     void deleteNotDefaultShippingAddress() {
-        DetailShippingResponse response1 = userFacade.createShippingAddress(kazuhaId, request1);
-        userFacade.createShippingAddress(kazuhaId, request2);
-        userFacade.createShippingAddress(kazuhaId, request3);
-        userFacade.createShippingAddress(kazuhaId, request4);
+        DetailShippingResponse response1 = shippingAddressService.createShippingAddress(kazuhaId, request1);
+        shippingAddressService.createShippingAddress(kazuhaId, request2);
+        shippingAddressService.createShippingAddress(kazuhaId, request3);
+        shippingAddressService.createShippingAddress(kazuhaId, request4);
 
-        userFacade.deleteShippingAddress(kazuhaId, response1.getId());
+        shippingAddressService.deleteShippingAddress(kazuhaId, response1.getId());
 
         assertThat(userJpaRepository.findById(kazuhaId).get().getShippingAddresses().size()).isEqualTo(3);
     }
@@ -179,23 +187,23 @@ class UserServiceTest {
     @Test
     @DisplayName("기본 배송지인 배송지를 삭제할 수 없다.")
     void deleteDefaultShippingAddress() {
-        userFacade.createShippingAddress(kazuhaId, request1);
-        userFacade.createShippingAddress(kazuhaId, request2);
-        userFacade.createShippingAddress(kazuhaId, request3);
-        DetailShippingResponse response4 = userFacade.createShippingAddress(kazuhaId,
+        shippingAddressService.createShippingAddress(kazuhaId, request1);
+        shippingAddressService.createShippingAddress(kazuhaId, request2);
+        shippingAddressService.createShippingAddress(kazuhaId, request3);
+        DetailShippingResponse response4 = shippingAddressService.createShippingAddress(kazuhaId,
             request4);
 
-        assertThatThrownBy(() -> userFacade.deleteShippingAddress(kazuhaId, response4.getId()))
+        assertThatThrownBy(() -> shippingAddressService.deleteShippingAddress(kazuhaId, response4.getId()))
             .isInstanceOf(UserException.class);
     }
 
     @Test
     @DisplayName("기본 배송지를 수정할 수 있다.")
     void updateDefaultShippingAddress() {
-        DetailShippingResponse response4 = userFacade.createShippingAddress(kazuhaId,
+        DetailShippingResponse response4 = shippingAddressService.createShippingAddress(kazuhaId,
             request4);
 
-        userFacade.updateShippingAddress(kazuhaId, response4.getId(), request7);
+        shippingAddressService.updateShippingAddress(kazuhaId, response4.getId(), request7);
 
         assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getRecipient()).isEqualTo("푸리나");
         assertThat(shippingAddressJpaRepository.findById(response4.getId()).get().getDefaultYn()).isTrue();
@@ -204,10 +212,10 @@ class UserServiceTest {
     @Test
     @DisplayName("기본 배송지가 아닌 배송지를 기본 배송지로 수정할 수 있다.")
     void updateNotDefaultToDefaultShippingAddress() {
-        DetailShippingResponse response1 = userFacade.createShippingAddress(kazuhaId,
+        DetailShippingResponse response1 = shippingAddressService.createShippingAddress(kazuhaId,
             request1);
 
-        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request7);
+        shippingAddressService.updateShippingAddress(kazuhaId, response1.getId(), request7);
 
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("푸리나");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isTrue();
@@ -216,10 +224,10 @@ class UserServiceTest {
     @Test
     @DisplayName("기본 배송지가 아닌 배송지를 기본배송지가 아닌 배송지로 수정할 수 있다.")
     void updateNotDefaultToNotDefaultShippingAddress() {
-        DetailShippingResponse response1 = userFacade.createShippingAddress(kazuhaId,
+        DetailShippingResponse response1 = shippingAddressService.createShippingAddress(kazuhaId,
             request1);
 
-        userFacade.updateShippingAddress(kazuhaId, response1.getId(), request6);
+        shippingAddressService.updateShippingAddress(kazuhaId, response1.getId(), request6);
 
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getRecipient()).isEqualTo("나히다");
         assertThat(shippingAddressJpaRepository.findById(response1.getId()).get().getDefaultYn()).isFalse();

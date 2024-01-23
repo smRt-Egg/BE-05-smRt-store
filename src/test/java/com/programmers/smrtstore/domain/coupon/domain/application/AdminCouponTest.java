@@ -45,7 +45,6 @@ import java.util.List;
 
 @SpringBootTest
 @Transactional
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(RedisTestConfig.class)
 public class AdminCouponTest {
 
