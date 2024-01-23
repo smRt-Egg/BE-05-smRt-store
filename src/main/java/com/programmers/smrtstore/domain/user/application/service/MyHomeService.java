@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MyHomeService {
 
@@ -50,7 +50,6 @@ public class MyHomeService {
     private final ReviewService reviewService;
     private final ProductQuestionService questionService;
 
-    @Transactional(readOnly = true)
     public MyHomeResponse getMyHome(Long userId) {
         User user = findByUserId(userId);
 
@@ -75,7 +74,6 @@ public class MyHomeService {
             .build();
     }
 
-    @Transactional(readOnly = true)
     public MyOrdersResponse getOrders(Long userId) {
         User user = findByUserId(userId);
         return MyOrdersResponse.builder()
@@ -88,7 +86,6 @@ public class MyHomeService {
             .build();
     }
 
-    @Transactional(readOnly = true)
     public MyAllKeepsResponse getMyAllKeeps(Long userId) {
         User user = findByUserId(userId);
         return MyAllKeepsResponse.builder()
@@ -101,7 +98,6 @@ public class MyHomeService {
             .build();
     }
 
-    @Transactional(readOnly = true)
     public MyCategoryKeepsResponse getMyKeepsByCategory(Long userId, Integer categoryId) {
         User user = findByUserId(userId);
         return MyCategoryKeepsResponse.builder()
@@ -114,7 +110,6 @@ public class MyHomeService {
             .build();
     }
 
-    @Transactional(readOnly = true)
     public MyReviewsResponse getMyReviews(Long userId, DurationRequest request) {
         User user = findByUserId(userId);
         return MyReviewsResponse.builder()
@@ -126,7 +121,6 @@ public class MyHomeService {
             .reviewList(reviewService.getReviewsByUserId(userId, userId))
             .build();
     }
-    @Transactional(readOnly = true)
     public MyWritableReviewsResponse getMyWritableReviews(Long userId) {
         User user = findByUserId(userId);
         return MyWritableReviewsResponse.builder()
