@@ -1,5 +1,6 @@
 package com.programmers.smrtstore.domain.orderManagement.orderSheet.presentation.dto.req;
 
+import com.programmers.smrtstore.domain.coupon.domain.entity.Coupon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

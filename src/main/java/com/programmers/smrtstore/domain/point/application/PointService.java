@@ -80,15 +80,15 @@ public class PointService {
     }
 
     private Long saveAcmPointPerProduct(OrderedProductResponse product,
-        int totalAcmPointPerProduct, boolean isMembershipYn, PointRequest request) {
+                                        int totalAcmPointPerProduct, boolean isMembershipYn, PointRequest request) {
 
         Long pointId = null;
         int count = product.getQuantity();
         while (count != 0) {
             Point point = request.toEntity(
-                PointStatus.ACCUMULATED,
-                totalAcmPointPerProduct / product.getQuantity(),
-                isMembershipYn
+                    PointStatus.ACCUMULATED,
+                    totalAcmPointPerProduct / product.getQuantity(),
+                    isMembershipYn
             );
             pointRepository.save(point);
             count -= 1;
@@ -100,11 +100,11 @@ public class PointService {
     }
 
     public OrderExpectedPointDto calculateEstimatedAcmPoint(
-        List<Integer> productPrices, Long userId, boolean membershipYn
+            List<Integer> productPrices, Long userId, boolean membershipYn
     ) {
 
         int totalPrice = productPrices.stream()
-            .reduce(0, Integer::sum);
+                .reduce(0, Integer::sum);
 
         int defaultPoint = totalPrice / 100; // 기본 1% 예상 적립금액
         int additionalPoint = 0;
@@ -112,9 +112,9 @@ public class PointService {
             additionalPoint = calculateEstimatedAdditionalAcmPoint(productPrices, userId);
         }
         return OrderExpectedPointDto.of(
-            defaultPoint,
-            additionalPoint,
-            defaultPoint + additionalPoint
+                defaultPoint,
+                additionalPoint,
+                defaultPoint + additionalPoint
         );
     }
 
@@ -130,9 +130,9 @@ public class PointService {
             additionalPoint = calculateAdditionalAcmPoint(orderedProducts, userId);
         }
         return OrderExpectedPointDto.of(
-            defaultPoint,
-            additionalPoint,
-            defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
+                defaultPoint,
+                additionalPoint,
+                defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
         );
     }
 
@@ -164,7 +164,7 @@ public class PointService {
     public ProductEstimatedPointDto calculateEstimatedAcmPoint(Long productId, Long userId) {
 
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
         User user = validateUserExists(userId);
 
@@ -176,23 +176,23 @@ public class PointService {
             additionalPoint = calculateAdditionalAcmPoint(product, userId);
         }
         return ProductEstimatedPointDto.of(
-            defaultPoint,
-            additionalPoint,
-            defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
+                defaultPoint,
+                additionalPoint,
+                defaultPoint + additionalPoint // 멤버십 적용된 최종 적립 (=구매적립)
         );
     }
 
     public ProductEstimatedPointDto calculateEstimatedAcmPointWithoutUserId(Long productId) {
 
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ErrorCode.PRODUCT_NOT_FOUND));
 
         int defaultPoint = product.getPrice() / 100;
         int additionalPoint = calculateAdditionalAcmPoint(product, null);
         return ProductEstimatedPointDto.of(
-            defaultPoint,
-            additionalPoint,
-            defaultPoint + additionalPoint
+                defaultPoint,
+                additionalPoint,
+                defaultPoint + additionalPoint
         );
     }
 
@@ -305,10 +305,10 @@ public class PointService {
 
         int totalCancelPoint = 0;
         Point point = request.toEntity(
-            PointStatus.USE_CANCELED,
-            // 음수 값에 대해 음수 처리 -> 양수
-            pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
-            pointResponse.getMembershipApplyYn()
+                PointStatus.USE_CANCELED,
+                // 음수 값에 대해 음수 처리 -> 양수
+                pointFacade.makeNegativeNumber(pointResponse.getPointValue()),
+                pointResponse.getMembershipApplyYn()
         );
         pointRepository.save(point);
         totalCancelPoint += point.getPointValue();
@@ -316,9 +316,9 @@ public class PointService {
         int expiredPoint = calculateExpiredPoint(pointResponse.getOrderId());
         if (expiredPoint != 0) {
             Point expiredpoint = request.toEntity(
-                PointStatus.EXPIRED,
-                expiredPoint,
-                pointResponse.getMembershipApplyYn());
+                    PointStatus.EXPIRED,
+                    expiredPoint,
+                    pointResponse.getMembershipApplyYn());
             pointRepository.save(expiredpoint);
         }
         totalCancelPoint += expiredPoint;
@@ -357,6 +357,6 @@ public class PointService {
 
     private User validateUserExists(Long userId) {
         return userJpaRepository.findById(userId)
-            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, String.valueOf(userId)));
     }
 }

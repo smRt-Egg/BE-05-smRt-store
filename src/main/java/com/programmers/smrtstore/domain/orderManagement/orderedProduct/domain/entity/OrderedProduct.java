@@ -75,9 +75,9 @@ public class OrderedProduct {
 
     @Builder
     public OrderedProduct(
-        Long id, OrderSheet orderSheet, Product product,
-        ProductDetailOption productOption, Integer quantity, Integer extraPrice, Integer orgPrice,
-        Integer immediateDiscount
+            Long id, OrderSheet orderSheet, Product product,
+            ProductDetailOption productOption, Integer quantity, Integer extraPrice, Integer orgPrice,
+            Integer immediateDiscount
     ) {
         this.id = id;
         this.orderSheet = orderSheet;
@@ -96,17 +96,17 @@ public class OrderedProduct {
     }
 
     public static OrderedProduct createBeforeOrder(
-        Product product, ProductDetailOption productOption, Integer extraPrice,
-        Integer quantity, Integer orgPrice, Integer immediateDiscount
+            Product product, ProductDetailOption productOption, Integer extraPrice,
+            Integer quantity, Integer orgPrice, Integer immediateDiscount
     ) {
         return OrderedProduct.builder()
-            .product(product)
-            .productOption(productOption)
-            .extraPrice(extraPrice)
-            .quantity(quantity)
-            .orgPrice(orgPrice)
-            .immediateDiscount(immediateDiscount)
-            .build();
+                .product(product)
+                .productOption(productOption)
+                .extraPrice(extraPrice)
+                .quantity(quantity)
+                .orgPrice(orgPrice)
+                .immediateDiscount(immediateDiscount)
+                .build();
     }
 
     public void updatePointDiscount(Integer pointDiscount) {
@@ -128,7 +128,7 @@ public class OrderedProduct {
     }
 
     private void validateMatchingProductAndOption(
-        Long productId, Long productIdInProductOption
+            Long productId, Long productIdInProductOption
     ) {
         if (!productId.equals(productIdInProductOption)) {
             throw new OrderedProductException(PRODUCT_DETAIL_OPTION_NOT_MATCH);
